@@ -1,0 +1,88 @@
+services:
+  # Production service (the default service run). Run using
+  #     docker-compose up --build
+  # Creates an production build, expecting to connect to a cloud database.
+  prod:
+    build:
+      context: go-pulse
+      dockerfile: prod.dockerfile
+    ports:
+      - ${PROD_LOCAL_PORT:-3000}:3000 # Default 3000, but allow override
+   
+    env_file:
+      - .env
+
+  # Development service. Run using
+  #     docker-compose up dev --build --watch
+  # Creates a development build with a local database.
+  dev:
+    profiles:
+      - dev
+    build:
+      context: go-pulse
+      dockerfile: dev.dockerfile
+    develop:
+      watch: # https://docs.docker.com/compose/how-tos/file-watch/
+          # On changes to any source file, update the files within the docker 
+          # container automatically
+        - path: ./go-pulse
+          action: sync
+          target: /app
+          ignore:
+            - .next/
+            - node_modules/
+            - package.json
+            - packet-lock.json
+          
+          # On changes to dependencies, rebuild the docker container automatically.
+        - path: ./go-pulse/package.json
+          action: rebuild
+          target: /package.json
+        - path: ./go-pulse/package-lock.json
+          action: rebuild
+          target: /package-lock.json
+      
+    ports:
+      - ${DEV_LOCAL_PORT:-3000}:3000 # Default 3000, but allow override
+
+    environment:
+      - DB_HOST=db
+    env_file:
+      - .env
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Database image. Run using 
+  #     docker-compose up db --build
+  # You shouldn't have to call this manually, it should instead be launched
+  # automatically when composing the dev service.
+  db:
+    build:
+      context: go-pulse
+      dockerfile: db.dockerfile
+      args:
+        - POSTGRES_DB
+        - POSTGRES_USER
+        - POSTGRES_PASSWORD
+    profiles:
+      - dev
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - ${DB_LOCAL_PORT}:${DB_REMOTE_PORT}
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    env_file:
+      - ./.env
+
+# Volume to allow for persistent local database data.
+volumes:
+  db-data:

@@ -1,1 +1,123 @@
+# BEN: Fitness Tracker App (working name)
+
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=17758508&assignment_repo_type=AssignmentRepo)
+
+## Building and Deploying
+
+### Using Docker Compose
+
+> [!IMPORTANT]
+> Requires Docker Compose 2.22.0 or later.
+
+#### Start a development server using:
+```bash
+docker-compose up dev --build --watch
+```
+This command launches a development server (the equivalent of running `npm run dev`) and launches and connects a local postgres instance.
+The `--watch` flag allows docker to automatically refresh or rebuild on any file changes when using it for local development.
+
+Environment variables can be passed into docker using a `.env` file at the project root.
+
+> [!NOTE]
+> Changing source files should reflect within the docker container almost immediately (or on a page refresh). However, installing any new `npm` packages will require a full container rebuild, which is slower. You can see the current progress of the refresh/rebuild on the terminal running `--watch`.
+
+The app automatically launches to port `3000`, but this can be modified by providing a `DEV_LOCAL_PORT` environment variable.
+
+Databases within the postgres container can be accessed by running
+```bash
+psql postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost:{POSTGRES_LOCAL_PORT}/{POSTGRES_DB}
+```
+For example, if you launch docker compose with the following environment variables:
+```bash
+POSTGRES_HOST=localhost
+POSTGRES_DB=testdb
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres 
+DB_LOCAL_PORT=50432
+DB_REMOTE_PORT=5432
+```
+This database can be connected to directly using:
+```bash
+psql postgresql://postgres:postgres@localhost:50432/testdb
+```
+
+#### Start a production server using:
+```bash
+docker-compose up prod --build
+```
+or, as production is the default service launched:
+```bash
+docker-compose up --build
+```
+Production servers are launched without a local database backing them. Connect them up to a cloud database by providing the necessary environment variables.
+
+## Branch policies
+
+We are developing with 4 types of branches:
+
+### Main Branch (`main`)
+
+The main production branch. Commits to the main branch should only happen via pull request, any commits made to the main branch should be tagged as a release (something like `v1.0.1`).
+
+The main branch is currently protected from pushes. To add a tag, create a [release from a commit on `main`](https://github.com/UTSC-CSCC01-Software-Engineering-I/term-group-project-ben/releases).
+
+### Dev branch (`dev`)
+
+The developer branch. 
+Commits to the branch should only happen via pull request.
+
+### Release branches (`release/[VERSION]`)
+
+Release branches are branched off of `main` when a release is desired.
+Commits to release branches should only happen via pull request.
+
+### Issue branches (`feature/[ISSUE ID]-[Description]`)
+
+Issue branches should be branched off of `dev` or `main`. 
+Branch names should contain the issue id and a few words of description to explain what the branch is about.
+
+For example: `feature/SCRUM-2-set-up-repo`
+
+Commits to this branch should happen directly, we don't need any pull requests to merge anything into an issue branch.
+
+## Commit style
+
+Commits to `main`, `dev` and release branches should only be squash merge commits from pull requests following the style defined by GitHub. 
+
+Commits to issue branches are more freeform, but be clear, and write full sentences starting with a capital, NOT ending with a period.
+
+For example, prefer commits of the style: 
+> Adjust "Share" button styling
+
+Avoid commits of the style:
+
+> i'm adjusting styles. 
+
+> feat: adjust style. 
+
+## Pull Requests
+
+Pull requests should always use the "squash merge" strategy and require two reviews before being merge. 
+
+Titles should be a short-form summary of the issue(s) being resolved.
+
+Descriptions should follow the template provided in `.github/pull_request_template.md`.
+- Within the request, link to the relevant issue(s) that you are resolving.
+- Provide a small summary of the changes made, and any justification if needed. 
+- Make sure the pull request checklist is completed.
+
+Ideally, someone should be able to look at the pull request and the issue to understand the reasoning behind the changes you're making, without having to contact you.
+
+### Example Pull Request
+
+> ## Changes Made
+> [Linked Issue](https://risheitmunshi.atlassian.net/browse/SCRUM-2)
+> 
+> This PR:
+> - Adds necessary documentation.
+> - Sets up the initial state of the GitHub repository
+> 
+> ## Pull Request Checklist
+> - [x] The build launches successfully.
+> - [x] Code has been cleaned up (commented-out code, TODO comments, etc. are removed).
+> - [x] The PR is unit-tested adequately.
