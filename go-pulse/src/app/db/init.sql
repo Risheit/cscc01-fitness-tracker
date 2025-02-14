@@ -1,8 +1,3 @@
-CREATE TABLE note (
-    id SERIAL PRIMARY KEY,
-    content VARCHAR(100)
-);
-
 CREATE TABLE exercises (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
