@@ -1,3 +1,13 @@
+CREATE TABLE IF NOT EXISTS note (
+    id SERIAL PRIMARY KEY,
+    content VARCHAR(100)
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+);
 CREATE TABLE exercises (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

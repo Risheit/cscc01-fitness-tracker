@@ -1,31 +1,41 @@
+"use client";
 import Link from "next/link";
-import PostButton from "./components/PostButton";
 import NavBar from "./components/NavBar";
-import pool from "./db/database";
-import dotenv from "dotenv";
-
-dotenv.config();
+import PostButton from './components/PostButton';
+import pool from './db/database';
+import dotenv from 'dotenv';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import LogoutButton from "./components/LogoutButton";
 
 export default function Home() {
-  const addNote = async () => {
-    "use server";
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-    try {
-      await pool.query("INSERT INTO note (content) VALUES ('hello, world')");
-    } catch (e) {
-      console.log("addNote", e);
-    }
-  };
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await fetch("/api/check-auth", { credentials: "include" });
+
+      if (!res.ok) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <main className="p-20">
-      <NavBar />      
-
-      {/* Page Content */}
-      <h1 className="text-2xl font-bold mt-6">Welcome to the Home Page</h1>
-
-
-      <PostButton postAction={addNote} />
-    </main>
+    <div>      
+      <NavBar />
+      <LogoutButton />
+      <main className="p-20">
+        {/* Page Content */}
+        <h1 className="text-2xl font-bold mt-6">Welcome to the Home Page</h1>
+      </main>
+    </div>
   );
 }
