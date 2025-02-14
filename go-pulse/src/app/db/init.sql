@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL
 );
+
 CREATE TABLE exercises (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

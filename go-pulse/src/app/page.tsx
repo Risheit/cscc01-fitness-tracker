@@ -1,9 +1,5 @@
 "use client";
-import Link from "next/link";
 import NavBar from "./components/NavBar";
-import PostButton from './components/PostButton';
-import pool from './db/database';
-import dotenv from 'dotenv';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LogoutButton from "./components/LogoutButton";
