@@ -77,6 +77,9 @@ services:
         - POSTGRES_DB
         - POSTGRES_USER
         - POSTGRES_PASSWORD
+
+    profiles:
+      - dev
     volumes:
       - db-data:/var/lib/postgresql/data
     expose:
