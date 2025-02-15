@@ -1,29 +1,7 @@
-"use client";
 import NavBar from "./components/NavBar";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import LogoutButton from "./components/LogoutButton";
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const res = await fetch("/api/check-auth", { credentials: "include" });
-
-      if (!res.ok) {
-        router.push("/login");
-      } else {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [router]);
-
-  if (loading) return <p>Loading...</p>;
-
   return (
     <div>      
       <NavBar />

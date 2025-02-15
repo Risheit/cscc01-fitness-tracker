@@ -52,7 +52,7 @@ const YouTubePlayer = ({ videoId }: { videoId: string }) => {
     <iframe
       ref={iframeRef}
       id="player"
-      width="640"
+      width="w-full"
       height="390"
       src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${origin}`}
       frameBorder="0"

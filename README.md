@@ -11,7 +11,7 @@
 
 #### Start a development server using:
 ```bash
-docker-compose up dev --build --watch
+docker-compose --profile dev up --build --watch
 ```
 This command launches a development server (the equivalent of running `npm run dev`) and launches and connects a local postgres instance.
 The `--watch` flag allows docker to automatically refresh or rebuild on any file changes when using it for local development.
@@ -46,11 +46,7 @@ psql postgresql://postgres:postgres@localhost:50432/testdb
 
 #### Start a production server using:
 ```bash
-docker-compose up prod --build
-```
-or, as production is the default service launched:
-```bash
-docker-compose up --build
+docker-compose --profile prod up --build
 ```
 Production servers are launched without a local database backing them. Connect them up to a cloud database by providing the necessary environment variables.
 

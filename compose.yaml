@@ -3,6 +3,8 @@ services:
   #     docker-compose up --build
   # Creates an production build, expecting to connect to a cloud database.
   prod:
+    profiles:
+      - prod
     build:
       context: go-pulse
       dockerfile: prod.dockerfile
@@ -55,6 +57,9 @@ services:
       - DB_HOST=db
     env_file:
       - .env
+
+    volumes:
+      - ./go-pulse/.next/:/app/.next/
 
     depends_on:
       db:
