@@ -7,7 +7,6 @@
 
 <!-------->
 
-## Pull Request Checklist
-- [ ] The build launches successfully.
+- [ ] The build launches successfully (I've run `docker compose --profile prod build --no-cache` and it's succeeded).
 - [ ] Code has been cleaned up (commented-out code, TODO comments, etc. are removed).
 - [ ] The PR is unit-tested adequately.
