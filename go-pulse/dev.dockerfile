@@ -27,10 +27,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy over the rest of our source files
-COPY . .
-
-# Change ownership of /app after copying
-RUN chown -R nextjs:nodejs /app
+COPY --chown=nextjs:nodejs . .
 
 # Switch to our non-root user
 USER nextjs
