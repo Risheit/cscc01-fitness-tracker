@@ -96,13 +96,13 @@ export default function TimedBottomSheet({
             onClick={onPauseButtonClicked}
             disabled={isFinished}
           >
-            Pause
+            { isPaused ? 'Continue' : 'Pause' }
           </button>
           <button
             className="bg-green-600 rounded-r-md h-full w-full max-w-32 border border-green-800 text-white hover:bg-green-700 transition-colors"
             onClick={onCompletion}
           >
-            {isFinished ? 'Complete' : 'Skip'}
+            {isFinished ? 'Complete' : 'Pause'}
           </button>
         </div>
       </div>
