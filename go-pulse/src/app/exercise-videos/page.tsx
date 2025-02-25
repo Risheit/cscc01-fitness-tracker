@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import YouTubePlayer from "../components/YouTubePlayer";
 import NavBar from "../components/NavBar";
-import ExerciseSelector from "../components/ExerciseSelector";
+import ExerciseSelector from "./components/ExerciseSelector";
 
 export default function ExerciseVideosPage() {
     const [videoId, setVideoId] = useState<string>("M7lc1UVf-VE"); // Default videoId
