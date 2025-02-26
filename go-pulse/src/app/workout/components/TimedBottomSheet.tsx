@@ -102,7 +102,7 @@ export default function TimedBottomSheet({
             className="bg-green-600 rounded-r-md h-full w-full max-w-32 border border-green-800 text-white hover:bg-green-700 transition-colors"
             onClick={onCompletion}
           >
-            {isFinished ? 'Complete' : 'Pause'}
+            {isFinished ? 'Complete' : 'Skip'}
           </button>
         </div>
       </div>
