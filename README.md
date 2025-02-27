@@ -94,6 +94,53 @@ Avoid commits of the style:
 
 > feat: adjust style. 
 
+## Unit Tests (Frontend)
+
+### 1. Running Unit Tests
+
+Frontend unit tests are designed to test individual functions or modules of your app to ensure they behave as expected.
+
+To run all tests, use the following command:
+
+```bash
+npm test
+```
+
+This will run all tests using Vitest.
+
+To run a specific test file, use:
+
+```bash
+npx vitest run src/path/to/test/file.test.ts
+```
+
+### 2. Creating Unit Tests
+
+Unit tests are typically placed in a __tests__ folder or alongside the code they test (using the .test.ts or .test.tsx extension). Here's an example of a unit test for a utility function:
+```ts
+// Example: utils.test.ts
+import { sum } from './utils'; // Import the function you want to test
+
+test('adds two numbers correctly', () => {
+  expect(sum(1, 2)).toBe(3);
+});
+```
+In this example, sum is the function being tested. The test checks if calling sum(1, 2) returns 3.
+
+Here’s another example for testing a React component:
+```ts
+// Example: Button.test.tsx
+import { render, screen } from '@testing-library/react';
+import Button from './Button'; // Import the Button component
+
+test('renders Button component correctly', () => {
+  render(<Button label="Click me" />);
+  
+  // Check if the button is rendered with the correct label
+  expect(screen.getByRole('button', { name: /Click me/i })).toBeInTheDocument();
+});
+```
+
 ## Pull Requests
 
 Pull requests should always use the "squash merge" strategy and require two reviews before being merge. 
