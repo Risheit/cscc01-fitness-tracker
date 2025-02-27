@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import Home from "./page";
+import Home from "../page";
 
 const mockPush = vi.fn();
 
