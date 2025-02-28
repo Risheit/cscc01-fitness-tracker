@@ -18,7 +18,7 @@ export default function ExerciseVideosPage() {
                 if (response.ok) {
                     setExercises(data); // Store retrieved exercises
                     if (data.length > 0) {
-                        setVideoId(data[0].video_url); // Set default video to first exercise
+                        setVideoId(data[0].video_id); // Set default video to first exercise
                     }
                 } else {
                     console.error("Failed to fetch exercises");
