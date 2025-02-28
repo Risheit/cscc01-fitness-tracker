@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   const res = await fetch(new URL('/api/check-auth', req.url), {
-    headers: { Cookie: cookies().toString() },
+    headers: { Cookie: (await cookies()).toString() },
     credentials: 'include',
   });
 
