@@ -10,16 +10,16 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE exercises (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    youtube_url VARCHAR(255) NOT NULL
+    name VARCHAR(255) PRIMARY KEY,
+    youtube_url VARCHAR(255) NOT NULL,
+    image_path VARCHAR(255) NOT NULL
 );
 
-INSERT INTO exercises (name, youtube_url) VALUES
-('Bench Press', 'gMgvBspQ9lk'),
-('Squat', 'i7J5h7BJ07g'),
-('Pull Up', 'iWpoegdfgtc'),
-('Deadlift', 'AweC3UaM14o');
+-- INSERT INTO exercises (name, youtube_url) VALUES
+-- ('Bench Press', 'gMgvBspQ9lk'),
+-- ('Squat', 'i7J5h7BJ07g'),
+-- ('Pull Up', 'iWpoegdfgtc'),
+-- ('Deadlift', 'AweC3UaM14o');
 
 
 -- Workouts Table (User-created & Pre-Built)
@@ -41,13 +41,17 @@ CREATE TABLE workout_days (
 
 -- Workout-Exercises Table (Links workouts to exercises & specific days)
 CREATE TABLE workout_exercises (
-    id SERIAL PRIMARY KEY,
     workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
     workout_day_id INT REFERENCES workout_days(id) ON DELETE CASCADE, -- Now exercises are assigned to days!
-    name VARCHAR(255) NOT NULL, -- Example: "Squat", "Bench Press", etc.
-    sets INT NOT NULL,
-    reps INT NOT NULL,
+    name VARCHAR(255) NOT NULL REFERENCES exercises(name), -- Example: "Squat", "Bench Press", etc.
+    exercise_type VARCHAR(50) NOT NULL,
+    sets INT DEFAULT NULL,
+    reps INT DEFAULT NULL,
+    mins INT DEFAULT NULL,
     weight DECIMAL(5,2) DEFAULT NULL, -- Optional
-    rest_time INT DEFAULT 60
+    description TEXT,
+    position INT NOT NULL,
+    PRIMARY KEY (workout_id, workout_day_id, position), -- Composite primary key to ensure unique position for each exercise on a given day
+    CONSTRAINT position_order CHECK (position > 0) -- Ensuring position is a positive number
 );
 
