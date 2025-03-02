@@ -23,21 +23,30 @@ export default function WorkoutBuilder() {
   const [workoutName, setWorkoutName] = useState("");
   const [search, setSearch] = useState("");
   const [selectedDays, setSelectedDays] = useState<string[]>([]); // Track selected days
+  const [exerciseType, setExerciseType] = useState<string>("");
+  const [muscleGroup, setMuscleGroup] = useState<string>("");
+  const [difficulty, setDifficulty] = useState<string>("");
 
   const API_KEY = "NdkDHejsQYSeUoRM7IbM7g==LURTckWlIS0A8S1P";
 
   async function fetchExercises() {
-    const response = await fetch(
-      `https://api.api-ninjas.com/v1/exercises?muscle=chest`,
-      { headers: { "X-Api-Key": API_KEY } }
-    );
+    let url = `https://api.api-ninjas.com/v1/exercises?muscle=${muscleGroup}&type=${exerciseType}&difficulty=${difficulty}`;
+
+    if (search) {
+      url += `&name=${search}`;
+    }
+
+    const response = await fetch(url, {
+      headers: { "X-Api-Key": API_KEY },
+    });
+
     const data = await response.json();
     setExercises(data);
   }
 
   useEffect(() => {
     fetchExercises();
-  }, []);
+  }, [exerciseType, muscleGroup, difficulty, search]);
 
   function addExerciseToDay(exercise: Exercise, day: string) {
     // Check if the day already has exercises, otherwise create a new entry
@@ -104,7 +113,7 @@ export default function WorkoutBuilder() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <NavBar /> {/* ✅ Navbar added here */}
+      <NavBar />
 
       <div className="max-w-3xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg mt-8">
         <h1 className="text-2xl font-bold mb-4 text-center">Create Workout</h1>
@@ -134,6 +143,62 @@ export default function WorkoutBuilder() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Filter Dropdowns for Exercise */}
+        <div className="flex space-x-4 mb-4">
+          {/* Exercise Type */}
+          <select
+            value={exerciseType}
+            onChange={(e) => setExerciseType(e.target.value)}
+            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
+          >
+            <option value="">Select Type</option>
+            <option value="cardio">Cardio</option>
+            <option value="strength">Strength</option>
+            <option value="olympic_weightlifting">Olympic Weightlifting</option>
+            <option value="plyometrics">Plyometrics</option>
+            <option value="powerlifting">Powerlifting</option>
+            <option value="stretching">Stretching</option>
+            <option value="strongman">Strongman</option>
+          </select>
+
+          {/* Muscle Group */}
+          <select
+            value={muscleGroup}
+            onChange={(e) => setMuscleGroup(e.target.value)}
+            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
+          >
+            <option value="">Select Muscle</option>
+            <option value="abdominals">Abdominals</option>
+            <option value="abductors">Abductors</option>
+            <option value="adductors">Adductors</option>
+            <option value="biceps">Biceps</option>
+            <option value="calves">Calves</option>
+            <option value="chest">Chest</option>
+            <option value="forearms">Forearms</option>
+            <option value="glutes">Glutes</option>
+            <option value="hamstrings">Hamstrings</option>
+            <option value="lats">Lats</option>
+            <option value="lower_back">Lower Back</option>
+            <option value="middle_back">Middle Back</option>
+            <option value="neck">Neck</option>
+            <option value="quadriceps">Quadriceps</option>
+            <option value="traps">Traps</option>
+            <option value="triceps">Triceps</option>
+          </select>
+
+          {/* Difficulty Level */}
+          <select
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
+          >
+            <option value="">Select Difficulty</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="expert">Expert</option>
+          </select>
         </div>
 
         {/* Search Bar */}

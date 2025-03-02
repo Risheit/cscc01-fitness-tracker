@@ -6,13 +6,12 @@ async function checkAuth(req: Request) {
   const response = await fetch(`${process.env.BASE_URL}/api/check-auth`, {
     headers: req.headers, // Pass the headers (including cookie)
   });
-  const data = await response.json();
-  return data; // Contains both `authenticated` and `userId`
+  return await response.json();
 }
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = params
+    const { id } = params;
 
     // Call check-auth endpoint to verify user authentication and get userId
     const authData = await checkAuth(req);
@@ -43,7 +42,10 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const days = await Promise.all(
       daysResult.rows.map(async (day) => {
         const exercisesResult = await pool.query(
-          "SELECT name, sets, reps, weight, rest_time FROM workout_exercises WHERE workout_day_id = $1",
+          `SELECT name, exercise_type, sets, reps, mins, weight, position, description 
+           FROM workout_exercises 
+           WHERE workout_day_id = $1 
+           ORDER BY position ASC`,
           [day.id]
         );
 

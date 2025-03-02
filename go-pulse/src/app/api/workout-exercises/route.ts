@@ -6,13 +6,12 @@ async function checkAuth(req: Request) {
   const response = await fetch(`${process.env.BASE_URL}/api/check-auth`, {
     headers: req.headers, // Pass the headers (including cookie)
   });
-  const data = await response.json();
-  return data; // Contains both `authenticated` and `userId`
+  return await response.json();
 }
 
 export async function POST(req: Request) {
   try {
-    const { workout_id, day_of_week, name, sets, reps, weight, rest_time } = await req.json();
+    const { workout_id, day_of_week, name, exercise_type, sets, reps, mins, weight, position, description } = await req.json();
 
     // Call check-auth endpoint to verify user authentication and get userId
     const authData = await checkAuth(req);
@@ -34,10 +33,41 @@ export async function POST(req: Request) {
 
     const workout_day_id = dayResult.rows[0].id;
 
+    // Convert API exercise types into "Timed" or "Sets"
+    const typeMapping: Record<string, "Timed" | "Sets"> = {
+      cardio: "Timed",
+      olympic_weightlifting: "Sets",
+      plyometrics: "Sets",
+      powerlifting: "Sets",
+      strength: "Sets",
+      stretching: "Sets",
+      strongman: "Sets",
+    };
+
+    const mappedType = typeMapping[exercise_type as keyof typeof typeMapping]; // ✅ Fix
+
+    if (!mappedType) {
+      return NextResponse.json({ error: "Invalid exercise type" }, { status: 400 });
+    }
+
+    // Validate required fields based on "Timed" or "Sets"
+    if (mappedType === "Timed" && mins == null) {
+      return NextResponse.json({ error: "Timed exercises must include 'mins'" }, { status: 400 });
+    }
+
+    if (mappedType === "Sets" && (sets == null || reps == null)) {
+      return NextResponse.json({ error: "Sets-based exercises must include 'sets' and 'reps'" }, { status: 400 });
+    }
+
+    if (position <= 0) {
+      return NextResponse.json({ error: "Position must be greater than 0" }, { status: 400 });
+    }
+
     // Insert exercise into workout_exercises table
     await pool.query(
-      "INSERT INTO workout_exercises (workout_id, workout_day_id, name, sets, reps, weight, rest_time) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [workout_id, workout_day_id, name, sets, reps, weight, rest_time]
+      `INSERT INTO workout_exercises (workout_id, workout_day_id, name, exercise_type, sets, reps, mins, weight, position, description) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [workout_id, workout_day_id, name, mappedType, sets, reps, mins, weight, position, description]
     );
 
     return NextResponse.json({ message: "Exercise added to workout day" }, { status: 201 });

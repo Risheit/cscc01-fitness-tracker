@@ -53,5 +53,9 @@ CREATE TABLE workout_exercises (
     position INT NOT NULL,
     PRIMARY KEY (workout_id, workout_day_id, position), -- Composite primary key to ensure unique position for each exercise on a given day
     CONSTRAINT position_order CHECK (position > 0) -- Ensuring position is a positive number
+    CONSTRAINT valid_exercise CHECK (
+        (exercise_type = 'Timed' AND mins IS NOT NULL AND sets IS NULL AND reps IS NULL AND weight IS NULL) OR
+        (exercise_type = 'Sets' AND sets IS NOT NULL AND reps IS NOT NULL)
+    ) -- Ensures logical values: Timed uses mins, Sets uses sets/reps
 );
 
