@@ -49,15 +49,19 @@ export default function WorkoutBuilder() {
   }, [exerciseType, muscleGroup, difficulty, search]);
 
   function addExerciseToDay(exercise: Exercise, day: string) {
-    // Check if the day already has exercises, otherwise create a new entry
     setSelectedExercises((prev) => {
-      const dayExists = prev.find((item) => item.day === day);
-      if (dayExists) {
-        dayExists.exercises.push(exercise);
-        return [...prev];
-      }
-      return [...prev, { day, exercises: [exercise] }];
-    });
+        return prev.map((item) => {
+          if (item.day === day) {
+            // If exercise is already in the day's list, do nothing
+            if (item.exercises.some((e) => e.name === exercise.name)) {
+              return item;
+            }
+            // Return a new object to ensure state updates properly
+            return { ...item, exercises: [...item.exercises, { ...exercise }] };
+          }
+          return item;
+        }).concat(prev.some((item) => item.day === day) ? [] : [{ day, exercises: [{ ...exercise }] }]);
+      });
   }
 
   function removeExerciseFromDay(exercise: Exercise, day: string) {
@@ -91,6 +95,7 @@ export default function WorkoutBuilder() {
     const workout = await res.json();
 
     for (const day of selectedExercises) {
+      let position = 1;
       for (const exercise of day.exercises) {
         await fetch("/api/workout_exercises", {
           method: "POST",
@@ -103,8 +108,11 @@ export default function WorkoutBuilder() {
             reps: 10,
             weight: null,
             rest_time: 60,
+            position: position,
+            description: exercise.instructions || ""
           }),
         });
+        position += 1;
       }
     }
 
@@ -112,7 +120,7 @@ export default function WorkoutBuilder() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-100 text-white">
       <NavBar />
 
       <div className="max-w-3xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg mt-8">
@@ -241,22 +249,22 @@ export default function WorkoutBuilder() {
           <>
             <h2 className="text-xl font-semibold mt-6">Selected Exercises</h2>
             <ul className="mt-2">
-              {selectedExercises.map((day, index) => (
-                <div key={index} className="mb-4">
-                  <h3 className="font-semibold text-lg">{day.day}</h3>
-                  {day.exercises.map((exercise, idx) => (
-                    <li key={idx} className="bg-gray-700 p-2 rounded-md mt-2 flex justify-between">
-                      {exercise.name}
-                      <button
-                        onClick={() => removeExerciseFromDay(exercise, day.day)}
-                        className="text-red-500 text-xs"
-                      >
-                        Remove
-                      </button>
-                    </li>
-                  ))}
-                </div>
-              ))}
+            {selectedExercises.map((day) => (
+                    <div key={day.day} className="mb-4">
+                    <h3 className="font-semibold text-lg">{day.day}</h3>
+                    {day.exercises.map((exercise) => (
+                        <li key={`${exercise.name}-${day.day}`} className="bg-gray-700 p-2 rounded-md mt-2 flex justify-between">
+                        {exercise.name}
+                        <button
+                            onClick={() => removeExerciseFromDay(exercise, day.day)}
+                            className="text-red-500 text-xs"
+                        >
+                            Remove
+                        </button>
+                        </li>
+                    ))}
+                    </div>
+                ))}
             </ul>
           </>
         )}
