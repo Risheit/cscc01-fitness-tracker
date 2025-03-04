@@ -1,7 +1,7 @@
 import { expect, test, vi } from 'vitest';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { ExerciseData } from '@/app/models/Workout';
-import ExerciseScreen from '../../[id]/components/ExerciseScreen';
+import ExerciseScreen from '../components/ExerciseScreen';
 
 const mockWorkoutData: ExerciseData[] = [
   {
