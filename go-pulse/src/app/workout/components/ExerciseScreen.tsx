@@ -41,7 +41,9 @@ export default function ExerciseScreen({ exercises }: Props) {
 
   const completeExercise = () => {
     setCurrentIndex(currentIndex + 1);
-    setWorkoutState(currentIndex + 1 < exercises.length ? 'paused' : 'end');
+    setWorkoutState(
+      currentIndex + 1 < (exercises?.length ?? 0) ? 'paused' : 'end'
+    );
   };
 
   const nextExercise = () => {

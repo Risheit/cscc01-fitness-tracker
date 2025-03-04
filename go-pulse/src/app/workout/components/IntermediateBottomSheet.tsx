@@ -1,7 +1,7 @@
 'use client';
 
 import YouTubePlayer from '@/app/components/YouTubePlayer';
-import ExerciseData, { WorkoutState } from '@/app/models/Workout';
+import { ExerciseData, WorkoutState } from '@/app/models/Workout';
 
 interface Props {
   className?: string;

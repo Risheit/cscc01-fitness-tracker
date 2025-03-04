@@ -14,6 +14,9 @@ export interface ExerciseData {
 export type WorkoutState = 'start' | 'paused' | 'running' | 'end';
 
 export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
+  if (planId < 0)
+    return [];
+
   const { rows } = await pool.query(
   `SELECT
     w.position,
@@ -28,7 +31,9 @@ export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
   FROM workout AS w JOIN exercises AS e ON w.exercise = e.name
   WHERE plan = $1
   ORDER BY w.position ASC`,
-  [planId]);
+    [planId]);
+  
+  console.log(rows);
 
   return rows;
 }
