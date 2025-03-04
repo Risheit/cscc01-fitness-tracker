@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import TimedBottomSheet from './TimedBottomSheet';
-import ExerciseData, { WorkoutState } from '@/app/models/Workout';
+import { ExerciseData, WorkoutState } from '@/app/models/Workout';
 import RepBottomSheet from './RepBottomSheet';
 import { useState } from 'react';
 import IntermediateBottomSheet from './IntermediateBottomSheet';
