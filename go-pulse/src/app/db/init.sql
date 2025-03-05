@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 );
 
-CREATE TABLE exercises (
+CREATE TABLE IF NOT EXISTS exercises (
     name VARCHAR(255) PRIMARY KEY,
     youtube_url VARCHAR(255) NOT NULL,
     image_path VARCHAR(255) NOT NULL
@@ -23,7 +23,7 @@ CREATE TABLE exercises (
 
 
 -- Workouts Table (User-created & Pre-Built)
-CREATE TABLE workouts (
+CREATE TABLE IF NOT EXISTS workouts (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE, -- NULL for pre-built workouts
     name VARCHAR(255) NOT NULL, -- "Full Body Routine", "Push-Pull-Legs", etc.
@@ -32,7 +32,7 @@ CREATE TABLE workouts (
 );
 
 -- Workout Days Table (Defines which days a workout occurs)
-CREATE TABLE workout_days (
+CREATE TABLE IF NOT EXISTS workout_days (
     id SERIAL PRIMARY KEY,
     workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
     day_of_week VARCHAR(10) NOT NULL CHECK (day_of_week IN 
@@ -40,10 +40,10 @@ CREATE TABLE workout_days (
 );
 
 -- Workout-Exercises Table (Links workouts to exercises & specific days)
-CREATE TABLE workout_exercises (
+CREATE TABLE IF NOT EXISTS workout_exercises (
     workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
     workout_day_id INT REFERENCES workout_days(id) ON DELETE CASCADE, -- Now exercises are assigned to days!
-    name VARCHAR(255) NOT NULL REFERENCES exercises(name), -- Example: "Squat", "Bench Press", etc.
+    name VARCHAR(255) NOT NULL, -- Example: "Squat", "Bench Press", etc.
     exercise_type VARCHAR(50) NOT NULL,
     sets INT DEFAULT NULL,
     reps INT DEFAULT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE workout_exercises (
     description TEXT,
     position INT NOT NULL,
     PRIMARY KEY (workout_id, workout_day_id, position), -- Composite primary key to ensure unique position for each exercise on a given day
-    CONSTRAINT position_order CHECK (position > 0) -- Ensuring position is a positive number
+    CONSTRAINT position_order CHECK (position > 0), -- Ensuring position is a positive number
     CONSTRAINT valid_exercise CHECK (
         (exercise_type = 'Timed' AND mins IS NOT NULL AND sets IS NULL AND reps IS NULL AND weight IS NULL) OR
         (exercise_type = 'Sets' AND sets IS NOT NULL AND reps IS NOT NULL)

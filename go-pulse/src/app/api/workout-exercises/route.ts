@@ -3,7 +3,7 @@ import pool from "@/app/db/database"; // Use your existing database pool
 
 // Function to check authentication status and get userId by calling check-auth route
 async function checkAuth(req: Request) {
-  const response = await fetch(`${process.env.BASE_URL}/api/check-auth`, {
+  const response = await fetch(`http://localhost:3000/api/check-auth`, {
     headers: req.headers, // Pass the headers (including cookie)
   });
   return await response.json();
@@ -44,22 +44,26 @@ export async function POST(req: Request) {
       strongman: "Sets",
     };
 
-    const mappedType = typeMapping[exercise_type as keyof typeof typeMapping]; // ✅ Fix
+    const mappedType = typeMapping[exercise_type as keyof typeof typeMapping];
 
     if (!mappedType) {
+      console.log("Invalid exercise type")
       return NextResponse.json({ error: "Invalid exercise type" }, { status: 400 });
     }
 
     // Validate required fields based on "Timed" or "Sets"
     if (mappedType === "Timed" && mins == null) {
+      console.log("Timed exercises must include 'mins'")
       return NextResponse.json({ error: "Timed exercises must include 'mins'" }, { status: 400 });
     }
 
     if (mappedType === "Sets" && (sets == null || reps == null)) {
+      console.log("Sets-based exercises must include 'sets' and 'reps'")
       return NextResponse.json({ error: "Sets-based exercises must include 'sets' and 'reps'" }, { status: 400 });
     }
 
     if (position <= 0) {
+      console.log("Position must be greater than 0")
       return NextResponse.json({ error: "Position must be greater than 0" }, { status: 400 });
     }
 

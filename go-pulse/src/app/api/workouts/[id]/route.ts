@@ -3,7 +3,7 @@ import pool from "@/app/db/database"; // Use your existing database pool
 
 // Function to check authentication status and get userId by calling check-auth route
 async function checkAuth(req: Request) {
-  const response = await fetch(`${process.env.BASE_URL}/api/check-auth`, {
+  const response = await fetch(`http://localhost:3000/api/check-auth`, {
     headers: req.headers, // Pass the headers (including cookie)
   });
   return await response.json();

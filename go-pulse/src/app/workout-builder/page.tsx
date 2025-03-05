@@ -97,13 +97,14 @@ export default function WorkoutBuilder() {
     for (const day of selectedExercises) {
       let position = 1;
       for (const exercise of day.exercises) {
-        await fetch("/api/workout_exercises", {
+        await fetch("http://localhost:3000/api/workout-exercises", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            workout_id: workout.id,
+            workout_id: workout.workout_id,
             day_of_week: day.day,
             name: exercise.name,
+            exercise_type: exercise.type,
             sets: 3,
             reps: 10,
             weight: null,
