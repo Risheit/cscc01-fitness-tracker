@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import TimedBottomSheet from './TimedBottomSheet';
-import ExerciseData, { WorkoutState } from '@/app/models/Workout';
+import { ExerciseData, WorkoutState } from '@/app/models/Workout';
 import RepBottomSheet from './RepBottomSheet';
 import { useState } from 'react';
 import IntermediateBottomSheet from './IntermediateBottomSheet';
@@ -41,7 +41,9 @@ export default function ExerciseScreen({ exercises }: Props) {
 
   const completeExercise = () => {
     setCurrentIndex(currentIndex + 1);
-    setWorkoutState(currentIndex + 1 < exercises.length ? 'paused' : 'end');
+    setWorkoutState(
+      currentIndex + 1 < (exercises?.length ?? 0) ? 'paused' : 'end'
+    );
   };
 
   const nextExercise = () => {
