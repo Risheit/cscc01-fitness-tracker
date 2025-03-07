@@ -13,7 +13,7 @@ function displayTab(tabName: string) {
     case 'Videos':
       return <ExerciseVideosTab />;
     case 'About':
-      return <ExerciseVideosTab />;
+      return <h1>About us</h1>
     default:
       notFound();
   }
