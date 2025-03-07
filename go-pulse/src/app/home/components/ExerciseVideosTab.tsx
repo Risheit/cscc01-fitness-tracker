@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import YouTubePlayer from './YouTubePlayer';
+import YouTubePlayer from '../../components/YouTubePlayer';
 import ExerciseSelector from './ExerciseSelector';
-import { ExerciseData } from '../models/Workout';
+import { ExerciseData } from '../../models/Workout';
 
 export default function ExerciseVideosTab() {
   const [videoId, setVideoId] = useState<string>('M7lc1UVf-VE'); // Default videoId
