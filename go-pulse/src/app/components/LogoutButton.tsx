@@ -1,5 +1,7 @@
 "use client";
 
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 
 const LogoutButton = () => {
@@ -17,9 +19,13 @@ const LogoutButton = () => {
   return (
     <button
       onClick={handleLogout}
-      className="px-4 py-2 bg-red-500 text-white p-4 rounded-lg hover:bg-red-600"
+      className="w-5 h-5 flex-initial"
     >
-      Logout
+      <FontAwesomeIcon
+        icon={faArrowRightFromBracket}
+        color={'white'}
+        fixedWidth
+      />
     </button>
   );
 };

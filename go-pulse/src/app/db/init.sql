@@ -37,7 +37,6 @@ INSERT INTO exercises (name, description, video_id, image_path) VALUES
 ('Pull Up', 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 'iWpoegdfgtc', '/weight.jpg'),
 ('Deadlift', 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 'AweC3UaM14o', '/weight.jpg');
 
-
 -- Workouts Table (User-created & Pre-Built)
 CREATE TABLE IF NOT EXISTS workouts (
     id SERIAL PRIMARY KEY,

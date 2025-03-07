@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import pool from "@/app/db/database"; // Use your existing database pool
+import { getAllWorkoutPlans } from '@/app/models/Workout';
+import pool from "@/app/db/database";
 
 // Function to check authentication status and get userId by calling check-auth route
 async function checkAuth(req: Request) {
@@ -40,5 +41,28 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Create Workout Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+    // Call check-auth endpoint to verify user authentication and get userId
+    const authData = await checkAuth(req);
+    if (!authData.authenticated) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    const result = await getAllWorkoutPlans();
+
+    return NextResponse.json(result, { status: 200 });
+  } catch (error) {
+    console.error('Database query failed:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }
