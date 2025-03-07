@@ -24,6 +24,7 @@ export default function TimedBottomSheet({
     `${data.mins}m 0s`
   );
   const remainingMillis = useRef(data.mins! * 60 * 1000);
+  const audioRef = useRef(new Audio('/Timer.mp3'));
 
   const onLikedButtonClicked = () => {
     setIsLiked(!isLiked);
@@ -45,6 +46,7 @@ export default function TimedBottomSheet({
         if (remainingMillis.current <= 0) {
           setDisplayTimeRemaining(`All done!`);
           setIsFinished(true);
+          audioRef.current.play(); // Play the audio cue when the workout is finished
           clearInterval(timerId);
           return;
         }
