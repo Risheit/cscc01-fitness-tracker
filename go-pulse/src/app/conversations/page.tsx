@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import NavBar from "@/app/components/NavBar";
 import ConversationsList from "@/app/components/ConversationsList";
 import ChatWindow from "@/app/components/ChatWindow";
@@ -13,6 +12,7 @@ export default function ConversationsPage() {
     const [otherUserUsername, setOtherUserUsername] = useState<string | null>(null);
 
     const handleSelectConversation = (conversationId: number, myUserId: number, otherUserId: number, otherUserUsername: string) => {
+        console.log("Selected conversation:", conversationId);
         setSelectedConversationId(conversationId);
         setMyUserId(myUserId);
         setOtherUserId(otherUserId);
@@ -24,16 +24,7 @@ export default function ConversationsPage() {
             <NavBar />
             <div className="p-2 flex flex-1 border rounded-lg overflow-hidden">
                 <div className="w-1/5 p-4 bg-blue-200 rounded-lg border-r">
-                    <h1 className="text-2xl font-bold mb-2">Messages</h1>
-                    <Link href="/conversations/new-conversation" className="hover:underline">
-                        New Conversation
-                    </Link>
-                    <div>
-                        {/* Conversations List */}
-                        <div>
-                            <ConversationsList onSelect={handleSelectConversation} />
-                        </div>
-                    </div>
+                    <ConversationsList onSelect={handleSelectConversation} />
                 </div>
                 
                 {/* Chat Window */}
