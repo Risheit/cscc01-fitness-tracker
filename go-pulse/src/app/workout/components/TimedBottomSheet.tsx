@@ -46,8 +46,7 @@ export default function TimedBottomSheet({
         if (remainingMillis.current <= 0) {
           setDisplayTimeRemaining(`All done!`);
           setIsFinished(true);
-          audioRef.current.play(); // Play the audio cue when the workout is finished
-          clearInterval(timerId);
+          audioRef.current.play();
           return;
         }
 
