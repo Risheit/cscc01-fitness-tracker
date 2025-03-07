@@ -41,13 +41,14 @@ INSERT INTO exercises (name, description, video_id, image_path) VALUES
 CREATE TABLE IF NOT EXISTS workouts (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE, -- NULL for pre-built workouts
+    image_path VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL, -- "Full Body Routine", "Push-Pull-Legs", etc.
     is_prebuilt BOOLEAN DEFAULT FALSE, -- TRUE for pre-built workouts
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO workouts (user_id, name) VALUES
-(1, 'Easy Workout');
+INSERT INTO workouts (user_id, name, image_path) VALUES
+(1, 'Easy Workout', '/stock-running.jpg');
 
 -- Workout Days Table (Defines which days a workout occurs)
 CREATE TABLE IF NOT EXISTS workout_days (

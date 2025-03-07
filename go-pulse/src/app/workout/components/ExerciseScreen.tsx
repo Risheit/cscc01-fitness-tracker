@@ -63,7 +63,7 @@ export default function ExerciseScreen({ exercises }: Props) {
               ? '/stock-running.jpg'
               : exercises[currentIndex].imagePath
           }
-          alt=""
+          alt="current exercise"
           fill
           className="w-full h-2/3 object-cover object-top"
         />

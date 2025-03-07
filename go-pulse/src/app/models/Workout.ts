@@ -3,6 +3,7 @@ import pool from '../db/database';
 export interface WorkoutPlan {
   id: number;
   name: string;
+  imagePath: string;
 }
 
 export interface ExerciseData {
@@ -19,7 +20,9 @@ export interface ExerciseData {
 export type WorkoutState = 'start' | 'paused' | 'running' | 'end';
 
 export async function getAllWorkoutPlans(): Promise<WorkoutPlan[]> {
-  const { rows } = await pool.query('SELECT id, name FROM workouts');
+  const { rows } = await pool.query(
+    'SELECT id, name, image_path AS "imagePath" FROM workouts'
+  );
 
   return rows;
 }
