@@ -11,15 +11,14 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS exercises (
     name VARCHAR(255) PRIMARY KEY,
-    youtube_url VARCHAR(255) NOT NULL,
-    image_path VARCHAR(255) NOT NULL
+    youtube_url VARCHAR(255) NOT NULL
 );
 
--- INSERT INTO exercises (name, youtube_url) VALUES
--- ('Bench Press', 'gMgvBspQ9lk'),
--- ('Squat', 'i7J5h7BJ07g'),
--- ('Pull Up', 'iWpoegdfgtc'),
--- ('Deadlift', 'AweC3UaM14o');
+INSERT INTO exercises (name, youtube_url) VALUES
+('Bench Press', 'gMgvBspQ9lk'),
+('Squat', 'i7J5h7BJ07g'),
+('Pull Up', 'iWpoegdfgtc'),
+('Deadlift', 'AweC3UaM14o');
 
 
 -- Workouts Table (User-created & Pre-Built)
