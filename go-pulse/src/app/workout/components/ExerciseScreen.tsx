@@ -36,7 +36,7 @@ function renderBottomSheet(exercise: ExerciseData, onCompletion: () => void) {
 
 export default function ExerciseScreen({ exercises }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [workoutState, setWorkoutState] = useState('start' as WorkoutState);
+  const [workoutState, setWorkoutState] = useState<WorkoutState>('start');
   const router = useRouter();
 
   const completeExercise = () => {

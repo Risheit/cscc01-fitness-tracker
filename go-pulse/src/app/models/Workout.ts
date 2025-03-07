@@ -32,8 +32,6 @@ export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
   WHERE workout_id = $1
   ORDER BY w.position ASC`,
     [planId]);
-  
-  console.log(rows);
 
   return rows;
 }
