@@ -19,8 +19,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    const userId = authData.userId; // Get userId from check-auth response
-
     // Get `workout_day_id` for this workout and day
     const dayResult = await pool.query(
       "SELECT id FROM workout_days WHERE workout_id = $1 AND day_of_week = $2",

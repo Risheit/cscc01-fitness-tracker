@@ -9,9 +9,11 @@ async function checkAuth(req: Request) {
   return await response.json();
 }
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request) {
   try {
-    const { id } = params;
+    //{ params }: { params: { id: string } }
+    //const { id } = params;
+    const id = 0;
 
     // Call check-auth endpoint to verify user authentication and get userId
     const authData = await checkAuth(req);
