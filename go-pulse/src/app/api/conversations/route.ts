@@ -16,14 +16,42 @@ export async function GET(req: Request) {
     try {
         const decoded: any = jwt.verify(token, SECRET);
         const userId = decoded.userId;
-        console.log("Fetching conversations of User ID:", userId);  // Log the userId
+
+        console.log("Fetching conversations of User ID:", userId);
+
+        // Fetch conversations with the other user's details
         const { rows: conversations } = await pool.query(
-            "SELECT * FROM conversations WHERE user1_id = $1 OR user2_id = $1",
+            `SELECT 
+                c.id AS conversation_id,
+                c.user1_id,
+                c.user2_id,
+                c.created_at,
+                u1.id AS user1_id,
+                u1.username AS user1_username,
+                u2.id AS user2_id,
+                u2.username AS user2_username
+             FROM 
+                conversations c
+             JOIN 
+                users u1 ON c.user1_id = u1.id
+             JOIN 
+                users u2 ON c.user2_id = u2.id
+             WHERE 
+                c.user1_id = $1 OR c.user2_id = $1`,
             [userId]
         );
 
-        console.log("Fetched conversations:", conversations);  // Log the fetched data
-        return NextResponse.json(conversations);
+        // Map the response to include the other user's details
+        const formattedConversations = conversations.map((conv) => ({
+            conversation_id: conv.conversation_id,
+            my_user_id: userId,
+            other_user_id: conv.user1_id === userId ? conv.user2_id : conv.user1_id,
+            other_user_username: conv.user1_id === userId ? conv.user2_username : conv.user1_username,
+            created_at: conv.created_at,
+        }));
+
+        console.log("Fetched conversations:", formattedConversations);
+        return NextResponse.json(formattedConversations);
     } catch (error) {
         console.error("Error in GET /api/conversations:", error);
         return NextResponse.json({ error: "Failed to verify token or fetch conversations" }, { status: 500 });

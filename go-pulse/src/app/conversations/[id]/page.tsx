@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ChatWindow from "@/app/components/ChatWindow";
+import { useParams } from "next/navigation"; // Use Next.js hook to unwrap params
+// import ChatWindow from "@/app/components/ChatWindow";
 import NavBar from "@/app/components/NavBar";
 
-export default function ConversationPage({ params }: { params: { id: string } }) {
+export default function ConversationPage() {
+    const params = useParams<{ id: string }>(); // Unwrap the params using useParams()
     const [conversationId, setConversationId] = useState<number | null>(null);
 
     useEffect(() => {
-        // Handle async logic for resolving the conversationId
-        const resolvedId = parseInt(params.id);
-        setConversationId(resolvedId);
+        if (params?.id) {
+            const resolvedId = parseInt(params.id);
+            setConversationId(resolvedId);
+        }
     }, [params]);
 
     if (conversationId === null) {
@@ -22,7 +25,7 @@ export default function ConversationPage({ params }: { params: { id: string } })
             <NavBar />
             <div className="p-4">
                 <h1 className="text-2xl font-bold mb-4">Chat</h1>
-                <ChatWindow conversationId={conversationId} />
+                
             </div>
         </div>
     );
