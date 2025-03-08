@@ -13,7 +13,9 @@ export default function WorkoutSelectionTab({ workouts }: Props) {
 
   return (
     <div className="flex flex-col">
+      <label htmlFor='workout-search' className='hidden'>Search Workouts</label>
       <input
+        id='workout-search'
         type="text"
         placeholder="Search for a workout..."
         className="border-2 m-5 rounded-full px-3 py-1"
