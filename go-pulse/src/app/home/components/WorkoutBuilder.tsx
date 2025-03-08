@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import NavBar from "../components/NavBar"; // Importing the NavBar component
 
-interface Exercise {
+interface NinjaApiExercise {
   name: string;
   muscle: string;
   type: string;
@@ -14,11 +13,11 @@ interface Exercise {
 
 interface Day {
   day: string;
-  exercises: Exercise[];
+  exercises: NinjaApiExercise[];
 }
 
 export default function WorkoutBuilder() {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [exercises, setExercises] = useState<NinjaApiExercise[]>([]);
   const [selectedExercises, setSelectedExercises] = useState<Day[]>([]);
   const [workoutName, setWorkoutName] = useState("");
   const [search, setSearch] = useState("");
@@ -48,7 +47,7 @@ export default function WorkoutBuilder() {
     fetchExercises();
   }, [exerciseType, muscleGroup, difficulty, search]);
 
-  function addExerciseToDay(exercise: Exercise, day: string) {
+  function addExerciseToDay(exercise: NinjaApiExercise, day: string) {
     setSelectedExercises((prev) => {
         return prev.map((item) => {
           if (item.day === day) {
@@ -64,7 +63,7 @@ export default function WorkoutBuilder() {
       });
   }
 
-  function removeExerciseFromDay(exercise: Exercise, day: string) {
+  function removeExerciseFromDay(exercise: NinjaApiExercise, day: string) {
     setSelectedExercises((prev) => {
       const dayExercises = prev.find((item) => item.day === day);
       if (dayExercises) {
@@ -122,8 +121,6 @@ export default function WorkoutBuilder() {
 
   return (
     <div className="min-h-screen bg-gray-100 text-white">
-      <NavBar />
-
       <div className="max-w-3xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg mt-8">
         <h1 className="text-2xl font-bold mb-4 text-center">Create Workout</h1>
 

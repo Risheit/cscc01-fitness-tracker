@@ -13,11 +13,10 @@ type Message = {
 type ChatWindowProps = {
     conversationId: number;    
     myUserId: number;
-    otherUserId: number;
     otherUserUsername: string;
 };
 
-export default function ChatWindow({ conversationId, myUserId, otherUserId, otherUserUsername }: ChatWindowProps) {
+export default function ChatWindow({ conversationId, myUserId, otherUserUsername }: ChatWindowProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState("");    
     const messagesEndRef = useRef<HTMLDivElement | null>(null);

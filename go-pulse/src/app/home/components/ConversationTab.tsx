@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import NavBar from "@/app/components/NavBar";
-import ConversationsList from "@/app/components/ConversationsList";
-import ChatWindow from "@/app/components/ChatWindow";
+import ConversationsList from "./ConversationsList";
+import ChatWindow from "./ChatWindow";
 
-export default function ConversationsPage() {
+export default function ConversationsTab() {
     const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
     const [myUserId, setMyUserId] = useState<number | null>(null);
     const [otherUserId, setOtherUserId] = useState<number | null>(null);
@@ -21,7 +20,6 @@ export default function ConversationsPage() {
 
     return (
         <div className="h-screen flex flex-col">
-            <NavBar />
             <div className="p-2 flex flex-1 border rounded-lg overflow-hidden">
                 <div className="w-1/5 p-4 bg-blue-200 rounded-lg border-r">
                     <ConversationsList onSelect={handleSelectConversation} />
@@ -33,7 +31,6 @@ export default function ConversationsPage() {
                         <ChatWindow
                             conversationId={selectedConversationId}
                             myUserId={myUserId}
-                            otherUserId={otherUserId}
                             otherUserUsername={otherUserUsername}
                         />
                     ) : (

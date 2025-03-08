@@ -24,7 +24,7 @@ const mockWorkoutData: ExerciseData[] = [
 ];
 
 vi.mock('next/navigation', () => ({
-  useRouter() {
+  useRouter: () => {
     return {
       push: () => null,
     };

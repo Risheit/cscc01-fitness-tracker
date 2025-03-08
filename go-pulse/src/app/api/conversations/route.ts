@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     }
 
     try {
-        const decoded: any = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, SECRET) as { userId: string };
         const userId = decoded.userId;
 
         console.log("Fetching conversations of User ID:", userId);
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     }
 
     try {
-        const decoded: any = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, SECRET) as { userId: string, username: string };
         const userId = decoded.userId;
         const username = decoded.username;
 

@@ -36,7 +36,7 @@ function renderBottomSheet(exercise: ExerciseData, onCompletion: () => void) {
 
 export default function ExerciseScreen({ exercises }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [workoutState, setWorkoutState] = useState('start' as WorkoutState);
+  const [workoutState, setWorkoutState] = useState<WorkoutState>('start');
   const router = useRouter();
 
   const completeExercise = () => {
@@ -63,7 +63,7 @@ export default function ExerciseScreen({ exercises }: Props) {
               ? '/stock-running.jpg'
               : exercises[currentIndex].imagePath
           }
-          alt=""
+          alt="current exercise"
           fill
           className="w-full h-2/3 object-cover object-top"
         />
