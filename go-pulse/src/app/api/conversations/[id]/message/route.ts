@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 const SECRET = process.env.JWT_SECRET!;
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
     const { id } = await context.params; // Get ID from the route
     const convId = parseInt(id, 10);
 
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     }
 }
 
-export async function POST(req: NextRequest, context: { params: { id: string } }) {
+export async function POST(req: NextRequest, context: { params: Promise<{ id: string }> }) {
     const { id } = await context.params; // Get ID from the route
     const convId = parseInt(id, 10);
 
