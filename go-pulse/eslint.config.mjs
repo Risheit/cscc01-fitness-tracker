@@ -10,7 +10,16 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    root: true, // Explicitly mark this as the root config
+    extends: [...compat.extends("next/core-web-vitals", "next/typescript")],
+    rules: {
+      "@typescript-eslint/explicit-module-boundary-types": "off", // Disables the rule globally
+      "no-unused-vars": "off", // Disable unused variable rule
+      "no-console": "off", // Disable console logging rule
+      // Add more rules you want to disable here...
+    },
+  },
 ];
 
 export default eslintConfig;

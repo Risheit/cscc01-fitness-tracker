@@ -21,15 +21,15 @@ export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
   `SELECT
     w.position,
     e.name,
-    e.description,
+    w.description,
     e.video_id AS "videoId",
     e.image_path AS "imagePath",
-    workout_type AS "type",
+    exercise_type AS "type",
     mins,
     sets,
     reps
-  FROM workout AS w JOIN exercises AS e ON w.exercise = e.name
-  WHERE plan = $1
+  FROM workout_exercises AS w INNER JOIN exercises AS e ON w.name = e.name
+  WHERE workout_id = $1
   ORDER BY w.position ASC`,
     [planId]);
   

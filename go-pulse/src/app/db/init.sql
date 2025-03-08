@@ -4,6 +4,10 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 );
 
+-- password is 'pass'
+INSERT INTO users (username, password) VALUES
+('user', '$2a$10$OnfmNxLKChtJtatMu9m9v.Khh0iIFW28xqoCdEp55SWKJPsHxI402');
+
 CREATE TABLE IF NOT EXISTS exercises (
     name VARCHAR(255) PRIMARY KEY,
     description TEXT,
@@ -27,8 +31,8 @@ CREATE TABLE IF NOT EXISTS workouts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO workouts (id, user_id, name) VALUES
-(1, 1, 'Easy Workout');
+INSERT INTO workouts (user_id, name) VALUES
+(1, 'Easy Workout');
 
 -- Workout Days Table (Defines which days a workout occurs)
 CREATE TABLE IF NOT EXISTS workout_days (
@@ -38,8 +42,8 @@ CREATE TABLE IF NOT EXISTS workout_days (
         ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
 );
 
-INSERT INTO workout_days (id, workout_id, day_of_week) VALUES
-(1, 1, 'Monday');
+INSERT INTO workout_days (workout_id, day_of_week) VALUES
+(1, 'Monday');
 
 -- Workout-Exercises Table (Links workouts to exercises & specific days)
 CREATE TABLE IF NOT EXISTS workout_exercises (
