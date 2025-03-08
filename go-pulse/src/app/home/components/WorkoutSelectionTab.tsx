@@ -1,31 +1,15 @@
 'use client';
 
 import { WorkoutPlan } from '@/app/models/Workout';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import WorkoutCard from './WorkoutCard';
 
-export default function WorkoutSelectionTab() {
+interface Props {
+  workouts: WorkoutPlan[]
+}
+
+export default function WorkoutSelectionTab({ workouts }: Props) {
   const [search, setSearch] = useState('');
-  const [workouts, setWorkouts] = useState<WorkoutPlan[]>([]); // Store exercises
-
-  useEffect(() => {
-    async function fetchWorkouts() {
-      try {
-        const response = await fetch('/api/workouts');
-        const data = (await response.json()) as WorkoutPlan[];
-
-        if (response.ok) {
-          setWorkouts(data); // Store retrieved exercises
-        } else {
-          console.error('Failed to fetch workouts');
-        }
-      } catch (error) {
-        console.error('Error fetching workouts:', error);
-      }
-    }
-
-    fetchWorkouts();
-  }, []);
 
   return (
     <div className="flex flex-col">
