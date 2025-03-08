@@ -22,9 +22,8 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     }
 
     try {
-        const decoded: any = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, SECRET) as { userId: string };
         const userId = decoded.userId;
-        const username = decoded.username;
 
         console.log(`Fetching messages of Conversation: ${convId} for User: ${userId}`);
 
@@ -60,7 +59,7 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
     }
 
     try {
-        const decoded: any = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, SECRET) as { userId: string };
         const userId = decoded.userId;
 
         const { content } = await req.json(); 
