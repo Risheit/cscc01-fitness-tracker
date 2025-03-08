@@ -11,8 +11,6 @@ async function checkAuth(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    //{ params }: { params: { id: string } }
-    //const { id } = params;
     const id = 0;
 
     // Call check-auth endpoint to verify user authentication and get userId

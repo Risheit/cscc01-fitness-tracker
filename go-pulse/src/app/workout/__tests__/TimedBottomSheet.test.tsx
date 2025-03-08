@@ -1,6 +1,6 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import TimedBottomSheet from '../workout/components/TimedBottomSheet';
+import TimedBottomSheet from '../components/TimedBottomSheet';
 
 describe('TimedBottomSheet Component', () => {
   it('should play an audio cue when the workout finishes', async () => {

@@ -29,22 +29,22 @@ export default function WorkoutBuilder() {
 
   const API_KEY = "NdkDHejsQYSeUoRM7IbM7g==LURTckWlIS0A8S1P";
 
-  async function fetchExercises() {
-    let url = `https://api.api-ninjas.com/v1/exercises?muscle=${muscleGroup}&type=${exerciseType}&difficulty=${difficulty}`;
-
-    if (search) {
-      url += `&name=${search}`;
-    }
-
-    const response = await fetch(url, {
-      headers: { "X-Api-Key": API_KEY },
-    });
-
-    const data = await response.json();
-    setExercises(data);
-  }
-
   useEffect(() => {
+    async function fetchExercises() {
+      let url = `https://api.api-ninjas.com/v1/exercises?muscle=${muscleGroup}&type=${exerciseType}&difficulty=${difficulty}`;
+  
+      if (search) {
+        url += `&name=${search}`;
+      }
+  
+      const response = await fetch(url, {
+        headers: { "X-Api-Key": API_KEY },
+      });
+  
+      const data = await response.json();
+      setExercises(data);
+    }
+    
     fetchExercises();
   }, [exerciseType, muscleGroup, difficulty, search]);
 

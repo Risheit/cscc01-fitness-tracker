@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach } from "vitest";
-import WorkoutBuilder from "../workout-builder/page";
+import WorkoutBuilder from "../page";
 
 describe("WorkoutBuilder Component", () => {
   beforeEach(() => {
