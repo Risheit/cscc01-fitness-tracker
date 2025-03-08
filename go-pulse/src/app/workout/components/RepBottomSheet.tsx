@@ -1,6 +1,6 @@
 'use client';
 
-import ExerciseData from '@/app/models/Workout';
+import { ExerciseData } from '@/app/models/Workout';
 import { useState } from 'react';
 
 interface Props {
@@ -10,12 +10,17 @@ interface Props {
   onCompletion: () => void;
 }
 
-export default function RepBottomSheet({ className, data, isCapped, onCompletion }: Props) {
+export default function RepBottomSheet({
+  className,
+  data,
+  isCapped,
+  onCompletion,
+}: Props) {
   const [reps, setReps] = useState(1);
   const [sets, setSets] = useState(1);
 
   const nextRep = () => {
-    if (isCapped && reps >= data.reps! - 1) {
+    if (isCapped && reps >= data.reps!) {
       nextSet();
       return;
     }
@@ -24,7 +29,7 @@ export default function RepBottomSheet({ className, data, isCapped, onCompletion
   };
 
   const nextSet = () => {
-    if (isCapped && sets >= data.sets! - 1) {
+    if (isCapped && sets >= data.sets!) {
       onCompletion();
     }
 

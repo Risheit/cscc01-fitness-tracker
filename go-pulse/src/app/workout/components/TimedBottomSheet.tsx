@@ -1,6 +1,6 @@
 'use client';
 
-import ExerciseData from '@/app/models/Workout';
+import { ExerciseData } from '@/app/models/Workout';
 import { faHeart } from '@fortawesome/free-regular-svg-icons/faHeart';
 import { faHeart as faSolidHeart } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,6 +24,7 @@ export default function TimedBottomSheet({
     `${data.mins}m 0s`
   );
   const remainingMillis = useRef(data.mins! * 60 * 1000);
+  const audioRef = useRef(new Audio('/Timer.mp3'));
 
   const onLikedButtonClicked = () => {
     setIsLiked(!isLiked);
@@ -45,7 +46,7 @@ export default function TimedBottomSheet({
         if (remainingMillis.current <= 0) {
           setDisplayTimeRemaining(`All done!`);
           setIsFinished(true);
-          clearInterval(timerId);
+          audioRef.current.play();
           return;
         }
 
@@ -96,7 +97,7 @@ export default function TimedBottomSheet({
             onClick={onPauseButtonClicked}
             disabled={isFinished}
           >
-            Pause
+            {isPaused ? 'Continue' : 'Pause'}
           </button>
           <button
             className="bg-green-600 rounded-r-md h-full w-full max-w-32 border border-green-800 text-white hover:bg-green-700 transition-colors"

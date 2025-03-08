@@ -39,3 +39,13 @@ next-env.d.ts
 
 # Dev files
 .vscode
+
+#ViTest
+.vitest/
+coverage/
+
+#Cypress
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+.vite/results.json

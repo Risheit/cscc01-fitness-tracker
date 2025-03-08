@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import TimedBottomSheet from './TimedBottomSheet';
-import ExerciseData, { WorkoutState } from '@/app/models/Workout';
+import { ExerciseData, WorkoutState } from '@/app/models/Workout';
 import RepBottomSheet from './RepBottomSheet';
 import { useState } from 'react';
 import IntermediateBottomSheet from './IntermediateBottomSheet';
@@ -36,12 +36,14 @@ function renderBottomSheet(exercise: ExerciseData, onCompletion: () => void) {
 
 export default function ExerciseScreen({ exercises }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [workoutState, setWorkoutState] = useState('start' as WorkoutState);
+  const [workoutState, setWorkoutState] = useState<WorkoutState>('start');
   const router = useRouter();
 
   const completeExercise = () => {
     setCurrentIndex(currentIndex + 1);
-    setWorkoutState(currentIndex + 1 < exercises.length ? 'paused' : 'end');
+    setWorkoutState(
+      currentIndex + 1 < (exercises?.length ?? 0) ? 'paused' : 'end'
+    );
   };
 
   const nextExercise = () => {
@@ -61,7 +63,7 @@ export default function ExerciseScreen({ exercises }: Props) {
               ? '/stock-running.jpg'
               : exercises[currentIndex].imagePath
           }
-          alt=""
+          alt="current exercise"
           fill
           className="w-full h-2/3 object-cover object-top"
         />

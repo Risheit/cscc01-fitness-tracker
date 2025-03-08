@@ -1,39 +1,15 @@
-import ExerciseData from "../models/Workout";
-import ExerciseScreen from "./components/ExerciseScreen";
+import { getWorkoutPlan } from '@/app/models/Workout';
+import ExerciseScreen from './components/ExerciseScreen';
+import { notFound } from 'next/navigation';
 
-export default function WorkoutPage() {
-  const dummyData: ExerciseData[] = [
-    {
-      name: 'Bench Press',
-      description:
-        "Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it's dark, and listening at a volume that allows you to hear traffic and other hazards.",
-      imagePath: '/weight.jpg',
-      video_id: 'gMgvBspQ9lk',
-      type: 'Sets',
-      sets: 4,
-      reps: 2,
-    },
-    {
-      name: 'Squats',
-      description:
-        "Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it's dark, and listening at a volume that allows you to hear traffic and other hazards.",
-      imagePath: '/weight.jpg',
-      video_id: 'i7J5h7BJ07g',
-      type: 'Timed',
-      mins: 1,
-    },
-    {
-      name: 'Squats 2',
-      description:
-        "Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it's dark, and listening at a volume that allows you to hear traffic and other hazards.",
-      imagePath: '/weight.jpg',
-      video_id: 'i7J5h7BJ07g',
-      type: 'Timed',
-      mins: 1,
-    },
-  ];
+export default async function WorkoutPage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
+  const paramsId = parseInt((await searchParams)?.id ?? '-1', 10);
+  const cleanId = Number.isNaN(paramsId) ? -1 : paramsId;
+  const data = await getWorkoutPlan(cleanId);
 
-  return (
-    <ExerciseScreen exercises={dummyData} />
-  );
+  if (!data || data.length === 0) {
+    notFound()
+  }
+
+  return <ExerciseScreen exercises={data} />;
 }
