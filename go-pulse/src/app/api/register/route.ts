@@ -5,6 +5,11 @@ import bcrypt from 'bcryptjs';
 export async function POST(req: Request) {
   const { username, password } = await req.json();
 
+  // Validate the input
+  if (!username || !password) {
+    return NextResponse.json({ message: 'Invalid input' }, { status: 400 });
+  }
+
   // Check if the user already exists
   const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
   if (result.rows.length > 0) {

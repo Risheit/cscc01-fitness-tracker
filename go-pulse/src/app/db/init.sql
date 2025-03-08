@@ -4,6 +4,22 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS conversations (
+    id SERIAL PRIMARY KEY,
+    user1_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user2_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user1_id, user2_id) -- Prevent duplicate conversations
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id INT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- password is 'pass'
 INSERT INTO users (username, password) VALUES
 ('user', '$2a$10$OnfmNxLKChtJtatMu9m9v.Khh0iIFW28xqoCdEp55SWKJPsHxI402');
