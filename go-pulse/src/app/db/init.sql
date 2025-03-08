@@ -4,27 +4,15 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 );
 
-CREATE TABLE exercises (
+-- password is 'pass'
+INSERT INTO users (username, password) VALUES
+('user', '$2a$10$OnfmNxLKChtJtatMu9m9v.Khh0iIFW28xqoCdEp55SWKJPsHxI402');
+
+CREATE TABLE IF NOT EXISTS exercises (
     name VARCHAR(255) PRIMARY KEY,
     description TEXT,
     video_id VARCHAR(255) NOT NULL,
     image_path VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE workout_plans (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE workout (
-    plan INTEGER REFERENCES workout_plans(id),
-    position INTEGER,
-    exercise VARCHAR(255) REFERENCES exercises(name),
-    workout_type VARCHAR(50) NOT NULL,
-    mins INTEGER,
-    sets INTEGER,
-    reps INTEGER,
-    PRIMARY KEY (plan, position)
 );
 
 INSERT INTO exercises (name, description, video_id, image_path) VALUES
@@ -33,14 +21,52 @@ INSERT INTO exercises (name, description, video_id, image_path) VALUES
 ('Pull Up', 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 'iWpoegdfgtc', '/weight.jpg'),
 ('Deadlift', 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 'AweC3UaM14o', '/weight.jpg');
 
-INSERT INTO workout_plans (name) VALUES
-('Easy Workout');
 
--- Easy workout steps
-INSERT INTO workout (plan, position, exercise, workout_type, sets, reps) VALUES
-(1, 1, 'Bench Press', 'Sets', 2, 2),
-(1, 3, 'Pull Up', 'Sets', 2, 5);
+-- Workouts Table (User-created & Pre-Built)
+CREATE TABLE IF NOT EXISTS workouts (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE, -- NULL for pre-built workouts
+    name VARCHAR(255) NOT NULL, -- "Full Body Routine", "Push-Pull-Legs", etc.
+    is_prebuilt BOOLEAN DEFAULT FALSE, -- TRUE for pre-built workouts
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-INSERT INTO workout (plan, position, exercise, workout_type, mins) VALUES
-(1, 2, 'Squats', 'Timed', 3),
-(1, 4, 'Squats', 'Timed', 2);
+INSERT INTO workouts (user_id, name) VALUES
+(1, 'Easy Workout');
+
+-- Workout Days Table (Defines which days a workout occurs)
+CREATE TABLE IF NOT EXISTS workout_days (
+    id SERIAL PRIMARY KEY,
+    workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
+    day_of_week VARCHAR(10) NOT NULL CHECK (day_of_week IN 
+        ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+);
+
+INSERT INTO workout_days (workout_id, day_of_week) VALUES
+(1, 'Monday');
+
+-- Workout-Exercises Table (Links workouts to exercises & specific days)
+CREATE TABLE IF NOT EXISTS workout_exercises (
+    workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
+    workout_day_id INT REFERENCES workout_days(id) ON DELETE CASCADE, -- Now exercises are assigned to days!
+    name VARCHAR(255) NOT NULL, -- Example: "Squat", "Bench Press", etc.
+    exercise_type VARCHAR(50) NOT NULL,
+    sets INT DEFAULT NULL,
+    reps INT DEFAULT NULL,
+    mins INT DEFAULT NULL,
+    weight DECIMAL(5,2) DEFAULT NULL, -- Optional
+    description TEXT,
+    position INT NOT NULL,
+    PRIMARY KEY (workout_id, workout_day_id, position), -- Composite primary key to ensure unique position for each exercise on a given day
+    CONSTRAINT position_order CHECK (position > 0), -- Ensuring position is a positive number
+    CONSTRAINT valid_exercise CHECK (
+        (exercise_type = 'Timed' AND mins IS NOT NULL AND sets IS NULL AND reps IS NULL AND weight IS NULL) OR
+        (exercise_type = 'Sets' AND sets IS NOT NULL AND reps IS NOT NULL)
+    ) -- Ensures logical values: Timed uses mins, Sets uses sets/reps
+);
+
+INSERT INTO workout_exercises(workout_id, workout_day_id, name, exercise_type, sets, reps, mins, description, position) VALUES
+(1, 1, 'Bench Press', 'Sets', 2, 2, NULL, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 1),
+(1, 1, 'Pull Up', 'Sets', 2, 5, NULL, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 3),
+(1, 1, 'Squats', 'Timed', NULL, NULL, 3, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 2),
+(1, 1, 'Squats', 'Timed', NULL, NULL, 2, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 4);

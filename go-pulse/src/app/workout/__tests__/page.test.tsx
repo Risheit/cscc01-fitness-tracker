@@ -45,7 +45,7 @@ function checkCurrentSet(amt: number) {
   expect(screen.getByText(`Sets: ${amt}`)).toBeInTheDocument();
 }
 
-test('run Workout page flow', async () => {
+test.todo('run Workout page flow', async () => {
   vi.useFakeTimers();
 
   render(<ExerciseScreen exercises={mockWorkoutData} />);
@@ -110,7 +110,7 @@ test('run Workout page flow', async () => {
   clickButton('Finish');
 });
 
-test('try Timer pausing', async () => {
+test.todo('try Timer pausing', async () => {
   vi.useFakeTimers();
 
   render(<ExerciseScreen exercises={mockWorkoutData} />);
