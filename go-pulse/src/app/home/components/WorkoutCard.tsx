@@ -14,7 +14,7 @@ export default function WorkoutCard({ plan }: Props) {
     >
       <div className="h-3/4 flex-auto overflow-hidden relative">
         <Image
-          src={plan.imagePath}
+          src={plan.imagePath ?? '/stock-running.jpg'}
           alt="workout image"
           fill
           className="object-cover object-top"

@@ -3,7 +3,7 @@ import pool from '../db/database';
 export interface WorkoutPlan {
   id: number;
   name: string;
-  imagePath: string;
+  imagePath?: string;
 }
 
 export interface ExerciseData {

@@ -3,6 +3,7 @@ import { redirect, RedirectType } from 'next/navigation';
 import ExerciseVideosTab from './components/ExerciseVideosTab';
 import WorkoutSelectionTab from './components/WorkoutSelectionTab';
 import { getAllWorkoutPlans } from '../models/Workout';
+import WorkoutBuilder from './components/WorkoutBuilder';
 
 // Internally, represent tabs in all lowercase with dashes between words:
 //    About Us --> about-us
@@ -15,6 +16,8 @@ async function displayTab(tabName?: string) {
       return <ExerciseVideosTab />;
     case 'about':
       return <h1>About us</h1>;
+    case 'workout-builder':
+      return <WorkoutBuilder />;
     default:
       redirect('/home?tab=workouts', RedirectType.replace);
   }
@@ -30,7 +33,7 @@ export default async function Home({
   return (
     <div className="flex flex-col w-full h-full">
       <main className="flex-1">{tab}</main>
-      <NavBar tabNames={['Workouts', 'Videos', 'About']} />
+      <NavBar tabNames={['Workouts', 'Workout Builder', 'Videos', 'About']} />
     </div>
   );
 }

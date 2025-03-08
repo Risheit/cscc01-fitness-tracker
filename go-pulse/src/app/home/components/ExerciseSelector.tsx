@@ -1,6 +1,7 @@
 'use client';
 
-import { ExerciseData } from '@/app/models/Workout';
+import { ExerciseData } from "@/app/models/Workout";
+
 
 interface ExerciseSelectorProps {
   exercises: ExerciseData[];
