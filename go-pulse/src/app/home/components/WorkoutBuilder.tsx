@@ -40,8 +40,13 @@ export default function WorkoutBuilder() {
         headers: { "X-Api-Key": API_KEY },
       });
   
-      const data = await response.json();
-      setExercises(data);
+      const data: NinjaApiExercise[] = await response.json();
+
+      const uniqueExercises = Array.from(
+        new Map(data.map((exercise: NinjaApiExercise) => [exercise.name, exercise])).values()
+      );
+
+      setExercises(uniqueExercises);
     }
     
     fetchExercises();
