@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach } from "vitest";
-import WorkoutBuilder from "../WorkoutBuilder";
+import WorkoutBuilder from "../components/WorkoutBuilder";
 
 describe("WorkoutBuilder Component", () => {
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe("WorkoutBuilder Component", () => {
     const addButtons = await screen.findAllByText(/Add to/i);
     fireEvent.click(addButtons[0]);
 
-    expect(screen.getByText("Remove")).toBeInTheDocument();
+    expect(screen.getByText("✖")).toBeInTheDocument();
   });
 
   it("prevents duplicate exercises on the same day", async () => {
@@ -64,11 +64,11 @@ describe("WorkoutBuilder Component", () => {
     const addButtons = await screen.findAllByText(/Add to/i);
     fireEvent.click(addButtons[0]);
 
-    expect(screen.getByText("Remove")).toBeInTheDocument();
+    expect(screen.getByText("✖")).toBeInTheDocument();
 
-    const removeButton = screen.getByText("Remove");
+    const removeButton = screen.getByText("✖");
     fireEvent.click(removeButton);
 
-    expect(screen.queryByText("Remove")).not.toBeInTheDocument();
+    expect(screen.queryByText("✖")).not.toBeInTheDocument();
   });
 });
