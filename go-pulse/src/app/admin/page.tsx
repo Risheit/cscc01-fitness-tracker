@@ -1,30 +1,19 @@
-import { sendNotification } from '@/app/models/Push';
+import { cookies } from 'next/headers';
+import { AdminDashboard } from './components/AdminDashboard';
 
-export default function AdminPage() {
-  return (
-    <div className="flex flex-col">
-      <button
-        className="bg-gray-800 text-white p-1 rounded-2xl m-5"
-        onClick={() => {
-          sendNotification(2, {
-            title: 'test',
-            body: 'test body',
-            url: `${process.env.NEXT_PUBLIC_URL}/workout?id=1`,
-          });
-        }}
-      >
-        Send a push notification
-      </button>
-      <button
-        className="bg-gray-800 text-white p-1 rounded-2xl m-5"
-        onClick={() => {
-          fetch('/web-push/remind', {
-            method: 'POST',
-          });
-        }}
-      >
-        Send out workout reminders
-      </button>
-    </div>
+export default async function AdminPage() {
+  const isAdmin = await fetch(
+    `${process.env.NEXT_PUBLIC_URL}/api/check-auth/admin`,
+    {
+      headers: { Cookie: (await cookies()).toString() },
+      credentials: 'include',
+    }
   );
+
+  // Admins log into dash boards.
+  if (!isAdmin.ok) {
+    return <p>Not Authorized.</p>;
+  }
+
+  return <AdminDashboard />;
 }

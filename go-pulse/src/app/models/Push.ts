@@ -1,7 +1,6 @@
 // Code taken and modified from https://github.com/ameerezae/web-push-nextjs/
 
 import webpush from 'web-push';
-import { getUserWorkouts } from './Workout';
 
 export interface UserSubscription {
   [userId: number]: webpush.PushSubscription;
@@ -67,7 +66,8 @@ export async function sendNotification(
   userId: number,
   notification: WorkoutNotification
 ) {
-  const res = await fetch(`/api/web-push/send/${userId}`, {
+  console.log('Sending push...');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/web-push/send/${userId}`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
@@ -75,36 +75,4 @@ export async function sendNotification(
     body: JSON.stringify(notification),
   });
   console.log(await res.json());
-}
-
-export async function sendWorkoutReminders() {
-  const daysOfWeek = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  const today = new Date();
-  const dayName = daysOfWeek[today.getDay()];
-
-  for (const userId_ in subscriptions) {
-    const userId = +userId_;
-    const subscription = subscriptions[userId];
-    if (!subscription) continue;
-
-    const workouts = await getUserWorkouts(userId);
-
-    workouts.forEach((workout) => {
-      if (workout.day.toLowerCase() === dayName.toLowerCase()) {
-        sendNotification(userId, {
-          title: "Don't forget your workout today!",
-          body: `You have your ${workout.name} to do.`,
-          url: `${process.env.NEXT_PUBLIC_URL}/workout?id=${workout.id}`,
-        });
-      }
-    });
-  }
 }
