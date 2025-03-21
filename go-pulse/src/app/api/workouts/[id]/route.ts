@@ -1,13 +1,6 @@
-import { NextResponse } from "next/server";
-import pool from "@/app/db/database"; // Use your existing database pool
-
-// Function to check authentication status and get userId by calling check-auth route
-async function checkAuth(req: Request) {
-  const response = await fetch(`http://localhost:3000/api/check-auth`, {
-    headers: req.headers, // Pass the headers (including cookie)
-  });
-  return await response.json();
-}
+import { NextResponse } from 'next/server';
+import pool from '@/app/db/database'; // Use your existing database pool
+import { checkAuth } from '../../check-auth/route';
 
 export async function GET(req: Request) {
   try {
@@ -16,26 +9,29 @@ export async function GET(req: Request) {
     // Call check-auth endpoint to verify user authentication and get userId
     const authData = await checkAuth(req);
     if (!authData.authenticated) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
     const userId = authData.userId; // Get userId from check-auth response
 
     // Get workout info
     const workoutResult = await pool.query(
-      "SELECT id, name FROM workouts WHERE id = $1 AND user_id = $2",
+      'SELECT id, name FROM workouts WHERE id = $1 AND user_id = $2',
       [id, userId]
     );
 
     if (workoutResult.rows.length === 0) {
-      return NextResponse.json({ error: "Workout not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Workout not found' }, { status: 404 });
     }
 
     const workout = workoutResult.rows[0];
 
     // Get workout days
     const daysResult = await pool.query(
-      "SELECT id, day_of_week FROM workout_days WHERE workout_id = $1",
+      'SELECT id, day_of_week FROM workout_days WHERE workout_id = $1',
       [id]
     );
 
@@ -58,7 +54,10 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ ...workout, days }, { status: 200 });
   } catch (error) {
-    console.error("Fetch Workout Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('Fetch Workout Error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }
