@@ -2,27 +2,28 @@ self.addEventListener('install', () => {
   console.info('service worker installed.');
 });
 
-const sendDeliveryReportAction = () => {
-  console.log('Web push delivered.');
-};
-
-self.addEventListener('push', function (event) {
-  console.log('we received a push', event.data);
-  if (!event.data) {
+self.addEventListener('push', (e) => {
+  if (!e.data) {
     return;
   }
 
-  const payload = event.data.json();
-  const { title, body } = payload;
+  const payload = e.data.json();
+  const { title, body, url } = payload;
   const notificationTitle = title ?? 'Hi';
 
-  event.waitUntil(
+  e.waitUntil(
     self.registration
       .showNotification(notificationTitle, {
         body,
-      })
-      .then(() => {
-        sendDeliveryReportAction();
+        requireInteraction: true,
+        renotify: true,
+        tag: 'workout-reminder',
+        data: { url },
       })
   );
 });
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  clients.openWindow(e.notification.data.url);
+})

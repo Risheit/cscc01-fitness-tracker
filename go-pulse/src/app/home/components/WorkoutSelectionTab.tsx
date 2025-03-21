@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import WorkoutCard from './WorkoutCard';
 import {
   notificationUnsupported,
+  sendNotification,
   trySubscribeToNotifications,
 } from '@/app/models/Push';
 
@@ -14,7 +15,7 @@ interface Props {
 
 export default function WorkoutSelectionTab({ workouts }: Props) {
   const [search, setSearch] = useState('');
-  const [notificationsAllowed, setNotificationsAllowed] = useState(false);
+  const [notificationsAllowed, setNotificationsAllowed] = useState(true);
 
   useEffect(() => {
     if (notificationUnsupported()) return;
@@ -36,6 +37,18 @@ export default function WorkoutSelectionTab({ workouts }: Props) {
           Subscribe for workout notifications!
         </button>
       )}
+      <button
+        className="bg-gray-800 text-white p-1 rounded-2xl m-5"
+        onClick={() => {
+          sendNotification({
+            title: 'test',
+            body: 'test body',
+            url: 'http://localhost:3000/workout?id=1',
+          });
+        }}
+      >
+        Send a push notification
+      </button>
       <label htmlFor="workout-search" className="hidden">
         Search Workouts
       </label>

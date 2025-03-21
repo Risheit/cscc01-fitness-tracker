@@ -55,3 +55,20 @@ export async function trySubscribeToNotifications(
       }
   }
 }
+
+export interface WorkoutNotification {
+  title: string;
+  body: string;
+  url: string;
+}
+
+export async function sendNotification(notification: WorkoutNotification) {
+  const res = await fetch('/api/web-push/send', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(notification),
+  });
+  console.log(await res.json());
+}
