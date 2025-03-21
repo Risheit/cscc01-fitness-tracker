@@ -2,17 +2,17 @@ import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { subscriptions } from '@/app/models/Push';
 
-webpush.setVapidDetails(
-  'mailto:mail@example.com',
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.NEXT_PUBLIC_VAPID_PRIVATE_KEY!
-);
-
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = parseInt((await params).id, 10); 
+  webpush.setVapidDetails(
+    'mailto:mail@example.com',
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    process.env.NEXT_PUBLIC_VAPID_PRIVATE_KEY!
+  );
+
+  const userId = parseInt((await params).id, 10);
 
   if (!userId) {
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { checkAuth } from '../../check-auth/route';
+import checkAuth from '../../check-auth/CheckAuth';
 import webpush from 'web-push';
 import { subscriptions } from '@/app/models/Push';
 

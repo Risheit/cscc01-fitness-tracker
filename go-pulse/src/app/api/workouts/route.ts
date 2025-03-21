@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllWorkoutPlans } from '@/app/models/Workout';
 import pool from '@/app/db/database';
-import { checkAuth } from '../check-auth/route';
+import checkAuth from '../check-auth/CheckAuth';
 
 export async function POST(req: Request) {
   try {

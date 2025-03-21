@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '@/app/db/database'; // Use your existing database pool
-import { checkAuth } from '../check-auth/route';
+import checkAuth from '../check-auth/CheckAuth';
 
 export async function POST(req: Request) {
   try {

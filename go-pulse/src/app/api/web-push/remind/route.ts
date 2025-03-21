@@ -1,9 +1,28 @@
 import { NextResponse } from 'next/server';
-import { checkAuth } from '../../check-auth/route';
+import checkAuth from '../../check-auth/CheckAuth';
 import { sendNotification, subscriptions } from '@/app/models/Push';
 import { getUserWorkouts } from '@/app/models/Workout';
 
-export async function sendWorkoutReminders() {
+export async function POST(req: Request) {
+  const authData = await checkAuth(req);
+  if (!authData.authenticated || authData.userId !== 1) {
+    return NextResponse.json(
+      { error: 'Authentication required' },
+      { status: 401 }
+    );
+  }
+
+  try {
+    console.log('sending reminders')
+    sendWorkoutReminders();
+    return NextResponse.json({ message: 'reminders sent' }, { status: 200 });
+  } catch (e) {
+    console.log(e)
+    return NextResponse.json({ message: 'error sending reminders' }, { status: 500 });
+  }
+}
+
+async function sendWorkoutReminders() {
   const daysOfWeek = [
     'Sunday',
     'Monday',
@@ -34,24 +53,5 @@ export async function sendWorkoutReminders() {
         });
       }
     });
-  }
-}
-
-export async function POST(req: Request) {
-  const authData = await checkAuth(req);
-  if (!authData.authenticated || authData.userId !== 1) {
-    return NextResponse.json(
-      { error: 'Authentication required' },
-      { status: 401 }
-    );
-  }
-
-  try {
-    console.log('sending reminders')
-    sendWorkoutReminders();
-    return NextResponse.json({ message: 'reminders sent' }, { status: 200 });
-  } catch (e) {
-    console.log(e)
-    return NextResponse.json({ message: 'error sending reminders' }, { status: 500 });
   }
 }
