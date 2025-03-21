@@ -43,6 +43,7 @@
     "@types/react-dom": "^19",
     "@types/socket.io": "^3.0.1",
     "@types/socket.io-client": "^1.4.36",
+    "@types/web-push": "^3.6.4",
     "@types/ws": "^8.18.0",
     "@types/youtube": "^0.1.0",
     "@vitejs/plugin-react": "^4.3.4",
