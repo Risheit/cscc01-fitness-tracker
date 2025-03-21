@@ -40,7 +40,7 @@ export default function WorkoutSelectionTab({ workouts }: Props) {
       <button
         className="bg-gray-800 text-white p-1 rounded-2xl m-5"
         onClick={() => {
-          sendNotification({
+          sendNotification(2, {
             title: 'test',
             body: 'test body',
             url: 'http://localhost:3000/workout?id=1',

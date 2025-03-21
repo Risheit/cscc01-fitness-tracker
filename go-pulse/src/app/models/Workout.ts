@@ -17,6 +17,14 @@ export interface ExerciseData {
   reps?: number;
 }
 
+export interface WorkoutScheduleItem {
+  id: number;
+  userId: number;
+  name: string;
+  imagePath: string;
+  day: string;
+}
+
 export type WorkoutState = 'start' | 'paused' | 'running' | 'end';
 
 export async function getAllWorkoutPlans(): Promise<WorkoutPlan[]> {
@@ -47,5 +55,20 @@ export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
     [planId]
   );
 
+  return rows;
+}
+
+export async function getUserWorkouts(userId: number): Promise<WorkoutScheduleItem[]> {
+  const { rows } = await pool.query(`SELECT 
+    w.id,
+    w.user_id AS userId,
+    w.name,
+    w.image_path AS imagePath,
+    d.day_of_week AS day
+    FROM workouts AS w JOIN workout_days AS d
+    ON w.id = d.workout_id
+    WHERE w.user_id = $1`,
+    [userId]);
+  
   return rows;
 }

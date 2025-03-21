@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { checkAuth } from '../../check-auth/route';
 import webpush from 'web-push';
 import { subscriptions } from '@/app/models/Push';
 
@@ -9,15 +8,11 @@ webpush.setVapidDetails(
   process.env.NEXT_PUBLIC_VAPID_PRIVATE_KEY!
 );
 
-export async function POST(req: Request) {
-  const authData = await checkAuth(req);
-  if (!authData.authenticated) {
-    return NextResponse.json(
-      { error: 'Authentication required' },
-      { status: 401 }
-    );
-  }
-  const userId = authData.userId;
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const userId = parseInt((await params).id, 10); 
 
   if (!userId) {
     return NextResponse.json(
