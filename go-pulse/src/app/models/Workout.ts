@@ -9,12 +9,21 @@ export interface WorkoutPlan {
 export interface ExerciseData {
   name: string;
   description: string;
-  imagePath: string;
+  imagePath?: string;
   videoId?: string;
   type: 'Timed' | 'Sets';
   mins?: number;
   sets?: number;
   reps?: number;
+  dayOfWeek?: string;
+}
+
+export interface WorkoutScheduleItem {
+  id: number;
+  userId: number;
+  name: string;
+  imagePath: string;
+  day: string;
 }
 
 export type WorkoutState = 'start' | 'paused' | 'running' | 'end';
@@ -40,12 +49,55 @@ export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
     w.exercise_type AS "type",
     w.mins,
     w.sets,
-    w.reps
-  FROM workout_exercises AS w INNER JOIN exercises AS e ON w.name = e.name
-  WHERE workout_id = $1
+    w.reps,
+    wd.day_of_week AS "dayOfWeek"
+  FROM workout_exercises AS w
+  INNER JOIN exercises AS e ON w.name = e.name
+  INNER JOIN workout_days AS wd ON w.workout_day_id = wd.id
+  WHERE w.workout_id = $1
   ORDER BY w.position ASC`,
     [planId]
   );
 
   return rows;
+}
+
+export async function getUserWorkouts(
+  userId: number
+): Promise<WorkoutScheduleItem[]> {
+  const { rows } = await pool.query(
+    `SELECT
+    w.id,
+    w.user_id AS userId,
+    w.name,
+    w.image_path AS imagePath,
+    d.day_of_week AS day
+    FROM workouts AS w JOIN workout_days AS d
+    ON w.id = d.workout_id
+    WHERE w.user_id = $1`,
+    [userId]
+  );
+
+  return rows;
+}
+
+export async function addExercise(exercise: {
+  name: string;
+  description: string;
+  videoId?: string;
+  imagePath?: string;
+}) {
+  await pool.query(
+    `INSERT INTO exercises
+    (name, description, video_id, image_path)
+    VALUES
+    ($1, $2, $3, $4)
+    ON CONFLICT DO NOTHING`,
+    [
+      exercise.name,
+      exercise.description,
+      exercise.videoId ?? 'gMgvBspQ9lk',
+      exercise.imagePath ?? '/stock-running.jpg',
+    ]
+  );
 }

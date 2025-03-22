@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 interface NinjaApiExercise {
   name: string;
@@ -11,56 +11,105 @@ interface NinjaApiExercise {
   instructions: string;
 }
 
+interface SelectedExercise extends NinjaApiExercise {
+  sets: number | string;
+  reps: number | string;
+}
+
 interface Day {
   day: string;
-  exercises: NinjaApiExercise[];
+  exercises: SelectedExercise[];
 }
 
 export default function WorkoutBuilder() {
   const [exercises, setExercises] = useState<NinjaApiExercise[]>([]);
   const [selectedExercises, setSelectedExercises] = useState<Day[]>([]);
-  const [workoutName, setWorkoutName] = useState("");
-  const [search, setSearch] = useState("");
+  const [workoutName, setWorkoutName] = useState('');
+  const [search, setSearch] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]); // Track selected days
-  const [exerciseType, setExerciseType] = useState<string>("");
-  const [muscleGroup, setMuscleGroup] = useState<string>("");
-  const [difficulty, setDifficulty] = useState<string>("");
-
-  const API_KEY = "NdkDHejsQYSeUoRM7IbM7g==LURTckWlIS0A8S1P";
+  const [exerciseType, setExerciseType] = useState<string>('');
+  const [muscleGroup, setMuscleGroup] = useState<string>('');
+  const [difficulty, setDifficulty] = useState<string>('');
 
   useEffect(() => {
     async function fetchExercises() {
       let url = `https://api.api-ninjas.com/v1/exercises?muscle=${muscleGroup}&type=${exerciseType}&difficulty=${difficulty}`;
-  
+
       if (search) {
         url += `&name=${search}`;
       }
-  
+
       const response = await fetch(url, {
-        headers: { "X-Api-Key": API_KEY },
+        headers: { 'X-Api-Key': process.env.NEXT_PUBLIC_NINJA_API_KEY! },
       });
-  
-      const data = await response.json();
-      setExercises(data);
+
+      const data: NinjaApiExercise[] = await response.json();
+
+      // The API sometimes returns duplicate responses. This gets rid of those duplicates
+      const uniqueExercises = Array.from(
+        new Map(
+          data.map((exercise: NinjaApiExercise) => [exercise.name, exercise])
+        ).values()
+      );
+
+      setExercises(uniqueExercises);
     }
-    
+
     fetchExercises();
   }, [exerciseType, muscleGroup, difficulty, search]);
 
   function addExerciseToDay(exercise: NinjaApiExercise, day: string) {
     setSelectedExercises((prev) => {
-        return prev.map((item) => {
+      return prev
+        .map((item) => {
           if (item.day === day) {
             // If exercise is already in the day's list, do nothing
             if (item.exercises.some((e) => e.name === exercise.name)) {
               return item;
             }
             // Return a new object to ensure state updates properly
-            return { ...item, exercises: [...item.exercises, { ...exercise }] };
+            return {
+              ...item,
+              exercises: [
+                ...item.exercises,
+                { ...exercise, sets: 3, reps: 10 },
+              ],
+            };
           }
           return item;
-        }).concat(prev.some((item) => item.day === day) ? [] : [{ day, exercises: [{ ...exercise }] }]);
-      });
+        })
+        .concat(
+          prev.some((item) => item.day === day)
+            ? []
+            : [{ day, exercises: [{ ...exercise, sets: 3, reps: 10 }] }]
+        );
+    });
+  }
+
+  function updateExerciseDetails(
+    day: string,
+    exerciseName: string,
+    field: 'sets' | 'reps',
+    value: number | string
+  ) {
+    setSelectedExercises((prev) =>
+      prev.map((item) => {
+        if (item.day === day) {
+          return {
+            ...item,
+            exercises: item.exercises.map((exercise) =>
+              exercise.name === exerciseName
+                ? {
+                    ...exercise,
+                    [field]: value === '' ? '' : Math.max(1, Number(value)),
+                  }
+                : exercise
+            ),
+          };
+        }
+        return item;
+      })
+    );
   }
 
   function removeExerciseFromDay(exercise: NinjaApiExercise, day: string) {
@@ -85,9 +134,9 @@ export default function WorkoutBuilder() {
   }
 
   async function createWorkout() {
-    const res = await fetch("/api/workouts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('/api/workouts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: workoutName, days: selectedDays }),
     });
 
@@ -96,27 +145,27 @@ export default function WorkoutBuilder() {
     for (const day of selectedExercises) {
       let position = 1;
       for (const exercise of day.exercises) {
-        await fetch("http://localhost:3000/api/workout-exercises", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        await fetch(`${process.env.NEXT_PUBLIC_URL}/api/workout-exercises`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             workout_id: workout.workout_id,
             day_of_week: day.day,
             name: exercise.name,
             exercise_type: exercise.type,
-            sets: 3,
-            reps: 10,
+            sets: exercise.sets,
+            reps: exercise.reps,
             weight: null,
             rest_time: 60,
             position: position,
-            description: exercise.instructions || ""
+            description: exercise.instructions || '',
           }),
         });
         position += 1;
       }
     }
 
-    alert("Workout Created!");
+    alert('Workout Created!');
   }
 
   return (
@@ -137,12 +186,20 @@ export default function WorkoutBuilder() {
         <div className="mb-4">
           <h3 className="text-lg font-semibold">Select Days of the Week</h3>
           <div className="flex flex-wrap">
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
+            {[
+              'Monday',
+              'Tuesday',
+              'Wednesday',
+              'Thursday',
+              'Friday',
+              'Saturday',
+              'Sunday',
+            ].map((day) => (
               <button
                 key={day}
                 onClick={() => toggleDaySelection(day)}
                 className={`p-2 mr-2 mb-2 rounded-md ${
-                  selectedDays.includes(day) ? "bg-blue-500" : "bg-gray-700"
+                  selectedDays.includes(day) ? 'bg-blue-500' : 'bg-gray-700'
                 }`}
               >
                 {day}
@@ -224,9 +281,14 @@ export default function WorkoutBuilder() {
               exercise.name.toLowerCase().includes(search.toLowerCase())
             )
             .map((exercise) => (
-              <div key={exercise.name} className="bg-gray-700 p-4 rounded-lg shadow-md">
+              <div
+                key={exercise.name}
+                className="bg-gray-700 p-4 rounded-lg shadow-md"
+              >
                 <h3 className="font-semibold">{exercise.name}</h3>
-                <p className="text-sm text-gray-300">{exercise.muscle} | {exercise.equipment}</p>
+                <p className="text-sm text-gray-300">
+                  {exercise.muscle} | {exercise.equipment}
+                </p>
                 <div className="mt-2">
                   {selectedDays.map((day) => (
                     <button
@@ -246,23 +308,152 @@ export default function WorkoutBuilder() {
         {selectedExercises.length > 0 && (
           <>
             <h2 className="text-xl font-semibold mt-6">Selected Exercises</h2>
-            <ul className="mt-2">
-            {selectedExercises.map((day) => (
-                    <div key={day.day} className="mb-4">
-                    <h3 className="font-semibold text-lg">{day.day}</h3>
-                    {day.exercises.map((exercise) => (
-                        <li key={`${exercise.name}-${day.day}`} className="bg-gray-700 p-2 rounded-md mt-2 flex justify-between">
-                        {exercise.name}
+            <ul className="mt-2 space-y-2">
+              {selectedExercises.map((day) => (
+                <div key={day.day} className="mb-2">
+                  <h3 className="font-semibold text-lg mb-1">{day.day}</h3>
+                  {day.exercises.map((exercise) => (
+                    <li
+                      key={`${exercise.name}-${day.day}`}
+                      className="bg-gray-700 p-2 rounded-md flex items-center justify-between"
+                    >
+                      {/* Exercise Name */}
+                      <span className="text-sm">{exercise.name}</span>
+
+                      {/* Sets & Reps Controls (Inline) */}
+                      <div className="flex items-center space-x-2">
+                        {/* Sets */}
+                        <div className="flex items-center">
+                          <button
+                            onClick={() =>
+                              updateExerciseDetails(
+                                day.day,
+                                exercise.name,
+                                'sets',
+                                Math.max(1, Number(exercise.sets) - 1)
+                              )
+                            }
+                            className="w-6 h-6 bg-gray-600 text-white text-sm rounded-full flex items-center justify-center"
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min="1"
+                            value={exercise.sets}
+                            onChange={(e) =>
+                              updateExerciseDetails(
+                                day.day,
+                                exercise.name,
+                                'sets',
+                                e.target.value
+                              )
+                            }
+                            onBlur={(e) => {
+                              if (e.target.value === '') {
+                                updateExerciseDetails(
+                                  day.day,
+                                  exercise.name,
+                                  'sets',
+                                  '1'
+                                );
+                              }
+                            }}
+                            style={{
+                              appearance: 'none', // Firefox
+                              WebkitAppearance: 'none', // Chrome, Safari, Edge
+                              MozAppearance: 'textfield', // Firefox (alternative)
+                            }}
+                            className="w-10 h-8 text-center bg-gray-800 text-white rounded-md border border-gray-600 mx-1"
+                          />
+                          <button
+                            onClick={() =>
+                              updateExerciseDetails(
+                                day.day,
+                                exercise.name,
+                                'sets',
+                                Number(exercise.sets) + 1
+                              )
+                            }
+                            className="w-6 h-6 bg-gray-600 text-white text-sm rounded-full flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* Reps */}
+                        <div className="flex items-center">
+                          <button
+                            onClick={() =>
+                              updateExerciseDetails(
+                                day.day,
+                                exercise.name,
+                                'reps',
+                                Math.max(1, Number(exercise.reps) - 1)
+                              )
+                            }
+                            className="w-6 h-6 bg-gray-600 text-white text-sm rounded-full flex items-center justify-center"
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min="1"
+                            value={exercise.reps}
+                            onChange={(e) =>
+                              updateExerciseDetails(
+                                day.day,
+                                exercise.name,
+                                'reps',
+                                e.target.value
+                              )
+                            }
+                            onBlur={(e) => {
+                              if (e.target.value === '') {
+                                updateExerciseDetails(
+                                  day.day,
+                                  exercise.name,
+                                  'reps',
+                                  '1'
+                                );
+                              }
+                            }}
+                            style={{
+                              appearance: 'none', // Firefox
+                              WebkitAppearance: 'none', // Chrome, Safari, Edge
+                              MozAppearance: 'textfield', // Firefox (alternative)
+                            }}
+                            className="w-10 h-8 text-center bg-gray-800 text-white rounded-md border border-gray-600 mx-1"
+                          />
+                          <button
+                            onClick={() =>
+                              updateExerciseDetails(
+                                day.day,
+                                exercise.name,
+                                'reps',
+                                Number(exercise.reps) + 1
+                              )
+                            }
+                            className="w-6 h-6 bg-gray-600 text-white text-sm rounded-full flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* Remove Button */}
                         <button
-                            onClick={() => removeExerciseFromDay(exercise, day.day)}
-                            className="text-red-500 text-xs"
+                          onClick={() =>
+                            removeExerciseFromDay(exercise, day.day)
+                          }
+                          className="text-red-500 text-sm px-2 py-1 rounded-md bg-gray-800 hover:bg-gray-700"
                         >
-                            Remove
+                          ✖
                         </button>
-                        </li>
-                    ))}
-                    </div>
-                ))}
+                      </div>
+                    </li>
+                  ))}
+                </div>
+              ))}
             </ul>
           </>
         )}

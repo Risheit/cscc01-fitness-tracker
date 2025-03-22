@@ -1,6 +1,6 @@
 import { WorkoutPlan } from '@/app/models/Workout';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
+import { redirect, RedirectType } from 'next/navigation';
 
 interface Props {
   plan: WorkoutPlan;
@@ -10,7 +10,7 @@ export default function WorkoutCard({ plan }: Props) {
   return (
     <div
       className="flex flex-col h-44 w-40 align-top overflow-hidden rounded-xl border-1 border-gray-600"
-      onClick={() => redirect(`/workout?id=${plan.id}`)}
+      onClick={() => redirect(`/workout?id=${plan.id}`, RedirectType.push)}
     >
       <div className="h-3/4 flex-auto overflow-hidden relative">
         <Image
