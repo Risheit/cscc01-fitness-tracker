@@ -61,7 +61,7 @@ export default function ExerciseScreen({ exercises }: Props) {
           src={
             workoutState == 'end'
               ? '/stock-running.jpg'
-              : exercises[currentIndex].imagePath
+              : exercises[currentIndex].imagePath ?? '/stock-running.jpg'
           }
           alt="current exercise"
           fill

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import pool from '@/app/db/database'; // Use your existing database pool
 import checkAuth from '../check-auth/CheckAuth';
+import { addExercise } from '@/app/models/Workout';
 
 export async function POST(req: Request) {
   try {
@@ -87,10 +88,23 @@ export async function POST(req: Request) {
       );
     }
 
+    // Insert exercise into exercises table if it is new
+    addExercise({ name, description });
+
     // Insert exercise into workout_exercises table
     await pool.query(
-      `INSERT INTO workout_exercises (workout_id, workout_day_id, name, exercise_type, sets, reps, mins, weight, position, description) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      `INSERT INTO workout_exercises
+      (workout_id,
+      workout_day_id,
+      name,
+      exercise_type,
+      sets,
+      reps,
+      mins,
+      weight,
+      position,
+      description)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
         workout_id,
         workout_day_id,
