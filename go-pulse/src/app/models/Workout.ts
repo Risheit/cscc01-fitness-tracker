@@ -9,7 +9,7 @@ export interface WorkoutPlan {
 export interface ExerciseData {
   name: string;
   description: string;
-  imagePath: string;
+  imagePath?: string;
   videoId?: string;
   type: 'Timed' | 'Sets';
   mins?: number;
@@ -58,8 +58,11 @@ export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
   return rows;
 }
 
-export async function getUserWorkouts(userId: number): Promise<WorkoutScheduleItem[]> {
-  const { rows } = await pool.query(`SELECT 
+export async function getUserWorkouts(
+  userId: number
+): Promise<WorkoutScheduleItem[]> {
+  const { rows } = await pool.query(
+    `SELECT
     w.id,
     w.user_id AS userId,
     w.name,
@@ -68,7 +71,29 @@ export async function getUserWorkouts(userId: number): Promise<WorkoutScheduleIt
     FROM workouts AS w JOIN workout_days AS d
     ON w.id = d.workout_id
     WHERE w.user_id = $1`,
-    [userId]);
-  
+    [userId]
+  );
+
   return rows;
+}
+
+export async function addExercise(exercise: {
+  name: string;
+  description: string;
+  videoId?: string;
+  imagePath?: string;
+}) {
+  await pool.query(
+    `INSERT INTO exercises
+    (name, description, video_id, image_path)
+    VALUES
+    ($1, $2, $3, $4)
+    ON CONFLICT DO NOTHING`,
+    [
+      exercise.name,
+      exercise.description,
+      exercise.videoId ?? 'gMgvBspQ9lk',
+      exercise.imagePath ?? '/stock-running.jpg',
+    ]
+  );
 }
