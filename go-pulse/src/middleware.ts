@@ -2,12 +2,12 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
-  const isUser = await fetch(new URL('/api/check-auth', req.url), {
+  const res = await fetch(new URL('/api/check-auth', req.url), {
     headers: { Cookie: (await cookies()).toString() },
     credentials: 'include',
   });
 
-  if (isUser.ok) {
+  if (res.ok) {
     return NextResponse.next();
   } else {
     return NextResponse.redirect(new URL('/login', req.url));
