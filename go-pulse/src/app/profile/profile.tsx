@@ -1,6 +1,5 @@
 "use client";
 
-import { cookies } from "next/headers";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +12,6 @@ export default function Profile() {
     const [weight, setWeight] = useState("");
     const [gender, setGender] = useState("");
     const [bio, setBio] = useState("");    
-    const [profilePic, setProfilePic] = useState("/default-profile.jpg");
 
     useEffect(() => {
         setIsClient(true);
