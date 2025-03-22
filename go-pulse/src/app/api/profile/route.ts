@@ -23,7 +23,6 @@ async function getUserFromToken(req: NextRequest) {
 
 
 export async function GET(req: NextRequest) {
-    //console.log("Received GET request to /api/profile");
 
     const username = await getUserFromToken(req);
     if (!username) {
@@ -31,27 +30,6 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        /*
-        const { rows: bio } = await pool.query(
-
-            `Select
-                b.id AS bio_id,
-                b.username,
-                b.full_name,
-                b.weight_lbs,
-                b.age,
-                b.gender,
-                b.bio,
-                u.id AS user_id,
-                u.username AS user_username
-            FROM 
-                profiles b
-            JOIN 
-                users u ON b.username = u.username
-            WHERE 
-                b.username = $1;
-            `
-        );*/
 
         const { rows } = await pool.query(`
             SELECT full_name, weight_lbs, age, gender, bio
@@ -72,7 +50,6 @@ export async function GET(req: NextRequest) {
     }
 }
 
-
 export async function POST(req: NextRequest) {
     console.log("Received POST request to /api/profile");
 
@@ -82,11 +59,6 @@ export async function POST(req: NextRequest) {
     }
     
     try {
-        /*const decoded = jwt.verify(token, SECRET) as { userId: string, username: string };
-        const userId = decoded.userId;
-        const username = decoded.username;
-        const body = await req.json();*/
-
         const { full_name, age, weight_lbs, gender, bio } = await req.json();
 
         if (!full_name || !age || !weight_lbs || !gender || !bio) {
@@ -105,13 +77,6 @@ export async function POST(req: NextRequest) {
         `;
 
         await pool.query(updateQuery, [username, full_name, age, weight_lbs, gender, bio]);
-
-        /*
-        cnst updateQuery = `
-            UPDATE users SET full_name = $1, age = $2, weight = $3, gender = $4, bio = $5
-            WHERE username = $6
-        `;
-        await pool.query(updateQuery, [name, age, weight, gender, bio, username]);*/
 
         console.log("Profile updated successfully for:", username);
         return NextResponse.json({ message: "Profile updated successfully" }, { status: 200 });

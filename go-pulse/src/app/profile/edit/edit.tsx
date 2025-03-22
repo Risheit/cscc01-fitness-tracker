@@ -6,16 +6,6 @@ import React, { useEffect, useState } from "react";
 
 export default function EditProfile() {
     const router = useRouter();
-
-    /*
-    const [name, setName] = useState("Khabib Nurmagomedov");
-    const [age, setAge] = useState("36");
-    const [weight, setWeight] = useState("155");
-    const [gender, setGender] = useState("Male");
-    const [bio, setBio] = useState("#1 Pound for Pound fighter");
-    const [profilePic, setProfilePic] = useState("/profile-picture.jpg");*/
-
-    //const [isClient, setIsClient] = useState(false);
     const [name, setName] = useState("");
     const [age, setAge] = useState("");
     const [weight, setWeight] = useState("");
@@ -23,9 +13,7 @@ export default function EditProfile() {
     const [bio, setBio] = useState("");
     const [profilePic, setProfilePic] = useState("/default-profile.jpg");
 
-
     useEffect(() => {
-        
         const fetchProfile = async () => {
             try {
                 const res = await fetch(`/api/profile`);
@@ -46,41 +34,13 @@ export default function EditProfile() {
         fetchProfile();
     }, []);
 
-
     // Handle profile picture upload
     const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const imageUrl = URL.createObjectURL(event.target.files[0]);
-            //setProfile({ ...profile, profile_pic: imageUrl });
             setProfilePic(imageUrl);
         }
     };
-/*
-    const handleSave = async () => {
-        try {
-          const res = await fetch('/api/profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              full_name: name,
-              weight_lbs: Number(weight),
-              age: Number(age),
-              gender,
-              bio,
-            }),
-          });
-          
-          if (res.ok) {
-            router.push("/profile");
-          } else {
-            const Data = await res.json();
-            console.error("Failed to save:", Data.message || "Unknown error");
-          }
-        } catch (error) {
-            console.error("Error saving profile:", error);
-        }  
-    };
-*/
 
     const handleSave = () => {
         const profileData = {
@@ -97,8 +57,6 @@ export default function EditProfile() {
         // Redirect to profile page
         router.push("/profile");
     };
-
-
 
     return (
         <main className="relative w-full h-screen overflow-y-auto flex flex-col items-center bg-gray-100 p-4">
@@ -136,10 +94,8 @@ export default function EditProfile() {
                     placeholder="Enter your name"
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
                     value={name}
-                    //onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
                     onChange={(e) => setName(e.target.value)}
                 />
-                
 
                 {/* Age Input */}
                 <label className="block text-gray-800 font-medium mt-4">Age</label>
@@ -148,7 +104,6 @@ export default function EditProfile() {
                     placeholder="Enter age"
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
                     value={age}
-                    //onChange={(e) => setProfile({ ...profile, age: e.target.value })}
                     onChange={(e) => setAge(e.target.value)}
                 />
 
@@ -159,7 +114,6 @@ export default function EditProfile() {
                     placeholder="Enter weight"
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
                     value={weight}
-                    //onChange={(e) => setProfile({ ...profile, weight: e.target.value })}
                     onChange={(e) => setWeight(e.target.value)}
                 />
 
@@ -168,7 +122,6 @@ export default function EditProfile() {
                 <select 
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
                     value={gender}
-                    //onChange={(e) => setProfile({ ...profile, age: e.target.value })}
                     onChange={(e) => setGender(e.target.value)}
                 >
                     <option value="">Select</option>
@@ -184,7 +137,6 @@ export default function EditProfile() {
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
                     rows={4}
                     value={bio}
-                    //onChange={(e) => setProfile({ ...profile, age: e.target.value })}
                     onChange={(e) => setBio(e.target.value)}
                 />
                 <p className="text-sm text-gray-500">{bio.length}/500 characters</p>
@@ -199,7 +151,6 @@ export default function EditProfile() {
                     </button>
                     <button 
                         className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                        //onClick={() => alert("Feature not implemented yet!")}
                         onClick={handleSave}
                     >
                         Save

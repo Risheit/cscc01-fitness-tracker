@@ -8,39 +8,12 @@ import Link from "next/link";
 
 export default function Profile() {
     const [isClient, setIsClient] = useState(false);
-    //const [bio, setBio] = useState("#1 Pound for Pound fighter");
-
     const [name, setName] = useState("");
     const [age, setAge] = useState("");
     const [weight, setWeight] = useState("");
     const [gender, setGender] = useState("");
     const [bio, setBio] = useState("");    
     const [profilePic, setProfilePic] = useState("/default-profile.jpg");
-
-//Handles Retrieving data from database
-/*
-    useEffect(() => {
-        setIsClient(true); 
-
-        const fetchProfile = async () => {
-            try {
-                const res = await fetch("/api/profile");
-                if (!res.ok) throw new Error("Failed to fetch profile");
-                const data = await res.json();
-
-                setName(data.full_name || "");
-                setAge(data.age?.toString() || "");
-                setWeight(data.weight_lbs?.toString() || "");
-                setGender(data.gender || "");
-                setBio(data.bio || "");
-            } catch (err) {
-                console.error("Error fetching profile:", err);
-            }
-        };
-
-        fetchProfile();
-    }, []);
-*/
 
     useEffect(() => {
         setIsClient(true);
@@ -55,7 +28,6 @@ export default function Profile() {
             setBio(profile.bio || "");
         }
     }, []);
-
 
     return (
         <main className="relative w-full h-screen overflow-y-auto bg-gray-100 flex flex-col items-center">
