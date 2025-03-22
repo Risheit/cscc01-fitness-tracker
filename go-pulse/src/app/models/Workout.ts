@@ -15,6 +15,7 @@ export interface ExerciseData {
   mins?: number;
   sets?: number;
   reps?: number;
+  dayOfWeek?: string;
 }
 
 export interface WorkoutScheduleItem {
@@ -48,9 +49,12 @@ export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
     w.exercise_type AS "type",
     w.mins,
     w.sets,
-    w.reps
-  FROM workout_exercises AS w INNER JOIN exercises AS e ON w.name = e.name
-  WHERE workout_id = $1
+    w.reps,
+    wd.day_of_week AS "dayOfWeek"
+  FROM workout_exercises AS w
+  INNER JOIN exercises AS e ON w.name = e.name
+  INNER JOIN workout_days AS wd ON w.workout_day_id = wd.id
+  WHERE w.workout_id = $1
   ORDER BY w.position ASC`,
     [planId]
   );

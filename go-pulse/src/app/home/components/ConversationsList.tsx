@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa"; // Import the icon
+import { FaPlus } from "react-icons/fa";
 
 type Conversation = {
     id: number; 

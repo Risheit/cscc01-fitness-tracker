@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     // Insert workout
     const workoutResult = await pool.query(
-      'INSERT INTO workouts (user_id, name) VALUES ($1, $2) RETURNING id',
+      "INSERT INTO workouts (user_id, name, image_path) VALUES ($1, $2, '/stock-running.jpg') RETURNING id",
       [userId, name]
     );
 

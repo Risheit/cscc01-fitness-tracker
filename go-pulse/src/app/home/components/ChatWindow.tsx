@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Linkify from 'react-linkify';
 
 type Message = {
     id: number;
@@ -126,6 +127,13 @@ export default function ChatWindow({ conversationId, myUserId, otherUserUsername
     }
   }, [messages]);
 
+  // Custom link decorator to apply the CSS class
+  const linkDecorator = (decoratedHref: string, decoratedText: string, key: number) => (
+    <a href={decoratedHref} key={key} className="linkify-link">
+      {decoratedText}
+    </a>
+  );
+
   return (
     <div className="flex flex-col flex-1 h-full border rounded-lg">
         {/* Header with Other User's Name */}
@@ -150,7 +158,9 @@ export default function ChatWindow({ conversationId, myUserId, otherUserUsername
                                 : "bg-gray-200 text-black"
                         }`}
                     >
-                        <div className="text-sm">{msg.content}</div>
+                        <Linkify componentDecorator={linkDecorator}>
+                            <div className="text-sm">{msg.content}</div>
+                        </Linkify>
                     </div>
                 </div>
             ))}
