@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-//import React, { useState } from "react";
+import { useRouter } from "next/navigation";;
 import React, { useEffect, useState } from "react";
 
 export default function EditProfile() {
