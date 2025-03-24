@@ -17,7 +17,6 @@ export async function GET(req: Request) {
 
   try {
     const decoded = jwt.verify(token, SECRET) as { userId: number };
-    console.log(decoded);
     if (decoded.userId === 1)
       return NextResponse.json(
         { authenticated: true, userId: decoded.userId },

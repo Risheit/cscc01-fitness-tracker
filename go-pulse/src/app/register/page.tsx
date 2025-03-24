@@ -31,7 +31,7 @@ export default function Register() {
         setError(data.message || 'Something went wrong.');
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError('An error occurred. Please try again.');
     }
   };

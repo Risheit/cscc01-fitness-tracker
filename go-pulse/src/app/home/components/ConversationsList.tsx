@@ -33,17 +33,12 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
                 return res.json();
             })
             .then((data: Conversation[]) => {
-                console.log("Fetched conversations:", data);
                 setConversations(data);
             })
             .catch((error) => {
                 console.error("Error fetching conversations:", error);
             });
     }, []);
-
-    useEffect(() => {
-        console.log("Conversations:", conversations);
-    }, [conversations]);
 
     const handleSelect = (conversationId: number, myUserId: number, otherUserId: number, otherUserUsername: string) => {
         setSelectedConversationId(conversationId);
@@ -60,7 +55,6 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
 
     const handleAddNewConversation = async () => {
         try {
-            console.log("Starting conversation with User ID:", searchQuery);
             if(searchQuery === "") {
                 alert("Please enter a username to start a conversation");
                 return;
@@ -80,7 +74,6 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
             }
 
             const newConversation: Conversation = await res.json();
-            console.log("New conversation:", newConversation);
             setConversations([...conversations, newConversation]);
             
         } catch (err) {
@@ -119,7 +112,6 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
             )}
             <ul>
                 {conversations.map((conv) => (
-                    console.log(conv),
                     <li key={conv.id} className="mb-2">
                         <button
                             onClick={() => handleSelect(conv.id, conv.my_user_id, conv.other_user_id, conv.other_user_username)}

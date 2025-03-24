@@ -32,8 +32,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
             [convId]
         );
 
-        // console.log("Fetched messages:", messages);
-
         return NextResponse.json(messages);
     } catch (error) {
         console.error("Error fetching messages:", error);

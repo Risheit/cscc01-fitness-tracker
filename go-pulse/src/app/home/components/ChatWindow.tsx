@@ -29,7 +29,6 @@ export default function ChatWindow({
 
   // Fetch initial messages
   useEffect(() => {
-    console.log('Fetching messages for conversation:', conversationId);
     if (conversationId) {
       fetch(`/api/conversations/${conversationId}/message`, {
         method: 'GET',
@@ -45,7 +44,6 @@ export default function ChatWindow({
           return res.json();
         })
         .then((data: Message[]) => {
-          // console.log("Messages data:", data);
           setMessages(data);
         })
         .catch((error) => {
@@ -56,7 +54,6 @@ export default function ChatWindow({
 
   // Establish WebSocket connection
   useEffect(() => {
-    console.log('Connecting to WebSocket server');
     if (!conversationId) return;
 
     // Connect to the WebSocket server
@@ -91,13 +88,6 @@ export default function ChatWindow({
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
     try {
-      // Send message to the database
-      console.log(
-        'Sending POST message:',
-        newMessage,
-        'to conversation:',
-        conversationId
-      );
       const res = await fetch(`/api/conversations/${conversationId}/message`, {
         method: 'POST',
         credentials: 'include',
@@ -116,12 +106,9 @@ export default function ChatWindow({
 
       // Parse the response to get the saved message
       const savedMessage: Message = await res.json();
-      console.log('Message saved to DB:', savedMessage);
 
       // Send the saved message to the WebSocket server
-      console.log('ws', ws);
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-        console.log('Sending WebSocket message:', savedMessage);
         ws.current.send(JSON.stringify(savedMessage));
         setMessages((prev) => [...prev, savedMessage]);
       } else {
