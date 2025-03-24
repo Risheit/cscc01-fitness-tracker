@@ -1,6 +1,6 @@
 services:
   # Production service. Run using
-  #     docker-compose --profile prod up
+  #     docker-compose up prod
   # Creates an production build, expecting to connect to a cloud database.
   prod:
     profiles:
@@ -55,24 +55,6 @@ services:
       - 8080
     ports:
       - ${WS_PORT}:8080
-    env_file:
-      - ./.env
-
-  # Websocket server image. Run using 
-  #     docker-compose up ws
-  # You shouldn't have to call this manually, it should instead be launched
-  # automatically when composing the dev or prod services.  
-  socket:
-    profiles:
-      - prod
-      - dev
-    build:
-      context: go-pulse-ws
-      dockerfile: ws.dockerfile
-    expose:
-      - 8080
-    ports:
-      - ${NEXT_PUBLIC_WS_PORT}:8080
     env_file:
       - ./.env
 
