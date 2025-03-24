@@ -1,6 +1,6 @@
 services:
   # Production service. Run using
-  #     docker-compose up prod
+  #     docker-compose --profile prod up
   # Creates an production build, expecting to connect to a cloud database.
   prod:
     profiles:
