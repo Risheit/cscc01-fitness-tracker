@@ -31,16 +31,18 @@ Environment variables can be passed into the app using a `.env` file at the proj
 
 ```
 POSTGRES_HOST=localhost
-POSTGRES_DB=testdb
+POSTGRES_DB=go-pulse
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres 
-DB_LOCAL_PORT=50432
-DB_REMOTE_PORT=5432
+POSTGRES_PASSWORD=
+DB_PORT=50432
 JWT_SECRET=
+
+NEXT_PUBLIC_WS_HOST=localhost
+NEXT_PUBLIC_WS_PORT=9090
 
 NEXT_PUBLIC_URL=http://localhost:3000
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=
-NEXT_PUBLIC_VAPID_PRIVATE_KEY=
+VAPID_PRIVATE_KEY=
 NEXT_PUBLIC_NINJA_API_KEY=
 ```
 
@@ -64,13 +66,31 @@ This database can be connected to directly using:
 psql postgresql://postgres:postgres@localhost:50432/testdb
 ```
 
+The websocket server under the websocket container can be accessed from a terminal by running 
+```bash
+curl ws://{NEXT_PUBLIC_WS_HOST}:{NEXT_PUBLIC_WS_PORT}
+```
+For example, if you launch docker compose with the following environment variables:
+```bash
+NEXT_PUBLIC_WS_HOST=localhost
+NEXT_PUBLIC_WS_PORT=9090
+```
+The server can be connected to with
+```bash
+curl ws://localhost:9090
+```
+
 #### Start a production server using:
 
 ```bash
 docker-compose --profile prod up --build
+            --build-arg NEXT_PUBLIC_VAR1=VAL1
+            --build-arg NEXT_PUBLIC_VAR2=VAL2
+            ...
 ```
 
-This launches a production app, along with any necessary peripheral services.
+This launches a production app, along with any necessary peripheral services. 
+Due to the way Next.js handles client-accessible environment variables, when creating a production server, all `NEXT_PUBLIC_` without default values need to be specified when building (either when calling `docker-composer --profile prod build` or when adding the `--build` flag when spinning the profile up).
 
 ## Branch policies
 
