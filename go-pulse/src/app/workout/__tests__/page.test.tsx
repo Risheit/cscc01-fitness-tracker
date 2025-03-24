@@ -23,7 +23,14 @@ const mockWorkoutData: ExerciseData[] = [
   },
 ];
 
-vi.mock('next/navigation', () => ({
+const mockPlay = vi.fn();
+const mockPause = vi.fn();
+
+HTMLMediaElement.prototype.play = mockPlay;
+HTMLMediaElement.prototype.pause = mockPause;
+
+vi.mock('next/navigation', async (importOriginal) => ({
+  ...await importOriginal<typeof import('next/navigation')>(),
   useRouter: () => {
     return {
       push: () => null,
@@ -45,7 +52,7 @@ function checkCurrentSet(amt: number) {
   expect(screen.getByText(`Sets: ${amt}`)).toBeInTheDocument();
 }
 
-test.todo('run Workout page flow', async () => {
+test('run Workout page flow', async () => {
   vi.useFakeTimers();
 
   render(<ExerciseScreen exercises={mockWorkoutData} />);
@@ -94,15 +101,17 @@ test.todo('run Workout page flow', async () => {
 
   // Check if timer running
   expect(screen.getByText(`${mockWorkoutData[1].mins!}m 0s`));
+  expect(mockPlay).not.toHaveBeenCalled();
   act(() => {
     vi.advanceTimersByTime(1000); // Decrease timer by a second
   });
 
   expect(screen.getByText(`${mockWorkoutData[1].mins! - 1}m 59s`));
   act(() => {
-    vi.runAllTimers(); // End timer
+    vi.advanceTimersByTime(mockWorkoutData[1].mins! * 60 * 1000); // Decrease timer to end
   });
   expect(screen.getByRole('button', { name: 'Pause' })).toBeDisabled();
+  expect(mockPlay).toHaveBeenCalledOnce();
   clickButton('Complete');
 
   // Check if final page
@@ -110,7 +119,7 @@ test.todo('run Workout page flow', async () => {
   clickButton('Finish');
 });
 
-test.todo('try Timer pausing', async () => {
+test('try Timer pausing', async () => {
   vi.useFakeTimers();
 
   render(<ExerciseScreen exercises={mockWorkoutData} />);
@@ -140,7 +149,7 @@ test.todo('try Timer pausing', async () => {
   expect(screen.getByText(`${mockWorkoutData[1].mins! - 1}m 55s`));
 
   act(() => {
-    vi.runAllTimers(); // End timer
+    vi.advanceTimersByTime(mockWorkoutData[1].mins! * 60 * 1000); // Decrease timer to end
   });
   expect(screen.getByRole('button', { name: 'Pause' })).toBeDisabled();
   clickButton('Complete');
