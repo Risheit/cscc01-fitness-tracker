@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "@/app/db/database";
 import jwt from "jsonwebtoken";  // Ensure jsonwebtoken is installed
 
-const SECRET = process.env.JWT_SECRET!;  // Use your secret key here
+const SECRET = process.env.JWT_SECRET;
 
 // GET method to fetch conversations
 export async function GET(req: Request) {

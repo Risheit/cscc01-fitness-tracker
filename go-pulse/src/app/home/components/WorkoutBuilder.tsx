@@ -40,7 +40,7 @@ export default function WorkoutBuilder() {
       }
 
       const response = await fetch(url, {
-        headers: { 'X-Api-Key': process.env.NEXT_PUBLIC_NINJA_API_KEY! },
+        headers: { 'X-Api-Key': process.env.NEXT_PUBLIC_NINJA_API_KEY },
       });
 
       const data: NinjaApiExercise[] = await response.json();

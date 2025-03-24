@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import pool from "../../db/database";
 import jwt from "jsonwebtoken";
 
-const SECRET = process.env.JWT_SECRET!; 
+const SECRET = process.env.JWT_SECRET; 
 
 async function getUserFromToken(req: NextRequest) {
     try {
