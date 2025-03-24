@@ -1,7 +1,12 @@
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    full_name TEXT,
+    weight_lbs INT,
+    age INT,
+    gender VARCHAR(2) CHECK (gender IN ('M', 'F')),
+    bio TEXT
 );
 
 CREATE TABLE IF NOT EXISTS conversations (
@@ -10,24 +15,6 @@ CREATE TABLE IF NOT EXISTS conversations (
   user2_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT NOW(),
   UNIQUE(user1_id, user2_id) -- Prevent duplicate conversations
-);
-
-CREATE TABLE IF NOT EXISTS profiles (
-    id SERIAL PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
-    full_name TEXT,
-    weight_lbs INT,
-    age INT,
-    gender TEXT CHECK (gender IN ('M', 'F')),
-    bio TEXT NOT NULL
-);
-
-CREATE TABLE exercises (
-    id SERIAL PRIMARY KEY,
-    user1_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    user2_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(user1_id, user2_id) -- Prevent duplicate conversations
 );
 
 CREATE TABLE IF NOT EXISTS messages (

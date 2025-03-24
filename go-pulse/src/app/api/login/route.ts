@@ -6,7 +6,6 @@ import pool from "@/app/db/database";
 const SECRET = process.env.JWT_SECRET;
 
 export async function POST(req: Request) {
-  console.log(process.env);
   try {
     const { username, password } = await req.json();
 

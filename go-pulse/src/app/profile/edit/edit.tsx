@@ -1,5 +1,6 @@
 "use client";
 
+import { User } from "@/app/models/User";
 import { useRouter } from "next/navigation";;
 import React, { useEffect, useState } from "react";
 
@@ -10,7 +11,7 @@ export default function EditProfile() {
     const [weight, setWeight] = useState("");
     const [gender, setGender] = useState("");
     const [bio, setBio] = useState("");
-    const [profilePic, setProfilePic] = useState("/default-profile.jpg");
+    const [profilePic, setProfilePic] = useState("/profile-picture.jpg");
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -42,9 +43,9 @@ export default function EditProfile() {
     };
 
     const handleSave = () => {
-        const profileData = {
-            full_name: name,
-            weight_lbs: weight,
+        const profileData: User = {
+            fullName: name,
+            weight: weight,
             age: age,
             gender: gender,
             bio: bio,
