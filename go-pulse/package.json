@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "vitest",
+    "test": "vitest --run",
     "cypress:open": "cypress open",
     "lint": "next lint",
     "websocket": "ts-node src/websocket/server.ts"

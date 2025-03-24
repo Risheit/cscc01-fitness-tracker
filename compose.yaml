@@ -1,10 +1,11 @@
 services:
   # Production service. Run using
-  #     docker-compose --profile prod up
+  #     docker-compose up prod
   # Creates an production build, expecting to connect to a cloud database.
   prod:
     profiles:
       - prod
+    image: risheitm/c01-go-pulse-app:0.3.0
     build:
       context: go-pulse
       dockerfile: prod.dockerfile
@@ -30,6 +31,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      socket:
+        condition: service_started
+
+  # Test server image. Runs npm test
+  test:
+    build:
+      context: go-pulse
+      dockerfile: test.dockerfile
+    expose:
+      - 3000
+    ports:
+      - ${APP_PORT:-3001}:3000 # Default 3001, but allow override
 
   # Websocket server image. Run using 
   #     docker-compose up ws
@@ -39,6 +52,7 @@ services:
     profiles:
       - prod
       - dev
+    image: risheitm/c01-go-pulse-websocket:1.0.0
     build:
       context: go-pulse-ws
       dockerfile: ws.dockerfile
@@ -57,6 +71,7 @@ services:
     profiles:
       - prod
       - dev
+    image: risheitm/c01-go-pulse-database:1.0.0
     build:
       context: go-pulse
       dockerfile: db.dockerfile
