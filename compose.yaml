@@ -1,6 +1,6 @@
 services:
-  # Production service (the default service run). Run using
-  #     docker-compose up --build
+  # Production service. Run using
+  #     docker-compose --profile prod up
   # Creates an production build, expecting to connect to a cloud database.
   prod:
     profiles:
@@ -15,61 +15,19 @@ services:
       - .env
     
     environment:
-      - DB_HOST=db # Ensure the prod service can reach the db
-    depends_on:
-      db:
-        condition: service_healthy
-
-  # Development service. Run using
-  #     docker-compose up dev --build --watch
-  # Creates a development build with a local database.
-  dev:
-    profiles:
-      - dev
-    build:
-      context: go-pulse
-      dockerfile: dev.dockerfile
-    develop:
-      watch: # https://docs.docker.com/compose/how-tos/file-watch/
-          # On changes to any source file, update the files within the docker 
-          # container automatically
-        - path: ./go-pulse
-          action: sync
-          target: /app
-          ignore:
-            - .next/
-            - node_modules/
-            - package.json
-            - packet-lock.json
-          
-          # On changes to dependencies, rebuild the docker container automatically.
-        - path: ./go-pulse/package.json
-          action: rebuild
-          target: /package.json
-        - path: ./go-pulse/package-lock.json
-          action: rebuild
-          target: /package-lock.json
-      
-    ports:
-      - ${DEV_LOCAL_PORT:-3000}:3000 # Default 3000, but allow override
-
-    environment:
-      - DB_HOST=db
-    env_file:
-      - .env
-
-    volumes:
-      - ./go-pulse/.next/:/app/.next/
-
+      - POSTGRES_HOST=db # Ensure the prod service can reach the db
     depends_on:
       db:
         condition: service_healthy
 
   # Database image. Run using 
-  #     docker-compose up db --build
+  #     docker-compose up db
   # You shouldn't have to call this manually, it should instead be launched
   # automatically when composing the dev service.
   db:
+    profiles:
+      - prod
+      - dev
     build:
       context: go-pulse
       dockerfile: db.dockerfile
