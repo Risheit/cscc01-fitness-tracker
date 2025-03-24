@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json(
-      { workout_id: workoutId, message: 'Workout plan created' },
+      { workoutId: workoutId, message: 'Workout plan created' },
       { status: 201 }
     );
   } catch (error) {
