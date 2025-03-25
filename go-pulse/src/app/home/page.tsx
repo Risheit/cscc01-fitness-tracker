@@ -1,9 +1,9 @@
 import NavBar from './components/NavBar';
 import { redirect, RedirectType } from 'next/navigation';
-import WorkoutSelectionTab from './components/WorkoutSelectionTab';
+import WorkoutSelectionTab from './components/WorkoutSelection/WorkoutSelectionTab';
 import { getAllWorkoutPlans } from '../models/Workout';
-import WorkoutBuilder from './components/WorkoutBuilder';
-import ConversationsTab from './components/ConversationTab';
+import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
+import ConversationsTab from './components/ChatWindow/ConversationTab';
 
 // Internally, represent tabs in all lowercase with dashes between words:
 //    About Us --> about-us

@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import WorkoutSelectionTab from '../components/WorkoutSelectionTab';
+import WorkoutSelectionTab from '../components/WorkoutSelection/WorkoutSelectionTab';
 import { WorkoutPlan } from '@/app/models/Workout';
 
 const mockWorkoutPlans: WorkoutPlan[] = [

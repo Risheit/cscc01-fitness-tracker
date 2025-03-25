@@ -2,7 +2,7 @@
 
 import { WorkoutPlan } from '@/app/models/Workout';
 import { useEffect, useState } from 'react';
-import WorkoutCard from './WorkoutSelection/WorkoutCard';
+import WorkoutCard from './WorkoutCard';
 import {
   notificationUnsupported,
   trySubscribeToNotifications,
