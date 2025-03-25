@@ -40,8 +40,11 @@ INSERT INTO exercises (name, description, video_id, image_path) VALUES
 ('Bench Press', 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 'gMgvBspQ9lk', '/weight.jpg'),
 ('Squats', 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 'i7J5h7BJ07g', '/weight.jpg'),
 ('Pull Up', 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 'iWpoegdfgtc', '/weight.jpg'),
-('Deadlift', 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 'AweC3UaM14o', '/weight.jpg'),
-('Jumping rope', null, 'kDOGb9C5kp0', '/stock-running.jpg');
+('Barbell Deadlift', null , 'AweC3UaM14o', '/weight.jpg'),
+('Jumping rope', null, 'kDOGb9C5kp0', '/stock-running.jpg'),
+('Barbell Bench Press - Medium Grip', null, 'gMgvBspQ9lk', '/weight.jpg'),
+('Barbell Full Squat', null, 'i7J5h7BJ07g', '/weight.jpg'),
+('Pullups', null, 'iWpoegdfgtc', '/weight.jpg');
 
 -- Workouts Table (User-created & Pre-Built)
 CREATE TABLE IF NOT EXISTS workouts (
