@@ -3,7 +3,7 @@ import { AdminDashboard } from './components/AdminDashboard';
 
 export default async function AdminPage() {
   const isAdmin = await fetch(
-    `${process.env.NEXT_PUBLIC_URL}/api/check-auth/admin`,
+    `${process.env.URL}/api/check-auth/admin`,
     {
       headers: { Cookie: (await cookies()).toString() },
       credentials: 'include',

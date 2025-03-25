@@ -15,6 +15,7 @@ export async function POST(
   const userId = parseInt((await params).id, 10);
 
   if (!userId) {
+    console.log('no userId');
     return NextResponse.json(
       { message: 'could not identify user' },
       { status: 500 }
@@ -23,6 +24,7 @@ export async function POST(
 
   const subscription = subscriptions[userId];
   if (!subscription) {
+    console.log('user has not allowed notifications!');
     return NextResponse.json(
       { message: 'user has not allowed notifications' },
       { status: 200 }
@@ -33,16 +35,20 @@ export async function POST(
   try {
     const { title, body, url } = await req.json();
     if (!title || !body || !url) {
+      console.log('invalid notification body');
       return NextResponse.json(
         { message: 'missing/invalid notification title or body' },
         { status: 400 }
       );
     }
+    
+    const fullUrl = `${process.env.URL}${url}`
     const notification = await webpush.sendNotification(
       subscription,
-      JSON.stringify({ title, body, url })
+      JSON.stringify({ title, body, url: fullUrl })
     );
 
+    console.log('sent notification!');
     return NextResponse.json(
       { message: 'sent notification!', notification: notification },
       { status: 200 }

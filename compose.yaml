@@ -12,11 +12,6 @@ services:
       args:
         POSTGRES_HOST: db
         DB_PORT: 5432
-        # Client components can't access the docker network.
-        # As such, we access WS stuff from the public host 
-        # and port.
-        NEXT_PUBLIC_WS_HOST: ${NEXT_PUBLIC_WS_HOST}
-        NEXT_PUBLIC_WS_PORT: ${NEXT_PUBLIC_WS_PORT}
     expose:
       - 3000
     ports:
@@ -26,8 +21,6 @@ services:
     environment:
         POSTGRES_HOST: db
         DB_PORT: 5432
-        NEXT_PUBLIC_WS_HOST: ${NEXT_PUBLIC_WS_HOST}
-        NEXT_PUBLIC_WS_PORT: ${NEXT_PUBLIC_WS_PORT}
     depends_on:
       db:
         condition: service_healthy
@@ -61,7 +54,7 @@ services:
     expose:
       - 8080
     ports:
-      - ${NEXT_PUBLIC_WS_PORT}:8080
+      - ${WS_PORT}:8080
     env_file:
       - ./.env
 

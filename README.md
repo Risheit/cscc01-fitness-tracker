@@ -37,10 +37,10 @@ POSTGRES_PASSWORD=
 DB_PORT=50432
 JWT_SECRET=
 
-NEXT_PUBLIC_WS_HOST=localhost
-NEXT_PUBLIC_WS_PORT=9090
+WS_HOST=localhost
+WS_PORT=9090
 
-NEXT_PUBLIC_URL=http://localhost:3000
+URL=http://localhost:3000
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
 NEXT_PUBLIC_NINJA_API_KEY=
@@ -68,12 +68,12 @@ psql postgresql://postgres:postgres@localhost:50432/testdb
 
 The websocket server under the websocket container can be accessed from a terminal by running 
 ```bash
-curl ws://{NEXT_PUBLIC_WS_HOST}:{NEXT_PUBLIC_WS_PORT}
+curl ws://{WS_HOST}:{NEXT_PUBLIC_WS_PORT}
 ```
 For example, if you launch docker compose with the following environment variables:
 ```bash
-NEXT_PUBLIC_WS_HOST=localhost
-NEXT_PUBLIC_WS_PORT=9090
+WS_HOST=localhost
+WS_PORT=9090
 ```
 The server can be connected to with
 ```bash
