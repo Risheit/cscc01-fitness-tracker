@@ -25,7 +25,7 @@ export default function ChatWindow({ conversationId, myUserId, otherUserUsername
 
     // Fetch initial messages
     useEffect(() => {
-      console.log("Fetching messages for conversation:", conversationId);
+        console.log("Fetching messages for conversation:", conversationId);
         if (conversationId) {
             fetch(`/api/conversations/${conversationId}/message`, {
                 method: "GET",
@@ -40,8 +40,8 @@ export default function ChatWindow({ conversationId, myUserId, otherUserUsername
                     }
                     return res.json();
                 })
-                .then((data:  Message[] ) => {
-                    // console.log("Messages data:", data);
+                .then((data: Message[]) => {
+                    console.log("Messages data:", data);
                     setMessages(data);
                 })
                 .catch((error) => {
@@ -52,7 +52,7 @@ export default function ChatWindow({ conversationId, myUserId, otherUserUsername
 
     // Establish WebSocket connection
     useEffect(() => {
-      console.log("Connecting to WebSocket server");
+        console.log("Connecting to WebSocket server");
         if (!conversationId) return;
 
         // Connect to the WebSocket server
@@ -61,6 +61,7 @@ export default function ChatWindow({ conversationId, myUserId, otherUserUsername
         // Handle incoming messages
         ws.current.onmessage = (event) => {
             const message: Message = JSON.parse(event.data);
+            console.log("New message from WebSocket:", message);
             setMessages((prev) => [...prev, message]);
         };
 
@@ -83,106 +84,98 @@ export default function ChatWindow({ conversationId, myUserId, otherUserUsername
     }, [conversationId]);
 
     const sendMessage = async () => {
-      if (!newMessage.trim()) return;
-      try {
-          // Send message to the database
-          console.log("Sending POST message:", newMessage,"to conversation:", conversationId);
-          const res = await fetch(`/api/conversations/${conversationId}/message`, {
-              method: "POST",
-              credentials: "include",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ content: newMessage, conversationId: conversationId }),
-          });
-  
-          if (!res.ok) {
-              throw new Error(`HTTP error! Status: ${res.status}`);
-          }
-  
-          // Parse the response to get the saved message
-          const savedMessage: Message = await res.json();
-          console.log("Message saved to DB:", savedMessage);
-  
-          // Send the saved message to the WebSocket server
-          if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-              console.log("Sending WebSocket message:", savedMessage);
-              ws.current.send(JSON.stringify( savedMessage ));
-              setMessages((prev) => [...prev, savedMessage]);
-          } else {
-              console.error("WebSocket connection not established");
-          }
-  
-          // Clear the input field
-          setNewMessage("");
-      } catch (error) {
-          console.error("Error sending message:", error);
-      }
-  };
+        if (!newMessage.trim()) return;
+        try {
+            console.log("Sending POST message:", newMessage, "to conversation:", conversationId);
+            const res = await fetch(`/api/conversations/${conversationId}/message`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ content: newMessage, conversationId: conversationId }),
+            });
 
-  // Scroll to the bottom of the chat window when new messages are added
-  useEffect(() => {
-    if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
 
-  // Custom link decorator to apply the CSS class
-  const linkDecorator = (decoratedHref: string, decoratedText: string, key: number) => (
-    <a href={decoratedHref} key={key} className="linkify-link">
-      {decoratedText}
-    </a>
-  );
+            const savedMessage: Message = await res.json();
+            console.log("Message saved to DB:", savedMessage);
 
-  return (
-    <div className="flex flex-col flex-1 h-full border rounded-lg">
-        {/* Header with Other User's Name */}
-        <div className="bg-blue-100 p-4 text-black rounded-t-lg">
-            <h2 className="text-xl font-bold">{otherUserUsername}</h2>
-        </div>
+            // Send the saved message to the WebSocket server
+            if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+                console.log("Sending WebSocket message:", savedMessage);
+                ws.current.send(JSON.stringify(savedMessage));
+                setMessages((prev) => [...prev, savedMessage]);
+            } else {
+                console.error("WebSocket connection not established");
+            }
 
-        {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4">
-            {messages.map((msg) => (
-                <div
-                    key={msg.id}
-                    className={`flex ${
-                        msg.sender_id === myUserId ? "justify-end" : "justify-start"
-                    } mb-2`}
-                    title={`${new Date(msg.created_at).toLocaleString()}`}
-                >
+            setNewMessage("");
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
+
+    const linkDecorator = (decoratedHref: string, decoratedText: string, key: number) => (
+        <a href={decoratedHref} key={key} className="text-white-500 underline">
+            {decoratedText}
+        </a>
+    );
+
+    return (
+        <div className="flex flex-col h-full border rounded-lg shadow-lg bg-white">
+            {/* Header with Other User's Name */}
+            <div className="bg-gray-800 text-white p-4 rounded-t-lg">
+                <h2 className="text-xl font-semibold">{otherUserUsername}</h2>
+            </div>
+
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {messages.map((msg) => (
                     <div
-                        className={`max-w-[60%] p-3 rounded-lg ${
-                            msg.sender_id === myUserId
+                        key={msg.id}
+                        className={`flex ${msg.sender_id === myUserId ? "justify-end" : "justify-start"}`}
+                        title={`${new Date(msg.created_at).toLocaleString()}`}
+                    >
+                        <div
+                            className={`max-w-[60%] p-3 rounded-lg text-sm ${msg.sender_id === myUserId
                                 ? "bg-blue-500 text-white"
                                 : "bg-gray-200 text-black"
-                        }`}
-                    >
-                        <Linkify componentDecorator={linkDecorator}>
-                            <div className="text-sm">{msg.content}</div>
-                        </Linkify>
+                            }`}
+                        >
+                            <Linkify componentDecorator={linkDecorator}>
+                                {msg.content}
+                            </Linkify>
+                        </div>
                     </div>
-                </div>
-            ))}
-            <div ref={messagesEndRef} /> {/* Empty div for scrolling to the bottom */}
-        </div>
+                ))}
+                <div ref={messagesEndRef} /> {/* Empty div for scrolling to the bottom */}
+            </div>
 
-        {/* Message Input */}
-        <div className="flex p-4 border-t">
-            <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                className="flex-1 p-2 border rounded-l-lg"
-                placeholder="Type a message..."
-            />
-            <button
-                onClick={sendMessage}
-                className="px-4 py-2 bg-blue-500 text-white rounded-r-lg"
-            >
-                Send
-            </button>
+            {/* Message Input */}
+            <div className="flex p-4 border-t bg-gray-50">
+                <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    className="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Type a message..."
+                />
+                <button
+                    onClick={sendMessage}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700"
+                >
+                    Send
+                </button>
+            </div>
         </div>
-    </div>
-  );
+    );
 }
