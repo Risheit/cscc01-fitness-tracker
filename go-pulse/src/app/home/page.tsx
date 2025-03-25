@@ -28,12 +28,15 @@ export default async function Home({
 }: {
   searchParams: Promise<{ tab?: string }>;
 }) {
-  const tab = displayTab((await searchParams)?.tab);
+  const tab = await displayTab((await searchParams)?.tab);
 
   return (
-    <div className="flex flex-col w-full h-full">
-      <main className="flex-1">{tab}</main>
-      <NavBar tabNames={['Workouts', 'Workout Builder', 'Videos', 'Conversation']} />
+    <div className="flex flex-col w-full h-screen">
+      <main className="flex-1 overflow-y-auto">{tab}</main>
+
+      <div className="relative">
+        <NavBar tabImages={['/homeicon.png', '/buildericon.jpg', '/chaticon.png']} />
+      </div>
     </div>
   );
 }

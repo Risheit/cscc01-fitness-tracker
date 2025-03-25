@@ -18,9 +18,9 @@ export default function ConversationsTab() {
     };
 
     return (
-        <div className="h-screen flex flex-col">
+        <div className="h-screen bg-gray-200 flex flex-col">
             <div className="p-2 flex flex-1 border rounded-lg overflow-hidden">
-                <div className="w-1/5 p-4 bg-blue-200 rounded-lg border-r">
+                <div className="w-1/5 p-4 bg-gray-700 rounded-lg border-r">
                     <ConversationsList onSelect={handleSelectConversation} />
                 </div>
                 
