@@ -56,7 +56,7 @@ test('Workout page displays correctly', async () => {
   expect(screen.getAllByText(/Test_Workout*/)).toHaveLength(numWorkouts);
 
   fireEvent.change(screen.getByLabelText(/Search*/), {
-    target: { value: 'Test_Small ' },
+    target: { value: 'Test_Small' },
   });
   expect(screen.getAllByText(/Test_Workout*/)).toHaveLength(numSmallWorkouts);
 

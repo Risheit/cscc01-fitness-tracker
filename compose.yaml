@@ -5,18 +5,13 @@ services:
   prod:
     profiles:
       - prod
-    image: risheitm/c01-go-pulse-app:0.3.0
+    image: risheitm/c01-go-pulse-app:latest
     build:
       context: go-pulse
       dockerfile: prod.dockerfile
       args:
         POSTGRES_HOST: db
         DB_PORT: 5432
-        # Client components can't access the docker network.
-        # As such, we access WS stuff from the public host 
-        # and port.
-        NEXT_PUBLIC_WS_HOST: ${NEXT_PUBLIC_WS_HOST}
-        NEXT_PUBLIC_WS_PORT: ${NEXT_PUBLIC_WS_PORT}
     expose:
       - 3000
     ports:
@@ -26,8 +21,6 @@ services:
     environment:
         POSTGRES_HOST: db
         DB_PORT: 5432
-        NEXT_PUBLIC_WS_HOST: ${NEXT_PUBLIC_WS_HOST}
-        NEXT_PUBLIC_WS_PORT: ${NEXT_PUBLIC_WS_PORT}
     depends_on:
       db:
         condition: service_healthy
@@ -54,14 +47,14 @@ services:
     profiles:
       - prod
       - dev
-    image: risheitm/c01-go-pulse-websocket:1.0.0
+    image: risheitm/c01-go-pulse-websocket:latest
     build:
       context: go-pulse-ws
       dockerfile: ws.dockerfile
     expose:
       - 8080
     ports:
-      - ${NEXT_PUBLIC_WS_PORT}:8080
+      - ${WS_PORT}:8080
     env_file:
       - ./.env
 
@@ -73,7 +66,7 @@ services:
     profiles:
       - prod
       - dev
-    image: risheitm/c01-go-pulse-database:1.0.0
+    image: risheitm/c01-go-pulse-database:latest
     build:
       context: go-pulse
       dockerfile: db.dockerfile

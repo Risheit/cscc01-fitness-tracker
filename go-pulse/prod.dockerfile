@@ -33,12 +33,6 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Build arguments for database config
-ARG DB_PORT
-ARG POSTGRES_DB
-ARG POSTGRES_USER
-ARG POSTGRES_PASSWORD
-
 # Arguments to be passed into the docker container in during build. 
 # These should contain any NEXT_PUBLIC_ environment variables 
 # needed for the app.
@@ -54,10 +48,6 @@ ARG POSTGRES_PASSWORD
 #           --build-arg ARG1=VAL1 
 #           --build-arg ARG2=VAL2 
 #           ...    
-ARG NEXT_PUBLIC_WS_HOST="socket"
-ARG NEXT_PUBLIC_WS_PORT="8080"
-
-ARG NEXT_PUBLIC_URL
 ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY
 ARG NEXT_PUBLIC_NINJA_API_KEY
 
@@ -77,10 +67,10 @@ ENV NODE_ENV=production
 ENV DB_PORT ${DB_PORT}
 ENV JWT_SECRET ${JWT_SECRET}
 
-ENV NEXT_PUBLIC_WS_HOST ${NEXT_PUBLIC_WS_HOST}
-ENV NEXT_PUBLIC_WS_PORT ${NEXT_PUBLIC_WS_PORT}
+ENV WS_HOST ${WS_HOST}
+ENV WS_PORT ${WS_PORT}
 
-ENV NEXT_PUBLIC_URL ${NEXT_PUBLIC_URL}
+ENV URL ${URL}
 ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY ${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
 ENV VAPID_PRIVATE_KEY ${VAPID_PRIVATE_KEY}
 ENV NEXT_PUBLIC_NINJA_API_KEY ${NEXT_PUBLIC_NINJA_API_KEY}

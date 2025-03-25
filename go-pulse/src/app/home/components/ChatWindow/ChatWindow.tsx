@@ -11,17 +11,19 @@ type Message = {
   created_at: string;
 };
 
-type ChatWindowProps = {
+type Props = {
   conversationId: number;
   myUserId: number;
   otherUserUsername: string;
+  wsUrl: string;
 };
 
 export default function ChatWindow({
   conversationId,
   myUserId,
   otherUserUsername,
-}: ChatWindowProps) {
+  wsUrl
+}: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -47,9 +49,7 @@ export default function ChatWindow({
   useEffect(() => {
     if (!conversationId) return;
 
-    ws.current = new WebSocket(
-        `ws://${process.env.NEXT_PUBLIC_WS_HOST}:${process.env.NEXT_PUBLIC_WS_PORT}`
-    );
+    ws.current = new WebSocket(wsUrl);
 
     ws.current.onmessage = (event) => {
       const message: Message = JSON.parse(event.data);
@@ -59,7 +59,7 @@ export default function ChatWindow({
     return () => {
       ws.current?.close();
     };
-  }, [conversationId]);
+  }, [conversationId, wsUrl]);
 
   const sendMessage = async () => {
     if (!newMessage.trim()) return;

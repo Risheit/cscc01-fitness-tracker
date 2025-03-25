@@ -11,7 +11,7 @@ export function AdminDashboard() {
           sendNotification(2, {
             title: 'test',
             body: 'test body',
-            url: `${process.env.NEXT_PUBLIC_URL}/workout?id=1`,
+            url: `/workout?id=1`,
           });
         }}
       >

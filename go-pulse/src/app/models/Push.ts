@@ -65,7 +65,7 @@ export async function sendNotification(
   userId: number,
   notification: WorkoutNotification
 ) {
-  await fetch(`${process.env.NEXT_PUBLIC_URL}/api/web-push/send/${userId}`, {
+  await fetch(`/api/web-push/send/${userId}`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',

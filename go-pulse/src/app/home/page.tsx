@@ -17,7 +17,11 @@ async function displayTab(tabName?: string) {
     case 'workout-builder':
       return <WorkoutBuilder />;
     case 'conversation':
-      return <ConversationsTab />;
+      return (
+        <ConversationsTab
+          wsUrl={`ws://${process.env.WS_HOST}:${process.env.WS_PORT}`}
+        />
+      );
     default:
       redirect('/home?tab=workouts', RedirectType.replace);
   }
