@@ -1,7 +1,14 @@
 'use client';
 
-import { NinjaApiExercise, Day, fetchNinjaExercises, addExerciseToWorkout, createWorkout } from '@/app/models/Ninja';
+import {
+  NinjaApiExercise,
+  Day,
+  fetchNinjaExercises,
+  addExerciseToWorkout,
+  createWorkout,
+} from '@/app/models/Ninja';
 import { useState, useEffect } from 'react';
+import StepperMenu from './StepperMenu';
 
 export default function WorkoutBuilder() {
   const [exercises, setExercises] = useState<NinjaApiExercise[]>([]);
@@ -28,55 +35,61 @@ export default function WorkoutBuilder() {
   }, [exerciseType, muscleGroup, difficulty, search]);
 
   function addExerciseToDay(exercise: NinjaApiExercise, day: string) {
-    setSelectedExercises((prev) => {
-      return prev
+    const exerciseToAdd =
+      exercise.type !== 'cardio'
+        ? { ...exercise, sets: 3, reps: 10 }
+        : { ...exercise, mins: 10 };
+
+    setSelectedExercises((prev) =>
+      prev
         .map((item) => {
-          if (item.day === day) {
-            // If exercise is already in the day's list, do nothing
-            if (item.exercises.some((e) => e.name === exercise.name)) {
-              return item;
-            }
-            // Return a new object to ensure state updates properly
-            return {
-              ...item,
-              exercises: [
-                ...item.exercises,
-                { ...exercise, sets: 3, reps: 10 },
-              ],
-            };
+          // If item not in today, do nothing
+          if (item.day !== day) {
+            return item;
           }
-          return item;
+
+          // If exercise is already in the day's list, do nothing
+          if (item.exercises.some((e) => e.name === exercise.name)) {
+            return item;
+          }
+
+          // Return a new object to ensure state updates properly
+          return {
+            ...item,
+            exercises: [...item.exercises, exerciseToAdd],
+          };
         })
         .concat(
           prev.some((item) => item.day === day)
             ? []
-            : [{ day, exercises: [{ ...exercise, sets: 3, reps: 10 }] }]
-        );
-    });
+            : [{ day, exercises: [exerciseToAdd] }]
+        )
+    );
   }
 
   function updateExerciseDetails(
     day: string,
     exerciseName: string,
-    field: 'sets' | 'reps',
-    value: number | string
+    field: 'sets' | 'reps' | 'mins',
+    value: number
   ) {
     setSelectedExercises((prev) =>
       prev.map((item) => {
-        if (item.day === day) {
-          return {
-            ...item,
-            exercises: item.exercises.map((exercise) =>
-              exercise.name === exerciseName
-                ? {
-                    ...exercise,
-                    [field]: value === '' ? '' : Math.max(1, Number(value)),
-                  }
-                : exercise
-            ),
-          };
+        if (item.day !== day) {
+          return item;
         }
-        return item;
+
+        return {
+          ...item,
+          exercises: item.exercises.map((exercise) =>
+            exercise.name === exerciseName
+              ? {
+                  ...exercise,
+                  [field]: Math.max(1, value),
+                }
+              : exercise
+          ),
+        };
       })
     );
   }
@@ -263,130 +276,59 @@ export default function WorkoutBuilder() {
                   {day.exercises.map((exercise) => (
                     <li
                       key={`${exercise.name}-${day.day}`}
-                      className="bg-gray-700 p-2 rounded-md flex items-center justify-between"
+                      className="bg-gray-700 p-2 my-1 rounded-md flex items-center justify-between"
                     >
                       {/* Exercise Name */}
                       <span className="text-sm">{exercise.name}</span>
 
                       {/* Sets & Reps Controls (Inline) */}
                       <div className="flex items-center space-x-2">
-                        {/* Sets */}
-                        <div className="flex items-center">
-                          <button
-                            onClick={() =>
+                        {exercise.type !== 'cardio' && (
+                          <StepperMenu
+                            name='sets'
+                            value={exercise.sets ?? 3}
+                            min={1}
+                            onValueUpdate={(updated) =>
                               updateExerciseDetails(
                                 day.day,
                                 exercise.name,
                                 'sets',
-                                Math.max(1, Number(exercise.sets) - 1)
+                                updated
                               )
                             }
-                            className="w-6 h-6 bg-gray-600 text-white text-sm rounded-full flex items-center justify-center"
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            min="1"
-                            value={exercise.sets}
-                            onChange={(e) =>
-                              updateExerciseDetails(
-                                day.day,
-                                exercise.name,
-                                'sets',
-                                e.target.value
-                              )
-                            }
-                            onBlur={(e) => {
-                              if (e.target.value === '') {
-                                updateExerciseDetails(
-                                  day.day,
-                                  exercise.name,
-                                  'sets',
-                                  '1'
-                                );
-                              }
-                            }}
-                            style={{
-                              appearance: 'none', // Firefox
-                              WebkitAppearance: 'none', // Chrome, Safari, Edge
-                              MozAppearance: 'textfield', // Firefox (alternative)
-                            }}
-                            className="w-10 h-8 text-center bg-gray-800 text-white rounded-md border border-gray-600 mx-1"
                           />
-                          <button
-                            onClick={() =>
+                        )}
+                        {exercise.type !== 'cardio' && (
+                          <StepperMenu
+                            name='reps'
+                            value={exercise.reps ?? 3}
+                            min={1}
+                            onValueUpdate={(updated) =>
                               updateExerciseDetails(
                                 day.day,
                                 exercise.name,
-                                'sets',
-                                Number(exercise.sets) + 1
+                                'reps',
+                                updated
                               )
                             }
-                            className="w-6 h-6 bg-gray-600 text-white text-sm rounded-full flex items-center justify-center"
-                          >
-                            +
-                          </button>
-                        </div>
+                          />
+                        )}
 
-                        {/* Reps */}
-                        <div className="flex items-center">
-                          <button
-                            onClick={() =>
+                        {exercise.type === 'cardio' && (
+                          <StepperMenu
+                            name='minutes'
+                            value={exercise.mins ?? 3}
+                            min={1}
+                            onValueUpdate={(updated) =>
                               updateExerciseDetails(
                                 day.day,
                                 exercise.name,
-                                'reps',
-                                Math.max(1, Number(exercise.reps) - 1)
+                                'mins',
+                                updated
                               )
                             }
-                            className="w-6 h-6 bg-gray-600 text-white text-sm rounded-full flex items-center justify-center"
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            min="1"
-                            value={exercise.reps}
-                            onChange={(e) =>
-                              updateExerciseDetails(
-                                day.day,
-                                exercise.name,
-                                'reps',
-                                e.target.value
-                              )
-                            }
-                            onBlur={(e) => {
-                              if (e.target.value === '') {
-                                updateExerciseDetails(
-                                  day.day,
-                                  exercise.name,
-                                  'reps',
-                                  '1'
-                                );
-                              }
-                            }}
-                            style={{
-                              appearance: 'none', // Firefox
-                              WebkitAppearance: 'none', // Chrome, Safari, Edge
-                              MozAppearance: 'textfield', // Firefox (alternative)
-                            }}
-                            className="w-10 h-8 text-center bg-gray-800 text-white rounded-md border border-gray-600 mx-1"
                           />
-                          <button
-                            onClick={() =>
-                              updateExerciseDetails(
-                                day.day,
-                                exercise.name,
-                                'reps',
-                                Number(exercise.reps) + 1
-                              )
-                            }
-                            className="w-6 h-6 bg-gray-600 text-white text-sm rounded-full flex items-center justify-center"
-                          >
-                            +
-                          </button>
-                        </div>
+                        )}
 
                         {/* Remove Button */}
                         <button

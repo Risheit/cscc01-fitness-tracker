@@ -42,7 +42,14 @@ export default function IntermediateBottomSheet({
           "Take a breather. Don't forget to hydrate between workouts, other miscellaneous workout stuff here."}
       </p>
 
-      {data?.videoId && <YouTubePlayer videoId={data?.videoId} />}
+      {data?.videoId ? (
+        <YouTubePlayer videoId={data.videoId} />
+      ) : data?.name ? ( 
+        // Show message only if name exists but videoId is missing
+        <p className="text-center text-gray-500 italic">
+          Tutorial video will be added soon.
+        </p>
+      ) : null}
 
       <div className="flex justify-center w-full mt-4">
         <button

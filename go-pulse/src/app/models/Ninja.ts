@@ -15,8 +15,9 @@ export interface NinjaApiExercise {
 }
 
 export interface SelectedExercise extends NinjaApiExercise {
-  sets: number | string;
-  reps: number | string;
+  sets?: number;
+  reps?: number;
+  mins?: number;
 }
 
 export interface Day {
@@ -82,6 +83,7 @@ export async function addExerciseToWorkout(
       exercise_type: exercise.type,
       sets: exercise.sets,
       reps: exercise.reps,
+      mins: exercise.mins,
       weight: null,
       rest_time: 60,
       position: position,

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { expect } from 'vitest';
-import WorkoutBuilder from '../components/WorkoutBuilder';
+import WorkoutBuilder from '../components/WorkoutBuilder/WorkoutBuilder';
 import { NinjaApiExercise } from '@/app/models/Ninja';
 
 const mockExercises: NinjaApiExercise[] = [
