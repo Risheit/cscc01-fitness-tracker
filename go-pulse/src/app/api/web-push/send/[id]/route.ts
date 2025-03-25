@@ -8,8 +8,8 @@ export async function POST(
 ) {
   webpush.setVapidDetails(
     'mailto:mail@example.com',
-    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-    process.env.NEXT_PUBLIC_VAPID_PRIVATE_KEY!
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
   );
 
   const userId = parseInt((await params).id, 10);

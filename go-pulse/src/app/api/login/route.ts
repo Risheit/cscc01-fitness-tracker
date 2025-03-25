@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import pool from "@/app/db/database";
 
-const SECRET = process.env.JWT_SECRET!;
+const SECRET = process.env.JWT_SECRET;
 
 export async function POST(req: Request) {
   try {

@@ -11,7 +11,6 @@ export default function ConversationsTab() {
     const [otherUserUsername, setOtherUserUsername] = useState<string | null>(null);
 
     const handleSelectConversation = (conversationId: number, myUserId: number, otherUserId: number, otherUserUsername: string) => {
-        console.log("Selected conversation:", conversationId);
         setSelectedConversationId(conversationId);
         setMyUserId(myUserId);
         setOtherUserId(otherUserId);

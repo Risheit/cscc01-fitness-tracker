@@ -26,7 +26,7 @@ export default function Login() {
         setError(data.message || 'Invalid credentials. Please try again.');
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError('An error occurred. Please try again.');
     }
   };

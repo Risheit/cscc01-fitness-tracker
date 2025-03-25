@@ -1,88 +1,86 @@
 services:
-  # Production service (the default service run). Run using
-  #     docker-compose up --build
+  # Production service. Run using
+  #     docker-compose up prod
   # Creates an production build, expecting to connect to a cloud database.
   prod:
     profiles:
       - prod
+    image: risheitm/c01-go-pulse-app:0.3.0
     build:
       context: go-pulse
       dockerfile: prod.dockerfile
+      args:
+        POSTGRES_HOST: db
+        DB_PORT: 5432
+        # Client components can't access the docker network.
+        # As such, we access WS stuff from the public host 
+        # and port.
+        NEXT_PUBLIC_WS_HOST: ${NEXT_PUBLIC_WS_HOST}
+        NEXT_PUBLIC_WS_PORT: ${NEXT_PUBLIC_WS_PORT}
+    expose:
+      - 3000
     ports:
-      - ${PROD_LOCAL_PORT:-3000}:3000 # Default 3000, but allow override
-   
+      - ${APP_PORT:-3000}:3000 # Default 3000, but allow override
     env_file:
-      - .env
-    
+      - ./.env
     environment:
-      - DB_HOST=db # Ensure the prod service can reach the db
+        POSTGRES_HOST: db
+        DB_PORT: 5432
+        NEXT_PUBLIC_WS_HOST: ${NEXT_PUBLIC_WS_HOST}
+        NEXT_PUBLIC_WS_PORT: ${NEXT_PUBLIC_WS_PORT}
     depends_on:
       db:
         condition: service_healthy
+      socket:
+        condition: service_started
 
-  # Development service. Run using
-  #     docker-compose up dev --build --watch
-  # Creates a development build with a local database.
-  dev:
-    profiles:
-      - dev
+  # Test server image. Runs npm test
+  test:
     build:
       context: go-pulse
-      dockerfile: dev.dockerfile
-    develop:
-      watch: # https://docs.docker.com/compose/how-tos/file-watch/
-          # On changes to any source file, update the files within the docker 
-          # container automatically
-        - path: ./go-pulse
-          action: sync
-          target: /app
-          ignore:
-            - .next/
-            - node_modules/
-            - package.json
-            - packet-lock.json
-          
-          # On changes to dependencies, rebuild the docker container automatically.
-        - path: ./go-pulse/package.json
-          action: rebuild
-          target: /package.json
-        - path: ./go-pulse/package-lock.json
-          action: rebuild
-          target: /package-lock.json
-      
+      dockerfile: test.dockerfile
+    expose:
+      - 3000
     ports:
-      - ${DEV_LOCAL_PORT:-3000}:3000 # Default 3000, but allow override
+      - ${APP_PORT:-3001}:3000 # Default 3001, but allow override
 
-    environment:
-      - DB_HOST=db
+  # Websocket server image. Run using 
+  #     docker-compose up ws
+  # You shouldn't have to call this manually, it should instead be launched
+  # automatically when composing the dev or prod services.  
+  socket:
+    profiles:
+      - prod
+      - dev
+    image: risheitm/c01-go-pulse-websocket:1.0.0
+    build:
+      context: go-pulse-ws
+      dockerfile: ws.dockerfile
+    expose:
+      - 8080
+    ports:
+      - ${NEXT_PUBLIC_WS_PORT}:8080
     env_file:
-      - .env
-
-    volumes:
-      - ./go-pulse/.next/:/app/.next/
-
-    depends_on:
-      db:
-        condition: service_healthy
+      - ./.env
 
   # Database image. Run using 
-  #     docker-compose up db --build
+  #     docker-compose up db
   # You shouldn't have to call this manually, it should instead be launched
-  # automatically when composing the dev service.
+  # automatically when composing the dev or prod services.
   db:
+    profiles:
+      - prod
+      - dev
+    image: risheitm/c01-go-pulse-database:1.0.0
     build:
       context: go-pulse
       dockerfile: db.dockerfile
-      args:
-        - POSTGRES_DB
-        - POSTGRES_USER
-        - POSTGRES_PASSWORD
     volumes:
       - db-data:/var/lib/postgresql/data
     expose:
       - 5432
     ports:
-      - ${DB_LOCAL_PORT}:${DB_REMOTE_PORT}
+      - ${DB_PORT}:5432
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
