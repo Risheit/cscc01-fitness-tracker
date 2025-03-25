@@ -40,6 +40,7 @@ export default function WorkoutSelectionTab({ workouts }: Props) {
 
       {/* Search Input */}
       <div className="flex justify-center mb-6">
+        <label htmlFor="workout-search" className="invisible w-0 h-0">Search workouts</label>
         <input
           id="workout-search"
           type="text"
