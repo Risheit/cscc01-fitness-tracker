@@ -48,7 +48,7 @@ export default function ChatWindow({
     if (!conversationId) return;
 
     ws.current = new WebSocket(
-      `ws://http://localhost:3000:9090`
+        `ws://${process.env.NEXT_PUBLIC_WS_HOST}:${process.env.NEXT_PUBLIC_WS_PORT}`
     );
 
     ws.current.onmessage = (event) => {
