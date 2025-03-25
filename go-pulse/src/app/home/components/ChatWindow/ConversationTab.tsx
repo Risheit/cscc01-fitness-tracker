@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import ConversationsList from "./ConversationsList";
-import ChatWindow from "./ChatWindow";
+import ConversationsList from "./ChatWindow/ConversationsList";
+import ChatWindow from "./ChatWindow/ChatWindow";
 
 export default function ConversationsTab() {
     const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
