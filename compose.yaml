@@ -36,6 +36,8 @@ services:
 
   # Test server image. Runs npm test
   test:
+    profiles:
+      - test
     build:
       context: go-pulse
       dockerfile: test.dockerfile
