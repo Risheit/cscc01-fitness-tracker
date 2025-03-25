@@ -17,7 +17,7 @@ type ConversationsListProps = {
 
 export default function ConversationsList({ onSelect }: ConversationsListProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<number | undefined>(undefined);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -38,16 +38,16 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
         .catch((error) => {
             console.error("Error fetching conversations:", error);
         });
-}, []);
+  }, []);
 
-const handleNewConversation = () => {
+  const handleNewConversation = () => {
     setShowSearchBar(!showSearchBar);
   };
 
-const handleSelect = (conversationId: number, myUserId: number, otherUserId: number, otherUserUsername: string) => {
+  const handleSelect = (conversationId: number, myUserId: number, otherUserId: number, otherUserUsername: string) => {
     setSelectedConversationId(conversationId);
     onSelect(conversationId, myUserId, otherUserId, otherUserUsername);
-};
+  };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -91,7 +91,8 @@ const handleSelect = (conversationId: number, myUserId: number, otherUserId: num
   return (
     <div className="bg-gray-800 text-white p-4 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Messages</h1>
+        {/* Title only visible on screens larger than 800px */}
+        <h1 className="text-2xl font-bold hidden lg:block">Messages</h1>
         <button onClick={handleNewConversation} className="text-blue-500 hover:text-blue-700">
           <FaPlus size={20} />
         </button>
@@ -134,5 +135,4 @@ const handleSelect = (conversationId: number, myUserId: number, otherUserId: num
       </ul>
     </div>
   );
-  
 }
