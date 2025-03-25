@@ -5,7 +5,7 @@ services:
   prod:
     profiles:
       - prod
-    image: risheitm/c01-go-pulse-app:0.3.0
+    image: risheitm/c01-go-pulse-app:latest
     build:
       context: go-pulse
       dockerfile: prod.dockerfile
@@ -54,7 +54,7 @@ services:
     profiles:
       - prod
       - dev
-    image: risheitm/c01-go-pulse-websocket:1.0.0
+    image: risheitm/c01-go-pulse-websocket:latest
     build:
       context: go-pulse-ws
       dockerfile: ws.dockerfile
@@ -73,7 +73,7 @@ services:
     profiles:
       - prod
       - dev
-    image: risheitm/c01-go-pulse-database:1.0.0
+    image: risheitm/c01-go-pulse-database:latest
     build:
       context: go-pulse
       dockerfile: db.dockerfile
