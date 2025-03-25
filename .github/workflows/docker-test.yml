@@ -16,7 +16,7 @@ jobs:
       uses: docker/setup-compose-action@v1.2.0
     
     - name: Build tests container
-      run: docker-compose build test
+      run: docker compose build test
 
     - name: Run tests
-      run: docker-compose up --exit-code-from-test test || exit $?
+      run: docker compose up --exit-code-from-test test || exit $?

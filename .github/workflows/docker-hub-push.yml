@@ -22,9 +22,9 @@ jobs:
         password: ${{ secrets.DOCKER_PAT }}
     
     - name: Build Docker images
-      run: docker-compose build --profile prod
+      run: docker compose build --profile prod
               --build-arg NEXT_PUBLIC_URL="${{ vars.URL }}" 
               --build-arg NEXT_PUBLIC_VAPID_PUBLIC_KEY="${{ vars.VAPID_PUBLIC }}"
               --build-arg NEXT_PUBLIC_NINJA_API_KEY="${{ secrets.NINJA_API }}"
     - name: Publish Docker images
-      run: docker-compose push --profile prod
+      run: docker compose push --profile prod
