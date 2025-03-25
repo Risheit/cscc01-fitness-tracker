@@ -40,17 +40,16 @@ export async function trySubscribeToNotifications(
           'Subscribed for push notifications',
           subscription.toJSON()
         );
-        const res = await fetch('/api/web-push/register', {
+        await fetch('/api/web-push/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ subscription }),
         });
-        console.log('register completed', await res.json());
         return true;
       } catch (e) {
-        console.log('could not subscribe: ', e);
+        console.error('could not subscribe: ', e);
         return false;
       }
   }
@@ -66,13 +65,11 @@ export async function sendNotification(
   userId: number,
   notification: WorkoutNotification
 ) {
-  console.log('Sending push...');
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/web-push/send/${userId}`, {
+  await fetch(`${process.env.NEXT_PUBLIC_URL}/api/web-push/send/${userId}`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
     },
     body: JSON.stringify(notification),
   });
-  console.log(await res.json());
 }

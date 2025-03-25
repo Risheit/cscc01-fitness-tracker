@@ -23,37 +23,31 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
 
   useEffect(() => {
     fetch("/api/conversations", {
-      method: "GET",
-      credentials: "include",
+        method: "GET",
+        credentials: "include",
     })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data: Conversation[]) => {
-        console.log("Fetched conversations:", data);
-        setConversations(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching conversations:", error);
-      });
-  }, []);
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then((data: Conversation[]) => {
+            setConversations(data);
+        })
+        .catch((error) => {
+            console.error("Error fetching conversations:", error);
+        });
+}, []);
 
-  const handleSelect = (
-    conversationId: number,
-    myUserId: number,
-    otherUserId: number,
-    otherUserUsername: string
-  ) => {
-    setSelectedConversationId(conversationId);
-    onSelect(conversationId, myUserId, otherUserId, otherUserUsername);
-  };
-
-  const handleNewConversation = () => {
+const handleNewConversation = () => {
     setShowSearchBar(!showSearchBar);
   };
+
+const handleSelect = (conversationId: number, myUserId: number, otherUserId: number, otherUserUsername: string) => {
+    setSelectedConversationId(conversationId);
+    onSelect(conversationId, myUserId, otherUserId, otherUserUsername);
+};
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -61,20 +55,19 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
 
   const handleAddNewConversation = async () => {
     try {
-      console.log("Starting conversation with User ID:", searchQuery);
-      if (searchQuery === "") {
-        alert("Please enter a username to start a conversation");
-        return;
-      }
-      const res = await fetch("/api/conversations", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ otherUsername: searchQuery }),
-      });
-
+        if(searchQuery === "") {
+            alert("Please enter a username to start a conversation");
+            return;
+        }
+        const res = await fetch("/api/conversations", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ otherUsername: searchQuery })
+        });
+        
       if (!res.ok) {
         alert("Failed to start conversation");
         return;
@@ -96,17 +89,14 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
   };
 
   return (
-    <div className="bg-gray-800 text-white p-4 rounded-lg shadow-md max-w-lg mx-auto">
+    <div className="bg-gray-800 text-white p-4 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-semibold">Messages</h1>
-        <button
-          onClick={handleNewConversation}
-          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full"
-        >
+        <h1 className="text-2xl font-bold">Messages</h1>
+        <button onClick={handleNewConversation} className="text-blue-500 hover:text-blue-700">
           <FaPlus size={20} />
         </button>
       </div>
-
+  
       {showSearchBar && (
         <form onSubmit={handleSearchSubmit} className="mb-4">
           <input
@@ -118,7 +108,7 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
           />
         </form>
       )}
-
+  
       <ul className="space-y-2">
         {conversations.map((conv) => (
           <li key={conv.id}>
@@ -144,4 +134,5 @@ export default function ConversationsList({ onSelect }: ConversationsListProps) 
       </ul>
     </div>
   );
+  
 }

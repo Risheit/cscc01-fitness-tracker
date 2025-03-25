@@ -2,7 +2,7 @@
 
 FROM postgres:17-alpine
 
-ARG POSTGRES_DB="testdb"
+ARG POSTGRES_DB="go-pulse"
 ARG POSTGRES_USER="postgres"
 ARG POSTGRES_PASSWORD
 

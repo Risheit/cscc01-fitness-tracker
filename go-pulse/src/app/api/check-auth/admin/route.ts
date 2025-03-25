@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
-const SECRET = process.env.JWT_SECRET!;
+const SECRET = process.env.JWT_SECRET;
 
 export interface AuthResponse {
   authenticated: boolean;
@@ -17,7 +17,6 @@ export async function GET(req: Request) {
 
   try {
     const decoded = jwt.verify(token, SECRET) as { userId: number };
-    console.log(decoded);
     if (decoded.userId === 1)
       return NextResponse.json(
         { authenticated: true, userId: decoded.userId },

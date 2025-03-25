@@ -35,6 +35,7 @@ export default function TimedBottomSheet({
   };
 
   useEffect(() => {
+    const audio = audioRef.current;
     const startTimedExercise = () => {
       const oneSecondInMillis = 1 * 1000;
 
@@ -46,7 +47,7 @@ export default function TimedBottomSheet({
         if (remainingMillis.current <= 0) {
           setDisplayTimeRemaining(`All done!`);
           setIsFinished(true);
-          audioRef.current.play();
+          audio.play();
           return;
         }
 
@@ -64,6 +65,7 @@ export default function TimedBottomSheet({
       const timerId = startTimedExercise();
       return () => {
         clearInterval(timerId);
+        audio.pause();
       };
     }
   }, [data.type, isPaused, onCompletion]);
