@@ -40,9 +40,6 @@ jobs:
            docker tag risheitm/c01-go-pulse-database risheitm/c01-go-pulse-database:${{ env.DB_VERSION }}
     
     - name: Push versioned images.
-      env:
-        DB_PORT: 5432
-        WS_PORT: 8080
       run: docker push risheitm/c01-go-pulse-app:${{ env.APP_VERSION }}; 
            docker push risheitm/c01-go-pulse-websocket:${{ env.WS_VERSION }};
            docker push risheitm/c01-go-pulse-database:${{ env.DB_VERSION }}

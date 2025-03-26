@@ -55,7 +55,7 @@ services:
     expose:
       - 8080
     ports:
-      - ${WS_PORT}:8080
+      - ${WS_PORT:-8080}:8080
     env_file:
       - ./.env
 
@@ -76,7 +76,7 @@ services:
     expose:
       - 5432
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT:-5432}:5432
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
