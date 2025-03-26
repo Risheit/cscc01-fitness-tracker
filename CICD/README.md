@@ -21,7 +21,25 @@ This is done by building (not running) the all of the services within the `prod`
 
 Our app is hosted on a AWS EC2 VM instance, which has exposed port 80 (for HTTP connections into our app) and port 8080 (for TCP connections to our websocket server).
 The instance has a copy of the `compose.yaml` file located in this repository, but it contains a different set of environment variables attached to it. 
-Notably, it sets the `APP_PORT` variable to `80`, so that our app container maps the port it uses for connections to our publicly exposed VM HTTP port.
+
+The environment variables are as follows, with some secret variables replaced with `HIDDEN` (none of these secret variables are changed between our local and VM deployments)
+
+```
+APP_PORT=80
+POSTGRES_HOST=db
+POSTGRES_DB=go-pulse
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DB_PORT=5432
+JWT_SECRET=HIDDEN
+WS_HOST=ec2-3-19-141-1.us-east-2.compute.amazonaws.com
+WS_PORT=8080
+
+URL=http://ec2-3-19-141-1.us-east-2.compute.amazonaws.com
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=BPLoQO44BYTqpicQWCft0IlAJkzeN4iFeXOyP3CmJBS6G4rsrx_pYxp0VpcQisFJiwe8DlSvXBKmeHTSCH08-QI
+VAPID_PRIVATE_KEY=HIDDEN
+NEXT_PUBLIC_NINJA_API_KEY=HIDDEN
+```
 
 The deploying of our app is handled by the `./github/workflows/docker-hub-push.yml` workflow.
 
