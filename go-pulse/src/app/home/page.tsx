@@ -1,9 +1,9 @@
 import NavBar from './components/NavBar';
 import { redirect, RedirectType } from 'next/navigation';
-import WorkoutSelectionTab from './components/WorkoutSelectionTab';
+import WorkoutSelectionTab from './components/WorkoutSelection/WorkoutSelectionTab';
 import { getAllWorkoutPlans } from '../models/Workout';
-import WorkoutBuilder from './components/WorkoutBuilder';
-import ConversationsTab from './components/ConversationTab';
+import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
+import ConversationsTab from './components/ChatWindow/ConversationTab';
 
 // Internally, represent tabs in all lowercase with dashes between words:
 //    About Us --> about-us
@@ -17,7 +17,11 @@ async function displayTab(tabName?: string) {
     case 'workout-builder':
       return <WorkoutBuilder />;
     case 'conversation':
-      return <ConversationsTab />;
+      return (
+        <ConversationsTab
+          wsUrl={`ws://${process.env.WS_HOST}:${process.env.WS_PORT}`}
+        />
+      );
     default:
       redirect('/home?tab=workouts', RedirectType.replace);
   }
@@ -28,12 +32,15 @@ export default async function Home({
 }: {
   searchParams: Promise<{ tab?: string }>;
 }) {
-  const tab = displayTab((await searchParams)?.tab);
+  const tab = await displayTab((await searchParams)?.tab);
 
   return (
-    <div className="flex flex-col w-full h-full">
-      <main className="flex-1">{tab}</main>
-      <NavBar tabNames={['Workouts', 'Workout Builder', 'Videos', 'Conversation']} />
+    <div className="flex flex-col w-full h-screen">
+      <main className="flex-1 overflow-y-auto">{tab}</main>
+
+      <div className="relative">
+        <NavBar tabImages={['/homeicon.png', '/buildericon.jpg', '/chaticon.png']} />
+      </div>
     </div>
   );
 }

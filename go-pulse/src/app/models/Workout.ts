@@ -52,7 +52,7 @@ export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
     w.reps,
     wd.day_of_week AS "dayOfWeek"
   FROM workout_exercises AS w
-  INNER JOIN exercises AS e ON w.name = e.name
+  JOIN exercises AS e ON w.name = e.name
   INNER JOIN workout_days AS wd ON w.workout_day_id = wd.id
   WHERE w.workout_id = $1
   ORDER BY w.position ASC`,
@@ -84,7 +84,7 @@ export async function getUserWorkouts(
 export async function addExercise(exercise: {
   name: string;
   description: string;
-  videoId?: string;
+  videoId?: string | null;
   imagePath?: string;
 }) {
   await pool.query(
@@ -96,7 +96,7 @@ export async function addExercise(exercise: {
     [
       exercise.name,
       exercise.description,
-      exercise.videoId ?? 'gMgvBspQ9lk',
+      exercise.videoId ?? null,
       exercise.imagePath ?? '/stock-running.jpg',
     ]
   );

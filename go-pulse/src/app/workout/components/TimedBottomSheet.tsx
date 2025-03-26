@@ -35,6 +35,7 @@ export default function TimedBottomSheet({
   };
 
   useEffect(() => {
+    const audio = audioRef.current;
     const startTimedExercise = () => {
       const oneSecondInMillis = 1 * 1000;
 
@@ -46,7 +47,7 @@ export default function TimedBottomSheet({
         if (remainingMillis.current <= 0) {
           setDisplayTimeRemaining(`All done!`);
           setIsFinished(true);
-          audioRef.current.play();
+          audio.play();
           return;
         }
 
@@ -64,6 +65,7 @@ export default function TimedBottomSheet({
       const timerId = startTimedExercise();
       return () => {
         clearInterval(timerId);
+        audio.pause();
       };
     }
   }, [data.type, isPaused, onCompletion]);
@@ -93,14 +95,14 @@ export default function TimedBottomSheet({
         </button>
         <div className="flex-initial flex gap-0 min-w-48 w-full max-w-64">
           <button
-            className="bg-green-600 rounded-l-md h-full w-full max-w-32 border border-r-2 border-green-800 text-white hover:bg-green-700 disabled:text-gray-600 disabled:bg-green-800 transition-colors"
+            className="bg-blue-600 rounded-l-md h-full w-full max-w-32 border border-r-2 border-blue-800 text-white hover:bg-blue-700 disabled:text-gray-600 disabled:bg-blue-800 transition-colors"
             onClick={onPauseButtonClicked}
             disabled={isFinished}
           >
             {isPaused ? 'Continue' : 'Pause'}
           </button>
           <button
-            className="bg-green-600 rounded-r-md h-full w-full max-w-32 border border-green-800 text-white hover:bg-green-700 transition-colors"
+            className="bg-blue-600 rounded-r-md h-full w-full max-w-32 border border-blue-800 text-white hover:bg-blue-700 transition-colors"
             onClick={onCompletion}
           >
             {isFinished ? 'Complete' : 'Skip'}

@@ -10,22 +10,45 @@
 > Requires Docker Compose 2.22.0 or later.
 
 #### Start a development server using:
+Development servers are launched locally. Begin by installing the necessary packages:
 ```bash
-docker-compose --profile dev up --build --watch
+cd go_pulse
+npm install
 ```
-This command launches a development server (the equivalent of running `npm run dev`) and launches and connects a local postgres instance.
-The `--watch` flag allows docker to automatically refresh or rebuild on any file changes when using it for local development.
 
-Environment variables can be passed into docker using a `.env` file at the project root.
+Run peripheral services, like the database, locally by running:
 
-Add JWT_SECRET in .env for login to work. E.g. JWT_SECRET="secret"
+```bash
+docker-compose --profile dev up
+```
 
-> [!NOTE]
-> Changing source files should reflect within the docker container almost immediately (or on a page refresh). However, installing any new `npm` packages will require a full container rebuild, which is slower. You can see the current progress of the refresh/rebuild on the terminal running `--watch`.
+Finally, launch the app by running 
+```bash 
+npm run dev
+```
+
+Environment variables can be passed into the app using a `.env` file at the project root. An example .env file with the necessary variables is shown below (sensitive environment variables have been removed).
+
+```
+POSTGRES_HOST=localhost
+POSTGRES_DB=go-pulse
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=
+DB_PORT=50432
+JWT_SECRET=
+
+WS_HOST=localhost
+WS_PORT=9090
+
+URL=http://localhost:3000
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
+NEXT_PUBLIC_NINJA_API_KEY=
+```
 
 The app automatically launches to port `3000`, but this can be modified by providing a `DEV_LOCAL_PORT` environment variable.
 
-Databases within the postgres container can be accessed by running
+Databases within the postgres container can be accessed from a terminal by running
 ```bash
 psql postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost:{POSTGRES_LOCAL_PORT}/{POSTGRES_DB}
 ```
@@ -37,18 +60,37 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres 
 DB_LOCAL_PORT=50432
 DB_REMOTE_PORT=5432
-JWT_SECRET="secret"
 ```
 This database can be connected to directly using:
 ```bash
 psql postgresql://postgres:postgres@localhost:50432/testdb
 ```
 
+The websocket server under the websocket container can be accessed from a terminal by running 
+```bash
+curl ws://{WS_HOST}:{NEXT_PUBLIC_WS_PORT}
+```
+For example, if you launch docker compose with the following environment variables:
+```bash
+WS_HOST=localhost
+WS_PORT=9090
+```
+The server can be connected to with
+```bash
+curl ws://localhost:9090
+```
+
 #### Start a production server using:
+
 ```bash
 docker-compose --profile prod up --build
+            --build-arg NEXT_PUBLIC_VAR1=VAL1
+            --build-arg NEXT_PUBLIC_VAR2=VAL2
+            ...
 ```
-Production servers are launched without a local database backing them. Connect them up to a cloud database by providing the necessary environment variables.
+
+This launches a production app, along with any necessary peripheral services. 
+Due to the way Next.js handles client-accessible environment variables, when creating a production server, all `NEXT_PUBLIC_` without default values need to be specified when building (either when calling `docker-composer --profile prod build` or when adding the `--build` flag when spinning the profile up).
 
 ## Branch policies
 
@@ -67,8 +109,10 @@ Commits to the branch should only happen via pull request.
 
 ### Release branches (`release/[VERSION]`)
 
-Release branches are branched off of `main` when a release is desired.
-Commits to release branches should only happen via pull request.
+Release branches are branched off of `dev` when a release is desired.
+Commits to release branches can occur via both pull requests and direct pushes for hotfixes or administrative work (such 
+as bumping version numbers).
+Once released, these should be merged back into both `dev` and `main`.
 
 ### Issue branches (`feature/[ISSUE ID]-[Description]`)
 

@@ -42,11 +42,18 @@ export default function IntermediateBottomSheet({
           "Take a breather. Don't forget to hydrate between workouts, other miscellaneous workout stuff here."}
       </p>
 
-      {data?.videoId && <YouTubePlayer videoId={data?.videoId} />}
+      {data?.videoId ? (
+        <YouTubePlayer videoId={data.videoId} />
+      ) : data?.name ? ( 
+        // Show message only if name exists but videoId is missing
+        <p className="text-center text-gray-500 italic">
+          Tutorial video will be added soon.
+        </p>
+      ) : null}
 
       <div className="flex justify-center w-full mt-4">
         <button
-          className="bg-green-600 rounded-md h-16 w-48 border border-r-2 border-green-800 text-white hover:bg-green-700 transition-colors"
+          className="bg-blue-600 rounded-md h-16 w-48 border border-r-2 border-blue-800 text-white hover:bg-blue-700 transition-colors"
           onClick={onCompletion}
         >
           {state != 'end' ? 'Continue' : 'Finish'}

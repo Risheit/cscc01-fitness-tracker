@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import pool from "@/app/db/database";
 
-const SECRET = process.env.JWT_SECRET!;
+const SECRET = process.env.JWT_SECRET;
 
 export async function POST(req: Request) {
   try {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const token = jwt.sign({ userId: user.id, username: user.username }, SECRET, { expiresIn: "1h" });
 
     const response = NextResponse.json({ message: "Logged in" }, { status: 200 });
-    response.cookies.set("token", token, { httpOnly: true, secure: true, sameSite: "strict" });
+    response.cookies.set("token", token, { httpOnly: true, sameSite: "strict" });
 
     return response;
 

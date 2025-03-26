@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/db/database";
 import jwt from "jsonwebtoken";
 
-const SECRET = process.env.JWT_SECRET!;
+const SECRET = process.env.JWT_SECRET;
 
 export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
     const { id } = await context.params; // Get ID from the route
@@ -31,8 +31,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
             "SELECT * FROM messages WHERE conversation_id = $1 ORDER BY created_at ASC",
             [convId]
         );
-
-        // console.log("Fetched messages:", messages);
 
         return NextResponse.json(messages);
     } catch (error) {

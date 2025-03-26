@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import WorkoutSelectionTab from '../components/WorkoutSelectionTab';
+import WorkoutSelectionTab from '../components/WorkoutSelection/WorkoutSelectionTab';
 import { WorkoutPlan } from '@/app/models/Workout';
 
 const mockWorkoutPlans: WorkoutPlan[] = [
@@ -38,9 +38,10 @@ const mockWorkoutPlans: WorkoutPlan[] = [
 
 const mockRedirect = vi.fn();
 
-vi.mock('next/navigation', () => ({
+vi.mock('next/navigation', async (importOriginal) => ({
+...await importOriginal<typeof import('next/navigation')>(),
   redirect: () => {
-    mockRedirect();
+    return mockRedirect();
   },
 }));
 
@@ -55,7 +56,7 @@ test('Workout page displays correctly', async () => {
   expect(screen.getAllByText(/Test_Workout*/)).toHaveLength(numWorkouts);
 
   fireEvent.change(screen.getByLabelText(/Search*/), {
-    target: { value: 'Test_Small ' },
+    target: { value: 'Test_Small' },
   });
   expect(screen.getAllByText(/Test_Workout*/)).toHaveLength(numSmallWorkouts);
 

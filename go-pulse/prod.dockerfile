@@ -3,10 +3,11 @@
 # Based on the NextJS example dockerfile at:
 # https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 
-FROM node:23-alpine AS base
+FROM --platform=linux/amd64 node:23-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
+
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to 
 # understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
@@ -19,7 +20,7 @@ WORKDIR /app
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
+    npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -32,13 +33,48 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Arguments to be passed into the docker container in during build. 
+# These should contain any NEXT_PUBLIC_ environment variables 
+# needed for the app.
+#
+# Next.js public variables need to be decidable during build time,
+# They can't be accessed in client components in production builds 
+# if they're being passed in as environment variables, since they're
+# inline during build time. They can be accessed as environment 
+# variables in server context though.
+# Whatever service is deploying this should pass in these variables 
+# when building. You can do it locally if needed through
+#   docker-compose --profile prod build 
+#           --build-arg ARG1=VAL1 
+#           --build-arg ARG2=VAL2 
+#           ...    
+ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY
+ARG NEXT_PUBLIC_NINJA_API_KEY
+
 RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
+# We bind our the build time arguments to environment variables 
+# we can access within the app here.
+#       ENV ENV_VAR_NAME ${ARG_NAME}
+# For NEXT_PUBLIC_ environment variables, also add an ARG tag.
+# Remember also to update the env.d.ts file so TypeScript recognizes
+# your variables correctly.
 ENV NODE_ENV=production
+ENV DB_PORT ${DB_PORT}
+ENV JWT_SECRET ${JWT_SECRET}
+
+ENV WS_HOST ${WS_HOST}
+ENV WS_PORT ${WS_PORT}
+
+ENV URL ${URL}
+ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY ${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+ENV VAPID_PRIVATE_KEY ${VAPID_PRIVATE_KEY}
+ENV NEXT_PUBLIC_NINJA_API_KEY ${NEXT_PUBLIC_NINJA_API_KEY}
+
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -55,7 +91,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 EXPOSE 3000
-
 ENV PORT=3000
 
 # server.js is created by next build from the standalone output

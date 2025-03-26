@@ -1,0 +1,35 @@
+name: App Test
+
+on:
+  pull_request: 
+    branches: [ "dev" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Docker Compose
+      uses: docker/setup-compose-action@v1.2.0
+    
+    - name: Build tests container
+      run: docker compose build test
+
+    - name: Run tests
+      run: docker compose up test
+
+  builds:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Docker Compose
+      uses: docker/setup-compose-action@v1.2.0
+    
+    - name: Build production containers
+      run: docker compose --profile prod build

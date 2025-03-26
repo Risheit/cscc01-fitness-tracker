@@ -26,7 +26,7 @@ test('Logout button calls API and redirects', async () => {
     Promise.resolve({ ok: true, json: async () => ({}) } as Response)
   ) as typeof fetch;
   
-  render(<NavBar tabNames={['test']} />);
+  render(<NavBar tabImages={['/buildericon.png']} />);
   const logoutButton = screen.getByTitle('logout');
 
   await fireEvent.click(logoutButton);

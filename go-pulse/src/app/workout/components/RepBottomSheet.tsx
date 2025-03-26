@@ -65,14 +65,14 @@ export default function RepBottomSheet({
         >
           {!isCapped && (
             <button
-              className="bg-green-600 rounded-md h-16 w-48 border border-r-2 border-green-800 text-white hover:bg-green-700 transition-colors"
+              className="bg-blue-600 rounded-md h-16 w-48 border border-r-2 border-blue-800 text-white hover:bg-blue-700 transition-colors"
               onClick={nextSet}
             >
               Next Set
             </button>
           )}
           <button
-            className="bg-green-600 rounded-md h-16 w-48 border border-r-2 border-green-800 text-white hover:bg-green-700 transition-colors"
+            className="bg-blue-600 rounded-md h-16 w-48 border border-r-2 border-blue-800 text-white hover:bg-blue-700 transition-colors"
             onClick={nextRep}
           >
             Next Rep
