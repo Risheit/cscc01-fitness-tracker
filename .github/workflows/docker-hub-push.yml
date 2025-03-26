@@ -7,7 +7,7 @@ env:
 
 on:
   push:
-    branches: [ "releases/**" ]
+    branches: [ "releases/**", "main" ]
 
 jobs:
   build:
@@ -40,6 +40,25 @@ jobs:
            docker tag risheitm/c01-go-pulse-database risheitm/c01-go-pulse-database:${{ env.DB_VERSION }}
     
     - name: Push versioned images.
-      run: docker push risheitm/c01-go-pulse-app; 
-           docker push risheitm/c01-go-pulse-websocket; 
-           docker push risheitm/c01-go-pulse-database
+      run: docker push risheitm/c01-go-pulse-app:${{ env.APP_VERSION }}; 
+           docker push risheitm/c01-go-pulse-websocket:${{ env.WS_VERSION }};
+           docker push risheitm/c01-go-pulse-database:${{ env.DB_VERSION }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Connect to EC2 instance and deploy app
+      env:
+        PRIVATE_KEY: ${{ secrets.AWS_EC2_KEY }}
+      run: |
+         echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem;
+         ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_EC2_USER }}@ec2-3-19-141-1.us-east-2.compute.amazonaws.com '
+            docker-compose --profile prod down &&
+            docker-compose --profile prod pull &&
+            docker-compose --profile prod up -d
+            '

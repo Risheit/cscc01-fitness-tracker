@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function middleware(req: NextRequest) {
-  const res = await fetch(new URL('/api/check-auth', req.url), {
+export async function middleware() {
+  const res = await fetch(`${process.env.URL}/api/check-auth`, {
     headers: { Cookie: (await cookies()).toString() },
     credentials: 'include',
   });
@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
   if (res.ok) {
     return NextResponse.next();
   } else {
-    return NextResponse.redirect(new URL('/login', req.url));
+    return NextResponse.redirect(`${process.env.URL}/login`);
   }
 }
 

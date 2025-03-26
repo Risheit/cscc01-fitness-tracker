@@ -1,6 +1,6 @@
 services:
   # Production service. Run using
-  #     docker-compose up prod
+  #     docker-compose up --profile prod
   # Creates an production build, expecting to connect to a cloud database.
   prod:
     profiles:
@@ -31,6 +31,7 @@ services:
   test:
     profiles:
       - test
+    image: risheitm/c01-go-pulse-tests:latest
     build:
       context: go-pulse
       dockerfile: test.dockerfile
@@ -81,7 +82,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+      
     env_file:
       - ./.env
 

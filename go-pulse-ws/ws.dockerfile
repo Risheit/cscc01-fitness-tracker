@@ -1,6 +1,6 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:23-alpine AS base
+FROM --platform=linux/amd64 node:23-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -14,10 +14,9 @@ WORKDIR /ws
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
 # Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
 # into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
+COPY ./package.json .
+COPY ./package-lock.json .
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -33,15 +32,10 @@ WORKDIR /ws
 
 ENV NODE_ENV=production
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 server
-
-COPY --from=deps --chown=nodejs:server /ws/node_modules ./node_modules
-COPY --from=builder --chown=nodejs:server /ws/package.json ./package.json
-COPY --from=builder --chown=nodejs:server /ws/package-lock.json ./package-lock.json
-COPY --from=builder --chown=nodejs:server /ws/build ./build
-
-USER server
+COPY --from=deps /ws/node_modules ./node_modules
+COPY --from=builder /ws/package.json ./package.json
+COPY --from=builder /ws/package-lock.json ./package-lock.json
+COPY --from=builder /ws/build ./build
 
 EXPOSE 8080
 
