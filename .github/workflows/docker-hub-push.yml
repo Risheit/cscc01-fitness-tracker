@@ -3,7 +3,6 @@ name: Docker Image Push
 env:
   APP_VERSION: 0.3.0
   WS_VERSION: 1.0.0
-  DB_VERSION: 1.0.0
 
 on:
   push:
@@ -37,9 +36,7 @@ jobs:
     - name: Version tag images.
       run: docker tag risheitm/c01-go-pulse-app risheitm/c01-go-pulse-app:${{ env.APP_VERSION }};
            docker tag risheitm/c01-go-pulse-websocket risheitm/c01-go-pulse-websocket:${{ env.WS_VERSION }};
-           docker tag risheitm/c01-go-pulse-database risheitm/c01-go-pulse-database:${{ env.DB_VERSION }}
     
     - name: Push versioned images.
       run: docker push risheitm/c01-go-pulse-app; 
-           docker push risheitm/c01-go-pulse-websocket; 
-           docker push risheitm/c01-go-pulse-database
+           docker push risheitm/c01-go-pulse-websocket
