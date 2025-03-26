@@ -109,8 +109,11 @@ Commits to the branch should only happen via pull request.
 
 ### Release branches (`release/[VERSION]`)
 
-Release branches are branched off of `main` when a release is desired.
-Commits to release branches should only happen via pull request.
+Release branches are branched off of `dev` when a release is desired.
+Commits to release branches should only happen via pull request, except the commit necessary to update version numbers
+and other administrative work, and any pushes necessary to resolve merge conflicts once the release is completed and we 
+are merging back into `main` and `dev`.
+Once released, these should be merged back into both `dev` and `main`.
 
 ### Issue branches (`feature/[ISSUE ID]-[Description]`)
 
