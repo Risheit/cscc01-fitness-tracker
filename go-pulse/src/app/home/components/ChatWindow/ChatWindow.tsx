@@ -22,7 +22,7 @@ export default function ChatWindow({
   conversationId,
   myUserId,
   otherUserUsername,
-  wsUrl
+  wsUrl,
 }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -47,8 +47,11 @@ export default function ChatWindow({
 
   // WebSocket connection
   useEffect(() => {
+    console.log('conversation id', conversationId);
     if (!conversationId) return;
 
+    console.log('create ws', ws);
+    console.log('connect to url', wsUrl);
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onmessage = (event) => {
@@ -76,6 +79,7 @@ export default function ChatWindow({
 
       const savedMessage: Message = await res.json();
 
+      console.log(ws);
       if (ws.current?.readyState === WebSocket.OPEN) {
         ws.current.send(JSON.stringify(savedMessage));
         setMessages((prev) => [...prev, savedMessage]);
@@ -127,7 +131,9 @@ export default function ChatWindow({
                   : 'bg-gray-700 text-gray-300'
               }`}
             >
-              <Linkify componentDecorator={linkDecorator}>{msg.content}</Linkify>
+              <Linkify componentDecorator={linkDecorator}>
+                {msg.content}
+              </Linkify>
             </div>
           </div>
         ))}

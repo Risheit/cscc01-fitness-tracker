@@ -22,6 +22,8 @@ services:
         POSTGRES_HOST: db
         DB_PORT: 5432
     depends_on:
+      db:
+        condition: service_healthy
       socket:
         condition: service_started
 
@@ -62,6 +64,7 @@ services:
   # automatically when composing the dev or prod services.
   db:
     profiles:
+      - prod
       - dev
     image: risheitm/c01-go-pulse-database:latest
     build:
@@ -73,7 +76,12 @@ services:
       - 5432
     ports:
       - ${DB_PORT}:5432
-
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
     env_file:
       - ./.env
 
