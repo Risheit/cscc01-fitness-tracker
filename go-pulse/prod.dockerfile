@@ -3,7 +3,7 @@
 # Based on the NextJS example dockerfile at:
 # https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 
-FROM node:23-alpine AS base
+FROM --platform=linux/amd64 node:23-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
