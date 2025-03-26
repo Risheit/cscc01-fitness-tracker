@@ -32,7 +32,9 @@ jobs:
               --build-arg NEXT_PUBLIC_NINJA_API_KEY="${{ secrets.NINJA_API }}"
 
     - name: Publish Docker latest images
-      run: docker compose --profile prod push 
+      run: |
+        touch .env;
+        docker compose --profile prod push 
 
     - name: Version tag images.
       run: docker tag risheitm/c01-go-pulse-app risheitm/c01-go-pulse-app:${{ env.APP_VERSION }};
