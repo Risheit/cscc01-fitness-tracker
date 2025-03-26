@@ -6,7 +6,7 @@ env:
 
 on:
   push:
-    branches: [ "releases/**" ]
+    branches: [ "releases/**", "main" ]
 
 jobs:
   build:
@@ -40,3 +40,23 @@ jobs:
     - name: Push versioned images.
       run: docker push risheitm/c01-go-pulse-app; 
            docker push risheitm/c01-go-pulse-websocket
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Connect to EC2 instance and deploy app
+      env:
+        PRIVATE_KEY: ${{ secrets.AWS_EC2_KEY }}
+      run: |
+         echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem;
+         ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_EC2_USER }}@ec2-3-19-141-1.us-east-2.compute.amazonaws.com '
+            docker pull registry.hub.docker.com/risheitm/c01-go-pulse-app:latest &&
+            docker stop app || true &&
+            docker rm app || true &&
+            docker run -d -p 80:3000 --name app --env-file ./env --network go-pulse registry.hub.docker.com/risheitm/c01-go-pulse-app:latest
+            '

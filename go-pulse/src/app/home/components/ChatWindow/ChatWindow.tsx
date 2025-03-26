@@ -47,11 +47,8 @@ export default function ChatWindow({
 
   // WebSocket connection
   useEffect(() => {
-    console.log('conversation id', conversationId);
     if (!conversationId) return;
 
-    console.log('create ws', ws);
-    console.log('connect to url', wsUrl);
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onmessage = (event) => {

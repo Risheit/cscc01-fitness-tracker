@@ -8,10 +8,8 @@ export async function middleware() {
   });
 
   if (res.ok) {
-    console.log('success');
     return NextResponse.next();
   } else {
-    console.log('failed');
     return NextResponse.redirect(`${process.env.URL}/login`);
   }
 }
