@@ -9,7 +9,7 @@ interface TopWorkout {
 
 export default function TopWorkoutsPage() {
   const [topWorkouts, setTopWorkouts] = useState<TopWorkout[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function TopWorkoutsPage() {
         if (!res.ok) throw new Error('Failed to fetch workouts');
         const data = await res.json();
         setTopWorkouts(data);
-      } catch (error: any) {
+      } catch (error) {
         console.error(error);
         setError('Failed to load top workouts');
       } finally {
