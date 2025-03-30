@@ -2,7 +2,9 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function middleware() {
-  const res = await fetch(`${process.env.URL}/api/check-auth`, {
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000"; // Fallback in case it's undefined
+
+  const res = await fetch(`${baseUrl}/api/check-auth`, {
     headers: { Cookie: (await cookies()).toString() },
     credentials: 'include',
   });
@@ -10,7 +12,7 @@ export async function middleware() {
   if (res.ok) {
     return NextResponse.next();
   } else {
-    return NextResponse.redirect(`${process.env.URL}/login`);
+    return NextResponse.redirect(`${baseUrl}/login`);
   }
 }
 

@@ -95,3 +95,12 @@ INSERT INTO workout_exercises(workout_id, workout_day_id, name, exercise_type, s
 (1, 1, 'Pull Up', 'Sets', 2, 5, NULL, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 3),
 (1, 1, 'Squats', 'Timed', NULL, NULL, 3, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 2),
 (1, 1, 'Squats', 'Timed', NULL, NULL, 2, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 4);
+
+
+CREATE TABLE IF NOT EXISTS finished_exercises (
+    id SERIAL PRIMARY KEY,  -- Auto-incrementing ID for each record
+    user_id INT NOT NULL,   -- Reference to the user who completed the exercise
+    exercise_name VARCHAR(255) NOT NULL,  -- Name of the exercise
+    FOREIGN KEY (user_id) REFERENCES users(id),  -- Assuming you have a 'users' table
+    FOREIGN KEY (exercise_name) REFERENCES exercises(name)  -- Assuming you have an 'exercises' table
+);
