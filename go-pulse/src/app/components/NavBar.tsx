@@ -8,6 +8,7 @@ const NavBar = () => {
             <Link href="/" className="hover:underline">Home</Link>
             <Link href="/exerciseVideos" className="hover:underline">Info</Link>
             <Link href="/about" className="hover:underline">About</Link>
+            <Link href="/finished_workouts" className="hover:underline">Frequent Workouts</Link>
         </nav>
     );
 };
