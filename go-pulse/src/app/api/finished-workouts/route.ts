@@ -1,14 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '../../db/database'; // Ensure correct import path
-
-// Function to check authentication status and get userId by calling check-auth route
-async function checkAuth(req: Request) {
-  const response = await fetch(`http://localhost:3000/api/check-auth`, {
-    headers: req.headers, // Pass the headers (including cookie)
-  });
-  const data = await response.json();
-  return data; // Contains both `authenticated` and `userId`
-}
+import checkAuth from '../check-auth/CheckAuth';
 
 export async function POST(req: Request) {
   try {

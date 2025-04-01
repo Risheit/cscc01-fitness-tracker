@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function middleware() {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000"; // Fallback in case it's undefined
+  const baseUrl = process.env.URL || "http://localhost:3000"; // Fallback in case it's undefined
 
   const res = await fetch(`${baseUrl}/api/check-auth`, {
     headers: { Cookie: (await cookies()).toString() },

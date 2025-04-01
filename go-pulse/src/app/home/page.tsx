@@ -4,7 +4,7 @@ import WorkoutSelectionTab from './components/WorkoutSelection/WorkoutSelectionT
 import { getAllWorkoutPlans } from '../models/Workout';
 import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
 import ConversationsTab from './components/ChatWindow/ConversationTab';
-import FinishedWorkouts from '../finished_workouts/page'
+import FinishedWorkouts from '../finished-workouts/page'
 
 // Internally, represent tabs in all lowercase with dashes between words:
 //    About Us --> about-us
@@ -23,7 +23,7 @@ async function displayTab(tabName?: string) {
           wsUrl={`ws://${process.env.WS_HOST}:${process.env.WS_PORT}`}
         />
       );
-      case 'finished_workouts':
+      case 'finished-workouts':
         return <FinishedWorkouts/>
     default:
       redirect('/home?tab=workouts', RedirectType.replace);

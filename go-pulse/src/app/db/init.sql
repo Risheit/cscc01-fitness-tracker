@@ -101,6 +101,6 @@ CREATE TABLE IF NOT EXISTS finished_exercises (
     id SERIAL PRIMARY KEY,  -- Auto-incrementing ID for each record
     user_id INT NOT NULL,   -- Reference to the user who completed the exercise
     exercise_name VARCHAR(255) NOT NULL,  -- Name of the exercise
-    FOREIGN KEY (user_id) REFERENCES users(id),  -- Assuming you have a 'users' table
-    FOREIGN KEY (exercise_name) REFERENCES exercises(name)  -- Assuming you have an 'exercises' table
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (exercise_name) REFERENCES exercises(name)  
 );
