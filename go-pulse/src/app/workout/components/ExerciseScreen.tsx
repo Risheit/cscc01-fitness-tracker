@@ -40,15 +40,61 @@ export default function ExerciseScreen({ exercises }: Props) {
   const router = useRouter();
 
   const completeExercise = () => {
-    setCurrentIndex(currentIndex + 1);
+    setCurrentIndex((prevIndex) => prevIndex + 1);
     setWorkoutState(
       currentIndex + 1 < (exercises?.length ?? 0) ? 'paused' : 'end'
     );
   };
+  
+  const logCompletedExercises = async () => {
+    if (!exercises || exercises.length === 0) {
+      console.warn('No exercises to log.');
+      return;
+    }
+
+    console.log('Logging completed exercises...');
+
+    try {
+      const results = await Promise.allSettled(
+        exercises.map(async (exercise) => {
+          const res = await fetch('/api/finished-workout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              exerciseName: exercise.name,
+            }),
+          });
+
+          if (!res.ok) {
+            const errorMsg = await res.text();
+            throw new Error(`${exercise.name} failed: ${errorMsg}`);
+          }
+
+          console.log(`Logged: ${exercise.name}`);
+        })
+      );
+
+      // Find failed logs
+      const failedExercises = results
+        .filter((result) => result.status === 'rejected')
+        .map((result) => (result as PromiseRejectedResult).reason.message);
+
+      if (failedExercises.length > 0) {
+        console.error('Some exercises failed to log:');
+        failedExercises.forEach((err) => console.error(err));
+      } else {
+        console.log('All exercises logged successfully!');
+      }
+    } catch (error) {
+      console.error('Unexpected error while logging exercises:', error);
+    }
+  };
 
   const nextExercise = () => {
-    if (workoutState == 'end') {
-      router.push('/');
+    if (workoutState === 'end') {
+      logCompletedExercises().then(() => {
+        router.push('/'); // Navigate home after logging
+      });
     } else {
       setWorkoutState('running');
     }
@@ -59,7 +105,7 @@ export default function ExerciseScreen({ exercises }: Props) {
       <div className="flex h-2/5 relative overflow-hidden">
         <Image
           src={
-            workoutState == 'end'
+            workoutState === 'end'
               ? '/stock-running.jpg'
               : exercises[currentIndex].imagePath ?? '/stock-running.jpg'
           }
@@ -68,7 +114,7 @@ export default function ExerciseScreen({ exercises }: Props) {
           className="w-full h-2/3 object-cover object-top"
         />
       </div>
-      {workoutState == 'running' ? (
+      {workoutState === 'running' ? (
         renderBottomSheet(exercises[currentIndex], completeExercise)
       ) : (
         <IntermediateBottomSheet

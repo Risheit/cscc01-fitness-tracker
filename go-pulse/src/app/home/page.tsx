@@ -4,6 +4,7 @@ import WorkoutSelectionTab from './components/WorkoutSelection/WorkoutSelectionT
 import { getAllWorkoutPlans } from '../models/Workout';
 import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
 import ConversationsTab from './components/ChatWindow/ConversationTab';
+import FinishedWorkouts from '../finished-workouts/page'
 
 // Internally, represent tabs in all lowercase with dashes between words:
 //    About Us --> about-us
@@ -22,6 +23,8 @@ async function displayTab(tabName?: string) {
           wsUrl={`ws://${process.env.WS_HOST}:${process.env.WS_PORT}`}
         />
       );
+      case 'finished-workouts':
+        return <FinishedWorkouts/>
     default:
       redirect('/home?tab=workouts', RedirectType.replace);
   }
@@ -39,7 +42,7 @@ export default async function Home({
       <main className="flex-1 overflow-y-auto">{tab}</main>
 
       <div className="relative">
-        <NavBar tabImages={['/homeicon.png', '/buildericon.jpg', '/chaticon.png']} />
+        <NavBar tabImages={['/homeicon.png', '/buildericon.jpg', '/chaticon.png', '/frequenticon.png']} />
       </div>
     </div>
   );

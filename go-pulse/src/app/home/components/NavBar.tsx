@@ -14,7 +14,7 @@ function changeToTab(tabName: string) {
 }
 
 const NavBar = ({ tabImages }: Props) => {
-  const tabNames = ['Workouts', 'Workout Builder', 'Conversation'];
+  const tabNames = ['Workouts', 'Workout Builder', 'Conversation', 'Finished-Workouts'];
 
   return (
     <nav className="bg-gray-700 text-white p-4 flex justify-between flex-initial space-x-4 h-fits">
