@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import { getAllWorkoutPlans } from '@/app/models/Workout';
 import pool from '@/app/db/database';
 import checkAuth from '../check-auth/CheckAuth';
+import { Day } from '@/app/models/Ninja';
 
 export async function POST(req: Request) {
   try {
-    const { name, days } = await req.json(); // Days should be an array like ["Monday", "Wednesday"]
+    const { name, days }: { name: string; days: Day[] } = await req.json();
 
     // Call check-auth endpoint to verify user authentication and get userId
     const authData = await checkAuth(req);
@@ -28,10 +29,10 @@ export async function POST(req: Request) {
 
     // Insert workout days
     const dayValues = days
-      .map((day: string) => `('${day}', ${workoutId})`)
+      .map((day) => `('${day.day}', ${workoutId}, ${day.time})`)
       .join(',');
     await pool.query(
-      `INSERT INTO workout_days (day_of_week, workout_id) VALUES ${dayValues}`
+      `INSERT INTO workout_days (day_of_week, workout_id, time) VALUES ${dayValues}`
     );
 
     return NextResponse.json(

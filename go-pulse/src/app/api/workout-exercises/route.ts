@@ -3,11 +3,27 @@ import pool from '@/app/db/database'; // Use your existing database pool
 import checkAuth from '../check-auth/CheckAuth';
 import { addExercise } from '@/app/models/Workout';
 
+interface AddExerciseRequest {
+  workout_id: number;
+  day_of_week: string;
+  time: number;
+  name: string;
+  exercise_type: string;
+  sets?: number;
+  reps?: number;
+  mins?: number;
+  weight?: number;
+  rest_time?: number;
+  position: number;
+  description: string;
+}
+
 export async function POST(req: Request) {
   try {
     const {
       workout_id,
       day_of_week,
+      time,
       name,
       exercise_type,
       sets,
@@ -16,7 +32,7 @@ export async function POST(req: Request) {
       weight,
       position,
       description,
-    } = await req.json();
+    }: AddExerciseRequest = await req.json();
 
     // Call check-auth endpoint to verify user authentication and get userId
     const authData = await checkAuth(req);
@@ -29,8 +45,8 @@ export async function POST(req: Request) {
 
     // Get `workout_day_id` for this workout and day
     const dayResult = await pool.query(
-      'SELECT id FROM workout_days WHERE workout_id = $1 AND day_of_week = $2',
-      [workout_id, day_of_week]
+      'SELECT id FROM workout_days WHERE workout_id = $1 AND day_of_week = $2 AND time = $3',
+      [workout_id, day_of_week, time]
     );
 
     if (dayResult.rows.length === 0) {
