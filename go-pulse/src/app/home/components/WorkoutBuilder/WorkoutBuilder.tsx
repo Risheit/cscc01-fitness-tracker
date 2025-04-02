@@ -78,6 +78,12 @@ export default function WorkoutBuilder() {
     );
   }
 
+  function removeSelectedDay(day: Day) {
+    setSelectedDays((prev) =>
+      prev.filter((d) => !(d.day === day.day && d.time === day.time))
+    );
+  }
+
   function addNewDay(newDay: DayOfWeek) {
     // Find some time period without conflicts
     let time = 0;
@@ -164,9 +170,7 @@ export default function WorkoutBuilder() {
                         newTime += changeType === 'decrease' ? -1 : 1;
                         if (newTime > 23) {
                           newTime = 0;
-                        }
-
-                        if (newTime < 0) {
+                        } else if (newTime < 0) {
                           newTime = 23;
                         }
 
@@ -184,6 +188,14 @@ export default function WorkoutBuilder() {
                       );
                     }}
                   />
+
+                  {/* Remove Button */}
+                  <button
+                    onClick={() => removeSelectedDay(day)}
+                    className="text-red-500 text-sm px-2 py-1 rounded-md bg-gray-800 hover:bg-gray-700"
+                  >
+                    ✖
+                  </button>
                 </div>
               </li>
             ))}
