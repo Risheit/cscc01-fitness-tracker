@@ -26,7 +26,7 @@ export default function RepBottomSheet({
   }
 
   async function logProgress() {
-    await fetch(`http://localhost:3000/api/log-progress`, {
+    await fetch(`/api/log-progress`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
