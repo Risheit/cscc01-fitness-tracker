@@ -9,13 +9,14 @@ import {
 } from '@/app/models/Ninja';
 import { useState, useEffect } from 'react';
 import StepperMenu from './StepperMenu';
+import { DropdownMenu } from './DropdownMenu';
 
 export default function WorkoutBuilder() {
   const [exercises, setExercises] = useState<NinjaApiExercise[]>([]);
   const [selectedExercises, setSelectedExercises] = useState<Day[]>([]);
   const [workoutName, setWorkoutName] = useState('');
   const [search, setSearch] = useState('');
-  const [selectedDays, setSelectedDays] = useState<string[]>([]); // Track selected days
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [exerciseType, setExerciseType] = useState<string>('');
   const [muscleGroup, setMuscleGroup] = useState<string>('');
   const [difficulty, setDifficulty] = useState<string>('');
@@ -62,7 +63,7 @@ export default function WorkoutBuilder() {
         .concat(
           prev.some((item) => item.day === day)
             ? []
-            : [{ day, exercises: [exerciseToAdd] }]
+            : [{ day, time: 3, exercises: [exerciseToAdd] }]
         )
     );
   }
@@ -169,60 +170,59 @@ export default function WorkoutBuilder() {
           </div>
         </div>
 
-        {/* Filter Dropdowns for Exercise */}
         <div className="flex space-x-4 mb-4">
-          {/* Exercise Type */}
-          <select
+          {/* Filter Dropdowns for Exercise */}
+          <DropdownMenu
+            options={[
+              { value: '', name: 'Select Type' },
+              { value: 'cardio', name: 'Cardio' },
+              { value: 'strength', name: 'Strength' },
+              { value: 'olympic_weightlifting', name: 'Olympic Weightlifting' },
+              { value: 'plyometrics', name: 'Plyometrics' },
+              { value: 'powerlifting', name: 'Powerlifting' },
+              { value: 'stretching', name: 'Stretching' },
+              { value: 'strongman', name: 'Strongman' },
+            ]}
             value={exerciseType}
-            onChange={(e) => setExerciseType(e.target.value)}
-            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
-          >
-            <option value="">Select Type</option>
-            <option value="cardio">Cardio</option>
-            <option value="strength">Strength</option>
-            <option value="olympic_weightlifting">Olympic Weightlifting</option>
-            <option value="plyometrics">Plyometrics</option>
-            <option value="powerlifting">Powerlifting</option>
-            <option value="stretching">Stretching</option>
-            <option value="strongman">Strongman</option>
-          </select>
+            onChange={setExerciseType}
+          />
 
-          {/* Muscle Group */}
-          <select
+          {/* Muscle Group Dropdown */}
+          <DropdownMenu
+            options={[
+              { value: '', name: 'Select Muscle' },
+              { value: 'abdominals', name: 'Abdominals' },
+              { value: 'abductors', name: 'Abductors' },
+              { value: 'adductors', name: 'Adductors' },
+              { value: 'biceps', name: 'Biceps' },
+              { value: 'calves', name: 'Calves' },
+              { value: 'chest', name: 'Chest' },
+              { value: 'forearms', name: 'Forearms' },
+              { value: 'glutes', name: 'Glutes' },
+              { value: 'hamstrings', name: 'Hamstrings' },
+              { value: 'lats', name: 'Lats' },
+              { value: 'lower_back', name: 'Lower Back' },
+              { value: 'middle_back', name: 'Middle Back' },
+              { value: 'neck', name: 'Neck' },
+              { value: 'quadriceps', name: 'Quadriceps' },
+              { value: 'traps', name: 'Traps' },
+              { value: 'triceps', name: 'Triceps' },
+            ]}
             value={muscleGroup}
-            onChange={(e) => setMuscleGroup(e.target.value)}
-            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
-          >
-            <option value="">Select Muscle</option>
-            <option value="abdominals">Abdominals</option>
-            <option value="abductors">Abductors</option>
-            <option value="adductors">Adductors</option>
-            <option value="biceps">Biceps</option>
-            <option value="calves">Calves</option>
-            <option value="chest">Chest</option>
-            <option value="forearms">Forearms</option>
-            <option value="glutes">Glutes</option>
-            <option value="hamstrings">Hamstrings</option>
-            <option value="lats">Lats</option>
-            <option value="lower_back">Lower Back</option>
-            <option value="middle_back">Middle Back</option>
-            <option value="neck">Neck</option>
-            <option value="quadriceps">Quadriceps</option>
-            <option value="traps">Traps</option>
-            <option value="triceps">Triceps</option>
-          </select>
+            onChange={setMuscleGroup}
+          />
 
           {/* Difficulty Level */}
-          <select
+          <DropdownMenu
+            options={[
+              { value: '', name: 'Select Difficulty' },
+              { value: 'beginner', name: 'Beginner' },
+              { value: 'intermediate', name: 'Intermediate' },
+              { value: 'expert', name: 'Expert' },
+            ]}
             value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
-          >
-            <option value="">Select Difficulty</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="expert">Expert</option>
-          </select>
+            onChange={setDifficulty}
+          />
         </div>
 
         {/* Search Bar */}
@@ -285,7 +285,7 @@ export default function WorkoutBuilder() {
                       <div className="flex items-center space-x-2">
                         {exercise.type !== 'cardio' && (
                           <StepperMenu
-                            name='sets'
+                            name="sets"
                             value={exercise.sets ?? 3}
                             min={1}
                             onValueUpdate={(updated) =>
@@ -300,7 +300,7 @@ export default function WorkoutBuilder() {
                         )}
                         {exercise.type !== 'cardio' && (
                           <StepperMenu
-                            name='reps'
+                            name="reps"
                             value={exercise.reps ?? 3}
                             min={1}
                             onValueUpdate={(updated) =>
@@ -316,7 +316,7 @@ export default function WorkoutBuilder() {
 
                         {exercise.type === 'cardio' && (
                           <StepperMenu
-                            name='minutes'
+                            name="minutes"
                             value={exercise.mins ?? 3}
                             min={1}
                             onValueUpdate={(updated) =>
