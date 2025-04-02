@@ -16,13 +16,13 @@ export default function RepBottomSheet({
   isCapped,
   onCompletion,
 }: Props) {
-  const [reps, setReps] = useState(1);
+  const [reps, setReps] = useState(0);
   const [sets, setSets] = useState(1);
   const [weight, setWeight] = useState("");
   const [error, setError] = useState(false);
 
   function isWeightValid() {
-    return weight.trim() !== "" && parseFloat(weight) > 0;
+    return (reps == 0 && sets == 1) || (weight.trim() !== "" && parseFloat(weight) > 0);
   }
 
   async function logProgress() {
@@ -134,7 +134,6 @@ export default function RepBottomSheet({
               await logProgress();
               onCompletion();
             }}
-            disabled={!isWeightValid()}
           >
             {isCapped ? 'Skip' : 'Next Workout'}
           </button>
