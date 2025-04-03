@@ -37,7 +37,8 @@ export default function StepperMenu({
       </button>
       <input
         type="number"
-        min="1"
+        min={min}
+        max={max}
         title={`Set number of ${name}`}
         value={value}
         onChange={(e) => onValueUpdate(clamp(Number(e.target.value)), 'manual')}
