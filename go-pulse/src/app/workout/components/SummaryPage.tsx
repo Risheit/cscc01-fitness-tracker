@@ -2,37 +2,28 @@
 
 import { useState } from 'react';
 import { ExerciseData } from '@/app/models/Workout';
-import ExerciseScreen from './ExerciseScreen';
-import { useRouter } from 'next/navigation';
 import { redirect, RedirectType } from 'next/navigation';
+import { endianness } from 'os';
 
 interface Props {
   exercises: ExerciseData[];
   workoutId: number;
 }
 
-export default function OverviewPage({ exercises, workoutId }: Props) {
-  const [workoutStarted, setWorkoutStarted] = useState(false);
-  const router = useRouter();
-  const startWorkout = () => {
-    setWorkoutStarted(true);
-  };
+export default function SummaryPage({ exercises, workoutId }: Props) {
+  const [workoutEnded, setWorkoutEnded] = useState(false);
 
-  const shareableLink = `${window.location.origin}/workout?id=${workoutId}`;
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(shareableLink).then(() => {
-      alert('Link copied to clipboard!');
-    });
+  const endWorkout = () => {
+    setWorkoutEnded(true);
   };
 
   const goBack = () => {
     redirect('/home?tab=workouts', RedirectType.replace)
   };
 
-  if (workoutStarted) {
-    // Update the view query parameter to "exercise"
-    router.push(`/workout?id=${workoutId}&view=exercise`);
+  if (workoutEnded) {
+    console.log('Workout ended');
+    redirect('/home?tab=workouts', RedirectType.replace)
   }
 
   return (
@@ -70,20 +61,10 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
 
       <div className="mt-8 text-center">
         <button
-          onClick={startWorkout}
+          onClick={endWorkout}
           className="bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
         >
-          Start Workout
-        </button>
-      </div>
-
-      <div className="mt-6 text-center">
-        <p className="text-lg text-gray-600">Share this workout:</p>
-        <button
-          onClick={copyToClipboard}
-          className="mt-3 bg-green-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-200"
-        >
-          Copy Link
+          End Workout
         </button>
       </div>
     </div>

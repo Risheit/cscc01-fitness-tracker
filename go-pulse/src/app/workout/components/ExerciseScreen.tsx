@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 
 interface Props {
   exercises: ExerciseData[];
+  workoutId: number;
 }
 
 function renderBottomSheet(exercise: ExerciseData, onCompletion: () => void) {
@@ -34,7 +35,7 @@ function renderBottomSheet(exercise: ExerciseData, onCompletion: () => void) {
   }
 }
 
-export default function ExerciseScreen({ exercises }: Props) {
+export default function ExerciseScreen({ exercises, workoutId  }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [workoutState, setWorkoutState] = useState<WorkoutState>('start');
   const router = useRouter();
@@ -93,7 +94,8 @@ export default function ExerciseScreen({ exercises }: Props) {
   const nextExercise = () => {
     if (workoutState === 'end') {
       logCompletedExercises().then(() => {
-        router.push('/'); // Navigate home after logging
+        // Update the view query parameter to "summary"
+        router.push(`/workout?id=${workoutId}&view=summary`);
       });
     } else {
       setWorkoutState('running');
