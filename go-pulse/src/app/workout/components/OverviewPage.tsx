@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ExerciseData } from '@/app/models/Workout';
 import ExerciseScreen from './ExerciseScreen';
 import { redirect, RedirectType } from 'next/navigation';
+import { SchedulingModal } from './SchedulingModal';
 
 interface Props {
   exercises: ExerciseData[];
@@ -12,6 +13,7 @@ interface Props {
 
 export default function OverviewPage({ exercises, workoutId }: Props) {
   const [workoutStarted, setWorkoutStarted] = useState(false);
+  const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(true);
 
   const startWorkout = () => {
     setWorkoutStarted(true);
@@ -26,7 +28,7 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
   };
 
   const goBack = () => {
-    redirect('/home?tab=workouts', RedirectType.replace)
+    redirect('/home?tab=workouts', RedirectType.replace);
   };
 
   if (workoutStarted) {
@@ -35,6 +37,14 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
 
   return (
     <div className="relative max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+      {/* Modal for scheduling */}
+      {isSchedulingModalOpen && (
+        <SchedulingModal
+          workoutId={workoutId}
+          onClose={() => setIsSchedulingModalOpen(false)}
+        />
+      )}
+
       {/* Back Button in the top-left, conditionally adjusts for small screen */}
       <button
         onClick={goBack}
@@ -46,16 +56,22 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
       <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6 sm:mt-12">
         Workout Summary
       </h1>
-      
+
       {/* List of exercises */}
       <ul className="space-y-6">
         {exercises.map((exercise, index) => (
-          <li key={index} className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl font-semibold text-gray-800">{exercise.name}</h2>
-            <p className="text-lg text-gray-600">Day: {exercise.dayOfWeek}</p>
+          <li
+            key={index}
+            className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          >
+            <h2 className="text-2xl font-semibold text-gray-800">
+              {exercise.name}
+            </h2>
             <p className="text-lg text-gray-600">Type: {exercise.type}</p>
             {exercise.type === 'Timed' && exercise.mins && (
-              <p className="text-lg text-gray-600">Duration: {exercise.mins} minutes</p>
+              <p className="text-lg text-gray-600">
+                Duration: {exercise.mins} minutes
+              </p>
             )}
             {exercise.type === 'Sets' && (
               <p className="text-lg text-gray-600">
@@ -66,12 +82,18 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
         ))}
       </ul>
 
-      <div className="mt-8 text-center">
+      <div className="mt-8 text-center flex flex-col items-center gap-2 w-fit self-center mx-auto">
         <button
           onClick={startWorkout}
-          className="bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
+          className="w-fit bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
         >
           Start Workout
+        </button>
+        <button
+          onClick={() => setIsSchedulingModalOpen(true)}
+          className="w-fit bg-gray-400 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
+        >
+          Schedule Workout
         </button>
       </div>
 
@@ -79,7 +101,7 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
         <p className="text-lg text-gray-600">Share this workout:</p>
         <button
           onClick={copyToClipboard}
-          className="mt-3 bg-green-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-200"
+          className="flex-initial w-fit mt-3 bg-green-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-200"
         >
           Copy Link
         </button>

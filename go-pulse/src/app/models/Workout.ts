@@ -1,5 +1,14 @@
 import pool from '../db/database';
 
+export type DayOfWeek =
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday'
+  | 'Sunday';
+
 export interface WorkoutPlan {
   id: number;
   name: string;
@@ -15,15 +24,16 @@ export interface ExerciseData {
   mins?: number;
   sets?: number;
   reps?: number;
-  dayOfWeek?: string;
 }
 
 export interface WorkoutScheduleItem {
   id: number;
+  workoutDayId: number;
   userId: number;
   name: string;
   imagePath: string;
-  day: string;
+  day: DayOfWeek;
+  time: number;
 }
 
 export type WorkoutState = 'start' | 'paused' | 'running' | 'end';
@@ -68,10 +78,12 @@ export async function getUserWorkouts(
   const { rows } = await pool.query(
     `SELECT
     w.id,
+    d.id AS "workoutDayId",
     w.user_id AS userId,
     w.name,
     w.image_path AS imagePath,
-    d.day_of_week AS day
+    d.day_of_week AS day,
+    d.time
     FROM workouts AS w JOIN workout_days AS d
     ON w.id = d.workout_id
     WHERE w.user_id = $1`,

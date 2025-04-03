@@ -4,6 +4,7 @@ import WorkoutSelectionTab from './components/WorkoutSelection/WorkoutSelectionT
 import { getAllWorkoutPlans } from '../models/Workout';
 import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
 import ConversationsTab from './components/ChatWindow/ConversationTab';
+import ScheduledWorkouts from './components/ScheduledWorkouts/ScheduledWorkouts';
 import FinishedWorkouts from '../finished-workouts/page'
 
 // Internally, represent tabs in all lowercase with dashes between words:
@@ -13,8 +14,6 @@ async function displayTab(tabName?: string) {
   switch (tabName) {
     case 'workouts':
       return <WorkoutSelectionTab workouts={await getAllWorkoutPlans()} />;
-    case 'about':
-      return <h1>About us</h1>;
     case 'workout-builder':
       return <WorkoutBuilder />;
     case 'conversation':
@@ -23,8 +22,10 @@ async function displayTab(tabName?: string) {
           wsUrl={`ws://${process.env.WS_HOST}:${process.env.WS_PORT}`}
         />
       );
+    case 'scheduled-workouts':
+      return <ScheduledWorkouts />;
       case 'finished-workouts':
-        return <FinishedWorkouts/>
+        return <FinishedWorkouts />
     default:
       redirect('/home?tab=workouts', RedirectType.replace);
   }
@@ -40,9 +41,16 @@ export default async function Home({
   return (
     <div className="flex flex-col w-full h-screen">
       <main className="flex-1 overflow-y-auto">{tab}</main>
-
       <div className="relative">
-        <NavBar tabImages={['/homeicon.png', '/buildericon.jpg', '/chaticon.png', '/frequenticon.png']} />
+        <NavBar
+          tabs={[
+            { name: 'Workouts', image: '/homeicon.png' },
+            { name: 'Scheduled Workouts', image: '/schedule-icon.png' },
+            { name: 'Workout Builder', image: '/buildericon.jpg' },
+            { name: 'Conversation', image: '/chaticon.png' },
+            { name: 'Finished Workouts', image: '/frequenticon.png' },
+          ]}
+        />
       </div>
     </div>
   );

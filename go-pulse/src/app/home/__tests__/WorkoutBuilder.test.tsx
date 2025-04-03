@@ -41,21 +41,21 @@ test('Builder allows selecting and deselecting workout days', async () => {
   await act(async () => {
     render(<WorkoutBuilder />);
   });
+  expect(screen.queryByText(':00')).not.toBeInTheDocument();
+
   const mondayButton = screen.getByText('Monday');
-
   fireEvent.click(mondayButton);
-  expect(mondayButton).toHaveClass('bg-blue-500');
 
-  fireEvent.click(mondayButton);
-  expect(mondayButton).not.toHaveClass('bg-blue-500');
+  expect(screen.getByText(':00')).toBeInTheDocument();
+
+  const deleteButton = screen.getByText('✖');
+  fireEvent.click(deleteButton);
 });
 
 test('Builder allows selecting and deselecting workout days', async () => {
   await act(async () => {
     render(<WorkoutBuilder />);
   });
-  const day = 'Monday';
-  fireEvent.click(screen.getByText(day));
 
   const exerciseName = await screen.findByText(/Rickshaw Carry/i);
   expect(exerciseName).toBeInTheDocument();
@@ -66,35 +66,10 @@ test('Builder allows selecting and deselecting workout days', async () => {
   expect(screen.getByText('✖')).toBeInTheDocument();
 });
 
-test('Builder prevents duplicate exercises on the same day', async () => {
+test('Builder removes an exercise from a workout', async () => {
   await act(async () => {
     render(<WorkoutBuilder />);
   });
-  const day = 'Monday';
-
-  fireEvent.click(screen.getByText(day));
-
-  const exerciseName = await screen.findByText(/Rickshaw Carry/i);
-  expect(exerciseName).toBeInTheDocument();
-
-  const addButtons = await screen.findAllByText(/Add to/i);
-  fireEvent.click(addButtons[0]);
-  fireEvent.click(addButtons[0]);
-  fireEvent.click(addButtons[0]);
-  fireEvent.click(addButtons[0]);
-
-  const exerciseItems = screen.getAllByText(/Rickshaw Carry/i);
-  expect(exerciseItems.length).toBe(2);
-});
-
-test('Builder removes an exercise from a day', async () => {
-  await act(async () => {
-    render(<WorkoutBuilder />);
-  });
-  const day = 'Monday';
-
-  fireEvent.click(screen.getByText(day));
-
   const exerciseName = await screen.findByText(/Rickshaw Carry/i);
   expect(exerciseName).toBeInTheDocument();
 

@@ -64,17 +64,18 @@ CREATE TABLE IF NOT EXISTS workout_days (
     id SERIAL PRIMARY KEY,
     workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
     day_of_week VARCHAR(10) NOT NULL CHECK (day_of_week IN 
-        ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+        ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')),
+    time INT NOT NULL CHECK (time >= 0 AND time < 24)
 );
 
-INSERT INTO workout_days (workout_id, day_of_week) VALUES
-(1, 'Monday');
+INSERT INTO workout_days (workout_id, day_of_week, time) VALUES
+(1, 'Monday', 0);
 
 -- Workout-Exercises Table (Links workouts to exercises & specific days)
 CREATE TABLE IF NOT EXISTS workout_exercises (
     workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
     workout_day_id INT REFERENCES workout_days(id) ON DELETE CASCADE, -- Now exercises are assigned to days!
-    name VARCHAR(255) NOT NULL, -- Example: "Squat", "Bench Press", etc.
+    name VARCHAR(255) NOT NULL REFERENCES exercises(name) ON DELETE CASCADE, 
     exercise_type VARCHAR(50) NOT NULL,
     sets INT DEFAULT NULL,
     reps INT DEFAULT NULL,
