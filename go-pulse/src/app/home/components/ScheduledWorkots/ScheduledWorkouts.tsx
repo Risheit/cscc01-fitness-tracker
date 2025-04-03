@@ -1,7 +1,7 @@
 'use client';
 
 import { DayOfWeek, WorkoutScheduleItem } from '@/app/models/Workout';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import { redirect, RedirectType } from 'next/navigation';
@@ -114,32 +114,22 @@ export default function ScheduledWorkouts() {
                         </div>
                       </div>
 
-                      <div className="flex flex-initial flex-col justify-around h-fill px-2">
-                        <button className="flex-initial" title="logout">
-                          <FontAwesomeIcon
-                            icon={faPen}
-                            color="black"
-                            size="xl"
-                            fixedWidth
-                          />
-                        </button>
-                        <button
-                          className="flex-initial"
-                          title="logout"
-                          onClick={() => {
-                            deleteScheduledWorkout(workout).then(() => {
-                              setIsLoading(true);
-                            });
-                          }}
-                        >
-                          <FontAwesomeIcon
-                            icon={faTrash}
-                            color="brown"
-                            size="xl"
-                            fixedWidth
-                          />
-                        </button>
-                      </div>
+                      <button
+                        className="flex-initial"
+                        title="logout"
+                        onClick={() => {
+                          deleteScheduledWorkout(workout).then(() => {
+                            setIsLoading(true);
+                          });
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          color="brown"
+                          size="xl"
+                          fixedWidth
+                        />
+                      </button>
                     </div>
                   </div>
                 ))
