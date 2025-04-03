@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllWorkoutPlans } from '@/app/models/Workout';
+import { getUserWorkouts } from '@/app/models/Workout';
 import pool from '@/app/db/database';
 import checkAuth from '../check-auth/CheckAuth';
 import { Day } from '@/app/models/Ninja';
@@ -59,7 +59,7 @@ export async function GET(req: Request) {
       );
     }
 
-    const result = await getAllWorkoutPlans();
+    const result = await getUserWorkouts(authData.userId!);
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {

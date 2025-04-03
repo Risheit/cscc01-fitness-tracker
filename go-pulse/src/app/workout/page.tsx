@@ -1,6 +1,5 @@
 import { getWorkoutPlan } from '@/app/models/Workout';
 import OverviewPage from './components/OverviewPage';
-import { notFound } from 'next/navigation';
 
 interface PageProps {
   searchParams: Promise<{ id?: string }>;
@@ -13,7 +12,7 @@ export default async function WorkoutPage({ searchParams }: PageProps) {
   const data = await getWorkoutPlan(cleanId);
 
   if (!data || data.length === 0) {
-    notFound();
+    return <p>There was an issue fetching exercises.</p>
   }
 
   return <OverviewPage exercises={data} workoutId={cleanId} />;

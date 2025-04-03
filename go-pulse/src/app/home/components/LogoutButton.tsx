@@ -19,7 +19,7 @@ const LogoutButton = () => {
   return (
     <button
       onClick={handleLogout}
-      className="w-5 h-5 flex-initial"
+      className="w-8 h-8 flex-initial"
       title="logout"
     >
       <FontAwesomeIcon

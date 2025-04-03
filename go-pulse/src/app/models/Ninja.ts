@@ -1,3 +1,5 @@
+import { DayOfWeek } from "./Workout";
+
 export interface NinjaApiExercise {
   name: string;
   muscle: string;
@@ -19,8 +21,6 @@ export interface SelectedExercise extends NinjaApiExercise {
   reps?: number;
   mins?: number;
 }
-
-export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 
 export interface Day {
   day: DayOfWeek;
@@ -80,7 +80,7 @@ export function addExerciseToWorkout(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       workout_id: workoutId,
-      day: day.day,
+      day_of_week: day.day,
       time: day.time,
       name: exercise.name,
       exercise_type: exercise.type,
@@ -88,7 +88,6 @@ export function addExerciseToWorkout(
       reps: exercise.reps,
       mins: exercise.mins,
       weight: undefined,
-      rest_time: 60,
       position: position,
       description: exercise.instructions || '',
     }),

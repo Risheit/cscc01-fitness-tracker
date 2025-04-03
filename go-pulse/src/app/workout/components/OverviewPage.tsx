@@ -52,7 +52,6 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
         {exercises.map((exercise, index) => (
           <li key={index} className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
             <h2 className="text-2xl font-semibold text-gray-800">{exercise.name}</h2>
-            <p className="text-lg text-gray-600">Day: {exercise.dayOfWeek}</p>
             <p className="text-lg text-gray-600">Type: {exercise.type}</p>
             {exercise.type === 'Timed' && exercise.mins && (
               <p className="text-lg text-gray-600">Duration: {exercise.mins} minutes</p>

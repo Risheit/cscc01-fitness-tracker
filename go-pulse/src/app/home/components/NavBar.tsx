@@ -5,7 +5,7 @@ import LogoutButton from './LogoutButton';
 import Image from 'next/image';
 
 interface Props {
-  tabImages: string[]; 
+  tabs: { name: string; image: string }[];
 }
 
 function changeToTab(tabName: string) {
@@ -13,24 +13,23 @@ function changeToTab(tabName: string) {
   redirect(`/home?tab=${cleanedTabName}`, RedirectType.replace);
 }
 
-const NavBar = ({ tabImages }: Props) => {
-  const tabNames = ['Workouts', 'Workout Builder', 'Conversation'];
-
+const NavBar = ({ tabs }: Props) => {
   return (
     <nav className="bg-gray-700 text-white p-4 flex justify-between flex-initial space-x-4 h-fits">
-      <div className="flex flex-row gap-3">
-        {tabImages.map((image, index) => (
+      <div className="flex flex-row gap-6">
+        {tabs.map((tab, index) => (
           <div
             key={index}
             className="hover:underline flex-auto cursor-pointer"
-            onClick={() => changeToTab(tabNames[index])}
+            onClick={() => changeToTab(tab.name)}
           >
             <Image
-              src={image}
-              alt={tabNames[index]}
-              width={32}  
+              className='invert'
+              src={tab.image}
+              alt={tab.name}
+              width={32}
               height={32}
-              title={tabNames[index]} 
+              title={tab.name}
             />
           </div>
         ))}

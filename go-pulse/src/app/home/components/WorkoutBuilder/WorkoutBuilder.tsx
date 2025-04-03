@@ -7,8 +7,8 @@ import {
   addExerciseToWorkout,
   createWorkout,
   SelectedExercise,
-  DayOfWeek,
 } from '@/app/models/Ninja';
+import { DayOfWeek } from "@/app/models/Workout";
 import { useState, useEffect } from 'react';
 import StepperMenu from './StepperMenu';
 import { DropdownMenu } from './DropdownMenu';
