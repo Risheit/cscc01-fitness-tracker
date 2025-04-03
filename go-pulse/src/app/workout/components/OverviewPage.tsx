@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ExerciseData } from '@/app/models/Workout';
 import ExerciseScreen from './ExerciseScreen';
+import { useRouter } from 'next/navigation';
 import { redirect, RedirectType } from 'next/navigation';
 import { SchedulingModal } from './SchedulingModal';
 
@@ -14,7 +15,7 @@ interface Props {
 export default function OverviewPage({ exercises, workoutId }: Props) {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(true);
-
+  const router = useRouter();
   const startWorkout = () => {
     setWorkoutStarted(true);
   };
@@ -32,7 +33,8 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
   };
 
   if (workoutStarted) {
-    return <ExerciseScreen exercises={exercises} />;
+    // Update the view query parameter to "exercise"
+    router.push(`/workout?id=${workoutId}&view=exercise`);
   }
 
   return (
