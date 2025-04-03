@@ -5,6 +5,7 @@ import { getAllWorkoutPlans } from '../models/Workout';
 import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
 import ConversationsTab from './components/ChatWindow/ConversationTab';
 import ScheduledWorkouts from './components/ScheduledWorkouts/ScheduledWorkouts';
+import FinishedWorkouts from '../finished-workouts/page'
 
 // Internally, represent tabs in all lowercase with dashes between words:
 //    About Us --> about-us
@@ -23,6 +24,8 @@ async function displayTab(tabName?: string) {
       );
     case 'scheduled-workouts':
       return <ScheduledWorkouts />;
+      case 'finished-workouts':
+        return <FinishedWorkouts />
     default:
       redirect('/home?tab=workouts', RedirectType.replace);
   }
@@ -45,6 +48,7 @@ export default async function Home({
             { name: 'Scheduled Workouts', image: '/schedule-icon.png' },
             { name: 'Workout Builder', image: '/buildericon.jpg' },
             { name: 'Conversation', image: '/chaticon.png' },
+            { name: 'Finished Workouts', image: '/frequenticon.png' },
           ]}
         />
       </div>
