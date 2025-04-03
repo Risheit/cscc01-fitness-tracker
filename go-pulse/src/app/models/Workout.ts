@@ -28,6 +28,7 @@ export interface ExerciseData {
 
 export interface WorkoutScheduleItem {
   id: number;
+  workoutDayId: number;
   userId: number;
   name: string;
   imagePath: string;
@@ -77,6 +78,7 @@ export async function getUserWorkouts(
   const { rows } = await pool.query(
     `SELECT
     w.id,
+    d.id AS "workoutDayId",
     w.user_id AS userId,
     w.name,
     w.image_path AS imagePath,

@@ -39,12 +39,20 @@ export default function ScheduledWorkouts() {
   const [isLoading, setIsLoading] = useState(true);
   const days = weekStartingToday();
 
+  async function deleteScheduledWorkout(workout: WorkoutScheduleItem) {
+    return fetch(`/api/workout-exercises`, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'DELETE',
+      body: JSON.stringify({ id: workout.workoutDayId }),
+    });
+  }
+
   useEffect(() => {
     fetchUserWorkouts().then((workouts) => {
       setIsLoading(false);
       setWorkouts(workouts);
     });
-  }, []);
+  }, [isLoading]);
 
   return (
     <div className="flex flex-col bg-gray-200 py-6 min-h-screen px-8 md:px-20 gap-4">
@@ -67,13 +75,15 @@ export default function ScheduledWorkouts() {
                 .sort((a, b) => a.time - b.time)
                 .map((workout) => (
                   <div
-                    key={workout.id}
+                    key={workout.workoutDayId}
                     className="flex flex-row h-fit w-full align-top overflow-hidden rounded-xl border-1 border-gray-600 hover:cursor-pointer transition-all duration-200 my-4"
-                    onClick={() =>
-                      redirect(`/workout?id=${workout.id}`, RedirectType.push)
-                    }
                   >
-                    <div className="h-32 w-40 flex-auto overflow-hidden relative group">
+                    <div
+                      className="h-32 w-40 flex-auto overflow-hidden relative group"
+                      onClick={() =>
+                        redirect(`/workout?id=${workout.id}`, RedirectType.push)
+                      }
+                    >
                       <Image
                         src={workout.imagePath ?? '/stock-running.jpg'}
                         alt="workout image"
@@ -82,17 +92,29 @@ export default function ScheduledWorkouts() {
                       />
                     </div>
                     <div className="flex flex-row h-fill w-full py-2 px-4 bg-gray-100 justify-between">
-                      <div className="flex-initial ">
-                        <p className="text-xl text-purple-800 font-black">
-                          {workout.name}
-                        </p>
-                        <div className="flex-initial h-fit">
-                          <p className="text-xs font-semibold">Scheduled at</p>
-                          <p className="text-4xl font-black text-gray-800">{`${workout.time}:00`}</p>
+                      <div
+                        className="flex flex-row h-fill flex-auto"
+                        onClick={() =>
+                          redirect(
+                            `/workout?id=${workout.id}`,
+                            RedirectType.push
+                          )
+                        }
+                      >
+                        <div className="flex-initial">
+                          <p className="text-xl text-purple-800 font-black">
+                            {workout.name}
+                          </p>
+                          <div className="flex-initial h-fit">
+                            <p className="text-xs font-semibold">
+                              Scheduled at
+                            </p>
+                            <p className="text-4xl font-black text-gray-800">{`${workout.time}:00`}</p>
+                          </div>
                         </div>
                       </div>
 
-                      <div className='flex flex-initial flex-col justify-around h-fill px-2'>
+                      <div className="flex flex-initial flex-col justify-around h-fill px-2">
                         <button className="flex-initial" title="logout">
                           <FontAwesomeIcon
                             icon={faPen}
@@ -101,7 +123,15 @@ export default function ScheduledWorkouts() {
                             fixedWidth
                           />
                         </button>
-                        <button className="flex-initial" title="logout">
+                        <button
+                          className="flex-initial"
+                          title="logout"
+                          onClick={() => {
+                            deleteScheduledWorkout(workout).then(() => {
+                              setIsLoading(true);
+                            });
+                          }}
+                        >
                           <FontAwesomeIcon
                             icon={faTrash}
                             color="brown"

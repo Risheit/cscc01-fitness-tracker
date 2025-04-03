@@ -147,3 +147,95 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function UPDATE(req: Request) {
+  try {
+    const authData = await checkAuth(req);
+    if (!authData.authenticated) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    const { id, time }: { id: number; time: number } = await req.json();
+    if (!id || !time) {
+      return NextResponse.json(
+        { error: 'Invalid request data' },
+        { status: 400 }
+      );
+    }
+
+    const result = await pool.query(
+      `UPDATE workout_days
+      SET time = $1
+      WHERE id = $2
+      RETURNING *`,
+      [time, id]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json(
+        { error: 'No workout day found with the given ID' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: 'Workout day updated successfully',
+        updatedRow: result.rows[0],
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Update Exercise Error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const authData = await checkAuth(req);
+    if (!authData.authenticated) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    const { id }: { id: number } = await req.json();
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Invalid request data' },
+        { status: 400 }
+      );
+    }
+
+    const result = await pool.query(
+      'DELETE FROM workout_days WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json(
+        { error: 'No workout day found with the given ID' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: 'Workout day deleted successfully' },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Delete Exercise Error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
