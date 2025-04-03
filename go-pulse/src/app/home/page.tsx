@@ -4,7 +4,7 @@ import WorkoutSelectionTab from './components/WorkoutSelection/WorkoutSelectionT
 import { getAllWorkoutPlans } from '../models/Workout';
 import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
 import ConversationsTab from './components/ChatWindow/ConversationTab';
-import ScheduledWorkouts from './components/ScheduledWorkots/ScheduledWorkouts';
+import ScheduledWorkouts from './components/ScheduledWorkouts/ScheduledWorkouts';
 
 // Internally, represent tabs in all lowercase with dashes between words:
 //    About Us --> about-us
