@@ -10,6 +10,8 @@ interface Props {
   onCompletion: () => void;
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+
 export default function RepBottomSheet({
   className,
   data,
@@ -26,7 +28,7 @@ export default function RepBottomSheet({
   }
 
   async function logProgress() {
-    await fetch(`/api/log-progress`, {
+    await fetch(`${baseUrl}/api/log-progress`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -131,6 +133,7 @@ export default function RepBottomSheet({
                 setError(true);
                 return;
               }
+
               await logProgress();
               onCompletion();
             }}
