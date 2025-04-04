@@ -38,11 +38,13 @@ const mockWorkoutPlans: WorkoutPlan[] = [
 
 const mockRedirect = vi.fn();
 
-vi.mock('next/navigation', () => ({
+vi.mock('next/navigation', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/navigation')>()),
   redirect: () => {
     mockRedirect();
   },
 }));
+
 
 test('Workout page displays correctly', async () => {
   const numWorkouts = mockWorkoutPlans.length;
