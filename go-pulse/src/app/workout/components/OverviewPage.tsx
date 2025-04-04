@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ExerciseData } from '@/app/models/Workout';
-import ExerciseScreen from './ExerciseScreen';
 import { useRouter } from 'next/navigation';
 import { redirect, RedirectType } from 'next/navigation';
 import { SchedulingModal } from './SchedulingModal';
@@ -16,9 +15,16 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(true);
   const router = useRouter();
+
   const startWorkout = () => {
     setWorkoutStarted(true);
   };
+
+  useEffect(() => {
+    if (workoutStarted) {
+      router.push(`/workout?view=exercise&id=${workoutId}`);
+    }
+  }, [workoutStarted, router]);
 
   const shareableLink = `${window.location.origin}/workout?id=${workoutId}`;
 
@@ -31,11 +37,6 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
   const goBack = () => {
     redirect('/home?tab=workouts', RedirectType.replace);
   };
-
-  if (workoutStarted) {
-    // Update the view query parameter to "exercise"
-    router.push(`/workout?id=${workoutId}&view=exercise`);
-  }
 
   return (
     <div className="relative max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-xl">
@@ -56,7 +57,7 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
       </button>
 
       <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6 sm:mt-12">
-        Workout Summary
+        Workout Overview
       </h1>
 
       {/* List of exercises */}
