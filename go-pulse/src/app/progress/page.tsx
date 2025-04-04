@@ -8,6 +8,8 @@ interface ProgressData {
   recorded_at: string;
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+
 export default function ProgressPage() {
   const [exercise, setExercise] = useState("");
   const [progress, setProgress] = useState<ProgressData[]>([]);
@@ -19,7 +21,7 @@ export default function ProgressPage() {
   useEffect(() => {
     async function fetchExercises() {
       try {
-        const res = await fetch(`/api/logged-exercises`);
+        const res = await fetch(`${baseUrl}/api/logged-exercises`);
         if (!res.ok) throw new Error("Failed to fetch exercises");
         const data = await res.json();
         setExercises(data);
