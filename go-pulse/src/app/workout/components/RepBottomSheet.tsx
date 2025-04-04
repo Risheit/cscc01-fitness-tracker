@@ -67,6 +67,10 @@ export default function RepBottomSheet({
     setSets(sets + 1);
   };
 
+  const checkreps = () =>{
+    return reps != 0;
+  }
+
   return (
     <div
       className={`${className ?? ''} flex flex-col p-5 rounded-3xl bg-gray-100`}
@@ -133,8 +137,9 @@ export default function RepBottomSheet({
                 setError(true);
                 return;
               }
-
-              await logProgress();
+              if(checkreps()){
+                await logProgress();
+              }
               onCompletion();
             }}
           >
