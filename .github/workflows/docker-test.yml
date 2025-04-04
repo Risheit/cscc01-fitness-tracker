@@ -19,7 +19,7 @@ jobs:
       run: docker compose build test
 
     - name: Run tests
-      run: docker compose up test
+      run: docker compose up test --exit-code-from test
 
   builds:
     runs-on: ubuntu-latest
