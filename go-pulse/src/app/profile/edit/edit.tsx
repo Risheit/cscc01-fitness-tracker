@@ -13,19 +13,10 @@ export default function EditProfile() {
     const age = useRef<HTMLInputElement>(null);
     const gender = useRef<HTMLSelectElement>(null);
     const bio = useRef<HTMLTextAreaElement>(null);
-    const [profilePic, setProfilePic] = useState("/profile-picture.jpg");
 
     useEffect(() => {
         getProfile().then(setProfile);
     }, []);
-
-    // Handle profile picture upload
-    const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files[0]) {
-            const imageUrl = URL.createObjectURL(event.target.files[0]);
-            setProfilePic(imageUrl);
-        }
-    };
 
     const handleSave = () => {
         const profileData: User = {
@@ -60,16 +51,6 @@ export default function EditProfile() {
                         alt="Profile Picture" 
                         fill
                         className="rounded-full object-cover"
-                    />
-                </div>
-
-                {/* Profile Picture Upload */}
-                <div className="flex flex-col items-center mb-6">
-                    <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="mt-2 text-sm"
-                        onChange={handleProfilePicChange}
                     />
                 </div>
 
