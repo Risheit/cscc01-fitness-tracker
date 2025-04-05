@@ -39,11 +39,15 @@ export interface WorkoutScheduleItem {
 export type WorkoutState = 'start' | 'paused' | 'running' | 'end';
 
 export async function getAllWorkoutPlans(): Promise<WorkoutPlan[]> {
-  const { rows } = await pool.query(
-    'SELECT id, name, image_path AS "imagePath" FROM workouts'
-  );
-
-  return rows;
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, name, image_path AS "imagePath" FROM workouts'
+    );
+    return rows;
+  } catch (error) {
+    console.error('Error fetching workout plans:', error);
+    return [];
+  }
 }
 
 export async function getWorkoutPlan(planId: number): Promise<ExerciseData[]> {
