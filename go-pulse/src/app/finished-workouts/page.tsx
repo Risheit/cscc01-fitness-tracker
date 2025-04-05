@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface TopWorkout {
   exercise_name: string;
@@ -11,6 +12,7 @@ export default function TopWorkoutsPage() {
   const [topWorkouts, setTopWorkouts] = useState<TopWorkout[]>([]);
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTopWorkouts = async () => {
@@ -61,6 +63,16 @@ export default function TopWorkoutsPage() {
           )}
         </ul>
       )}
+
+      {/* Go to Progress Page Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={() => router.push('/progress')}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md transition duration-200"
+        >
+          View Progress
+        </button>
+      </div>
     </div>
   );
 }

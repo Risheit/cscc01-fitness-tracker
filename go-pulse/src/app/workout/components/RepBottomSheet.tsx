@@ -16,11 +16,38 @@ export default function RepBottomSheet({
   isCapped,
   onCompletion,
 }: Props) {
-  const [reps, setReps] = useState(1);
+  const [reps, setReps] = useState(0);
   const [sets, setSets] = useState(1);
+  const [weight, setWeight] = useState("");
+  const [error, setError] = useState(false);
+
+  function isWeightValid() {
+    return (reps == 0 && sets == 1) || (weight.trim() !== "" && parseFloat(weight) > 0);
+  }
+
+  async function logProgress() {
+    await fetch(`/api/log-progress`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        exercise_name: data.name,
+        weight_lbs: parseFloat(weight) || 0,
+        sets: sets,
+        reps: reps,
+      }),
+    });
+  }
 
   const nextRep = () => {
     if (isCapped && reps >= data.reps!) {
+
+      if (!isWeightValid()) {
+        setError(true);
+        return;
+      }
+  
+      setError(false);
+
       nextSet();
       return;
     }
@@ -30,12 +57,17 @@ export default function RepBottomSheet({
 
   const nextSet = () => {
     if (isCapped && sets >= data.sets!) {
+      logProgress();
       onCompletion();
     }
 
     setReps(1);
     setSets(sets + 1);
   };
+
+  const checkreps = () =>{
+    return reps != 0;
+  }
 
   return (
     <div
@@ -56,6 +88,21 @@ export default function RepBottomSheet({
             {isCapped && <p className="text-md">of {data.reps!}</p>}
           </div>
         </div>
+
+        {/* Weight Input */}
+        <input
+          type="number"
+          placeholder="Enter weight (lbs)"
+          className="w-full max-w-64 p-3 rounded-md bg-gray-700 text-white text-center"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          min="0"
+        />
+
+        {/* Error Message */}
+        {error && (
+          <p className="text-red-500 text-sm">Please enter a valid weight before proceeding.</p>
+        )}
 
         {/* Flex container for the first row of buttons */}
         <div
@@ -83,7 +130,16 @@ export default function RepBottomSheet({
         <div className="flex justify-center w-full mt-4">
           <button
             className="bg-red-600 rounded-md h-16 w-48 border border-r-2 border-red-800 text-white hover:bg-red-700 transition-colors"
-            onClick={onCompletion}
+            onClick={async () => {
+              if (!isWeightValid()) {
+                setError(true);
+                return;
+              }
+              if(checkreps()){
+                await logProgress();
+              }
+              onCompletion();
+            }}
           >
             {isCapped ? 'Skip' : 'Next Workout'}
           </button>

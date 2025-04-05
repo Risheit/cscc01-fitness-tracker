@@ -11,32 +11,61 @@ const mockWorkoutData: ExerciseData[] = [
     imagePath: '/weight.jpg',
     type: 'Sets',
     sets: 2,
-    reps: 3,
+    reps: 3
   },
-  {
+   {
     name: 'Squats',
     description: 'Squats Description',
     videoId: 'gMgvBspQ9lk',
     imagePath: '/weight.jpg',
     type: 'Timed',
-    mins: 15,
+    mins: 15
   },
 ];
 
 const mockPlay = vi.fn();
 const mockPause = vi.fn();
+const mockPush = vi.fn();
 
 HTMLMediaElement.prototype.play = mockPlay;
 HTMLMediaElement.prototype.pause = mockPause;
 
 vi.mock('next/navigation', async (importOriginal) => ({
   ...await importOriginal<typeof import('next/navigation')>(),
-  useRouter: () => {
-    return {
-      push: () => null,
-    };
-  },
+  useRouter: () => ({
+    push: mockPush, // Track navigation calls
+  }),
 }));
+
+// Mock fetch globally in tests
+beforeEach(() => {
+  global.fetch = vi.fn(() =>
+    Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ success: true }),
+      headers: new Headers(),
+      text: () => Promise.resolve(JSON.stringify({ success: true })),
+      statusText: "OK",
+      redirected: false,
+      type: "basic",
+      url: "",
+      clone: function () { return this; },
+      body: null,
+      bodyUsed: false,
+    } as Response)
+  );  
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+function enterWeight(weight: string) {
+  const input = screen.getByPlaceholderText('Enter weight (lbs)');
+  expect(input).toBeInTheDocument();
+  fireEvent.change(input, { target: { value: weight } });
+}
 
 function clickButton(name: string) {
   const button = screen.getByRole('button', { name });
@@ -55,7 +84,7 @@ function checkCurrentSet(amt: number) {
 test('run Workout page flow', async () => {
   vi.useFakeTimers();
 
-  render(<ExerciseScreen exercises={mockWorkoutData} />);
+  render(<ExerciseScreen exercises={mockWorkoutData} workoutId={1} />);
 
   // Check the starting screen
   expect(
@@ -69,7 +98,11 @@ test('run Workout page flow', async () => {
   // Move to Sets workout screen
   clickButton('Continue');
 
+
   // Click through Sets workout screen
+  checkCurrentRep(0);
+  checkCurrentSet(1);
+  clickButton('Next Rep');
   checkCurrentRep(1);
   checkCurrentSet(1);
   clickButton('Next Rep');
@@ -78,6 +111,11 @@ test('run Workout page flow', async () => {
   clickButton('Next Rep');
   checkCurrentRep(3);
   checkCurrentSet(1);
+  
+  // Ensure weight input before proceeding to next set
+  clickButton('Next Rep');
+  expect(screen.getByText('Please enter a valid weight before proceeding.')).toBeInTheDocument();
+  enterWeight('100');
   clickButton('Next Rep');
   checkCurrentRep(1);
   checkCurrentSet(2);
@@ -122,8 +160,8 @@ test('run Workout page flow', async () => {
 test('try Timer pausing', async () => {
   vi.useFakeTimers();
 
-  render(<ExerciseScreen exercises={mockWorkoutData} />);
-
+  render(<ExerciseScreen exercises={mockWorkoutData} workoutId={1} />);
+  
   // Skip to Timer page
   clickButton('Continue');
   clickButton('Skip');

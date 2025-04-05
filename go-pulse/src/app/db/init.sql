@@ -46,6 +46,23 @@ INSERT INTO exercises (name, description, video_id, image_path) VALUES
 ('Barbell Full Squat', null, 'i7J5h7BJ07g', '/weight.jpg'),
 ('Pullups', null, 'iWpoegdfgtc', '/weight.jpg');
 
+CREATE TABLE IF NOT EXISTS exercise_progress (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    exercise_name VARCHAR(255) NOT NULL REFERENCES exercises(name) ON DELETE CASCADE,
+    recorded_at TIMESTAMP DEFAULT NOW(),
+    weight_lbs DECIMAL(5,2) NOT NULL CHECK (weight_lbs >= 0), -- Weight lifted, can't be negative
+    sets INT CHECK (sets >= 1), -- Optional, must be at least 1
+    reps INT CHECK (reps >= 1)  -- Optional, must be at least 1
+);
+
+-- Sample weight tracking data (user 1 logs weight for Bench Press)
+INSERT INTO exercise_progress (user_id, exercise_name, weight_lbs, sets, reps)
+VALUES 
+(1, 'Bench Press', 135.00, 3, 10),
+(1, 'Bench Press', 145.00, 3, 8),
+(1, 'Squats', 185.00, 4, 10);
+
 -- Workouts Table (User-created & Pre-Built)
 CREATE TABLE IF NOT EXISTS workouts (
     id SERIAL PRIMARY KEY,
