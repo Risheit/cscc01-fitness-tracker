@@ -1,58 +1,34 @@
 "use client";
 
-import { User } from "@/app/models/User";
+import { getProfile, updateProfile, User } from "@/app/models/User";
+import Image from "next/image";
 import { useRouter } from "next/navigation";;
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function EditProfile() {
     const router = useRouter();
-    const [name, setName] = useState("");
-    const [age, setAge] = useState("");
-    const [weight, setWeight] = useState("");
-    const [gender, setGender] = useState("");
-    const [bio, setBio] = useState("");
-    const [profilePic, setProfilePic] = useState("/profile-picture.jpg");
+    const [profile, setProfile] = useState<User>();
+    const name = useRef<HTMLInputElement>(null);
+    const weight = useRef<HTMLInputElement>(null);
+    const age = useRef<HTMLInputElement>(null);
+    const gender = useRef<HTMLSelectElement>(null);
+    const bio = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const res = await fetch(`/api/profile`);
-                if (!res.ok) throw new Error('Failed to load profile');
-
-                const data = await res.json();
-                setName(data.full_name || '');
-                setWeight(data.weight_lbs?.toString() || '');
-                setAge(data.age?.toString() || '');
-                setGender(data.gender || '');
-                setBio(data.bio || '');
-                    
-            } catch (error) {
-                console.error("Error fetching profile:", error);
-            }
-        };
-
-        fetchProfile();
+        getProfile().then(setProfile);
     }, []);
-
-    // Handle profile picture upload
-    const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files[0]) {
-            const imageUrl = URL.createObjectURL(event.target.files[0]);
-            setProfilePic(imageUrl);
-        }
-    };
 
     const handleSave = () => {
         const profileData: User = {
-            fullName: name,
-            weight: weight,
-            age: age,
-            gender: gender,
-            bio: bio,
+            fullName: name.current?.value,
+            weight: weight.current?.value ? parseInt(weight.current.value) : undefined,
+            age: age.current?.value ? parseInt(age.current.value) : undefined,
+            gender: gender.current?.value,
+            bio: bio.current?.value,
         };
     
         // Save to localStorage
-        localStorage.setItem("profileData", JSON.stringify(profileData));
+        updateProfile(profileData);
     
         // Redirect to profile page
         router.push("/profile");
@@ -69,21 +45,12 @@ export default function EditProfile() {
             {/* Profile Edit Container */}
             <div className="bg-white p-6 rounded-lg shadow-md mt-4 w-11/12 max-w-lg">
 
-                <div className="flex justify-center mb-4">
-                    <img 
-                        src={profilePic} 
+                <div className="mx-auto relative w-24 h-24 flex justify-center mb-4">
+                    <Image
+                        src="/profile-picture.jpg"
                         alt="Profile Picture" 
-                        className="w-24 h-24 rounded-full object-cover"
-                    />
-                </div>
-
-                {/* Profile Picture Upload */}
-                <div className="flex flex-col items-center mb-6">
-                    <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="mt-2 text-sm"
-                        onChange={handleProfilePicChange}
+                        fill
+                        className="rounded-full object-cover"
                     />
                 </div>
 
@@ -93,8 +60,8 @@ export default function EditProfile() {
                     type="text" 
                     placeholder="Enter your name"
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    defaultValue={profile?.fullName ?? ''}
+                    ref={name}
                 />
 
                 {/* Age Input */}
@@ -103,8 +70,8 @@ export default function EditProfile() {
                     type="number" 
                     placeholder="Enter age"
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
+                    defaultValue={profile?.age ?? ''}
+                    ref={age}
                 />
 
                 {/* Weight Input */}
@@ -113,16 +80,16 @@ export default function EditProfile() {
                     type="number" 
                     placeholder="Enter weight"
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
+                    defaultValue={profile?.weight ?? ''}
+                    ref={weight}
                 />
 
                 {/* Gender Selection */}
                 <label className="block text-gray-800 font-medium mt-4">Gender</label>
                 <select 
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
+                    defaultValue={profile?.gender ?? ''}
+                    ref={gender}
                 >
                     <option value="">Select</option>
                     <option value="Male">Male</option>
@@ -136,10 +103,9 @@ export default function EditProfile() {
                     maxLength={500}
                     className="w-full p-2 border border-gray-400 rounded-lg text-gray-900"
                     rows={4}
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
+                    defaultValue={profile?.bio ?? ''}
+                    ref={bio}
                 />
-                <p className="text-sm text-gray-500">{bio.length}/500 characters</p>
 
                 {/* Buttons */}
                 <div className="flex justify-between mt-6">

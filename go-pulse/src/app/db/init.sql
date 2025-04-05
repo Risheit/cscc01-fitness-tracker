@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     full_name TEXT,
     weight_lbs INT,
     age INT,
-    gender VARCHAR(2) CHECK (gender IN ('M', 'F')),
+    gender VARCHAR(255) CHECK (gender IN ('Male', 'Female')),
     bio TEXT
 );
 
