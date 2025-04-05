@@ -5,6 +5,7 @@ import { ExerciseData } from '@/app/models/Workout';
 import { useRouter } from 'next/navigation';
 import { redirect, RedirectType } from 'next/navigation';
 import { SchedulingModal } from './SchedulingModal';
+import CommentSection from './CommentSection';
 
 interface Props {
   exercises: ExerciseData[];
@@ -109,6 +110,7 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
           Copy Link
         </button>
       </div>
+      <CommentSection workoutId={workoutId} />
     </div>
   );
 }

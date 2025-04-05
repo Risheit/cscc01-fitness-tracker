@@ -11,8 +11,12 @@ export async function GET(req: Request) {
   }
 
   try {
-    const decoded = jwt.verify(token, SECRET) as { userId: number };
-    return NextResponse.json({ authenticated: true, userId: decoded.userId}, { status: 200 });
+    // Decode the token to extract `userId` and `username`
+    const decoded = jwt.verify(token, SECRET) as { userId: number; username: string };
+    return NextResponse.json(
+      { authenticated: true, userId: decoded.userId, username: decoded.username },
+      { status: 200 }
+    );
   } catch {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
