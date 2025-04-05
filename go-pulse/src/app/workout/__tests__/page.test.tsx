@@ -84,7 +84,7 @@ function checkCurrentSet(amt: number) {
 test('run Workout page flow', async () => {
   vi.useFakeTimers();
 
-  render(<ExerciseScreen exercises={mockWorkoutData} />);
+  render(<ExerciseScreen exercises={mockWorkoutData} workoutId={1} />);
 
   // Check the starting screen
   expect(
@@ -160,7 +160,7 @@ test('run Workout page flow', async () => {
 test('try Timer pausing', async () => {
   vi.useFakeTimers();
 
-  render(<ExerciseScreen exercises={mockWorkoutData} />);
+  render(<ExerciseScreen exercises={mockWorkoutData} workoutId={1} />);
   
   // Skip to Timer page
   clickButton('Continue');

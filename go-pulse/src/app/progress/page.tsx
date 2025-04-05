@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useRouter } from "next/navigation";
 
 interface ProgressData {
   weight_lbs: number;
   recorded_at: string;
 }
-
-const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
 
 export default function ProgressPage() {
   const [exercise, setExercise] = useState("");
@@ -16,12 +15,13 @@ export default function ProgressPage() {
   const [exercises, setExercises] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   // Fetch exercise options
   useEffect(() => {
     async function fetchExercises() {
       try {
-        const res = await fetch(`${baseUrl}/api/logged-exercises`);
+        const res = await fetch(`/api/logged-exercises`);
         if (!res.ok) throw new Error("Failed to fetch exercises");
         const data = await res.json();
         setExercises(data);
@@ -48,6 +48,7 @@ export default function ProgressPage() {
         }
 
         setProgress(data);
+        setLoading(false);
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -62,6 +63,13 @@ export default function ProgressPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 flex flex-col items-center">
+      <button
+        onClick={() => router.push("/home?tab=workouts")}
+        className="mb-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+      >
+        ← Back to Workouts
+      </button>
+
       <h1 className="text-2xl font-bold text-center mb-6">Weight Progression</h1>
 
       {/* Exercise Selection */}
