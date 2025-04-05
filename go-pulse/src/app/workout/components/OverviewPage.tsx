@@ -18,6 +18,7 @@ export default function OverviewPage({ exercises, workoutId, workoutPlan }: Prop
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(true);
   const router = useRouter();
+  
 
   const handleStartWorkout = async () => {
     const now = new Date().toISOString();
@@ -45,7 +46,7 @@ export default function OverviewPage({ exercises, workoutId, workoutPlan }: Prop
   };
 
   if (workoutStarted) {
-    return <ExerciseScreen exercises={exercises} workoutPlan={workoutPlan}/>;
+    return <ExerciseScreen exercises={exercises} workoutId={workoutId} workoutPlan={workoutPlan}/>;
   }
 
   return (

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 
 interface Props {
   exercises: ExerciseData[];
+  workoutId: number;
   workoutPlan: WorkoutPlan;
 }
 
