@@ -88,6 +88,14 @@ CREATE TABLE IF NOT EXISTS workout_days (
 INSERT INTO workout_days (workout_id, day_of_week, time) VALUES
 (1, 'Monday', 0);
 
+CREATE TABLE IF NOT EXISTS comments (
+    id SERIAL PRIMARY KEY,
+    workout_id INT NOT NULL REFERENCES workouts(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Workout-Exercises Table (Links workouts to exercises & specific days)
 CREATE TABLE IF NOT EXISTS workout_exercises (
     workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
@@ -114,6 +122,12 @@ INSERT INTO workout_exercises(workout_id, workout_day_id, name, exercise_type, s
 (1, 1, 'Squats', 'Timed', NULL, NULL, 3, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 2),
 (1, 1, 'Squats', 'Timed', NULL, NULL, 2, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 4);
 
+CREATE TABLE IF NOT EXISTS comment_likes (
+    id SERIAL PRIMARY KEY,
+    comment_id INT NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE(comment_id, user_id) -- Ensure a user can like a comment only once
+);
 
 CREATE TABLE IF NOT EXISTS finished_exercises (
     id SERIAL PRIMARY KEY,  -- Auto-incrementing ID for each record
