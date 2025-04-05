@@ -1,21 +1,37 @@
 'use client';
 
-import { useState } from 'react';
-import { ExerciseData } from '@/app/models/Workout';
+import { useState, useEffect } from 'react';
+import { ExerciseData, WorkoutPlan } from '@/app/models/Workout';
 import ExerciseScreen from './ExerciseScreen';
 import { redirect, RedirectType } from 'next/navigation';
+import { SchedulingModal } from './SchedulingModal';
+import CommentSection from './CommentSection';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   exercises: ExerciseData[];
   workoutId: number;
+  workoutPlan: WorkoutPlan;
 }
 
-export default function OverviewPage({ exercises, workoutId }: Props) {
+export default function OverviewPage({ exercises, workoutId, workoutPlan }: Props) {
   const [workoutStarted, setWorkoutStarted] = useState(false);
+  const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(true);
+  const router = useRouter();
+  
 
-  const startWorkout = () => {
+  const handleStartWorkout = async () => {
+    const now = new Date().toISOString();
+    localStorage.setItem("workoutStartTime", now); 
+  
     setWorkoutStarted(true);
   };
+
+  useEffect(() => {
+    if (workoutStarted) {
+      router.push(`/workout?view=exercise&id=${workoutId}`);
+    }
+  }, [workoutStarted, router, workoutId]);
 
   const shareableLink = `${window.location.origin}/workout?id=${workoutId}`;
 
@@ -26,15 +42,23 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
   };
 
   const goBack = () => {
-    redirect('/home?tab=workouts', RedirectType.replace)
+    redirect('/home?tab=workouts', RedirectType.replace);
   };
 
   if (workoutStarted) {
-    return <ExerciseScreen exercises={exercises} />;
+    return <ExerciseScreen exercises={exercises} workoutId={workoutId} workoutPlan={workoutPlan}/>;
   }
 
   return (
     <div className="relative max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+      {/* Modal for scheduling */}
+      {isSchedulingModalOpen && (
+        <SchedulingModal
+          workoutId={workoutId}
+          onClose={() => setIsSchedulingModalOpen(false)}
+        />
+      )}
+
       {/* Back Button in the top-left, conditionally adjusts for small screen */}
       <button
         onClick={goBack}
@@ -44,18 +68,24 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
       </button>
 
       <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6 sm:mt-12">
-        Workout Summary
+        Workout Overview
       </h1>
-      
+
       {/* List of exercises */}
       <ul className="space-y-6">
         {exercises.map((exercise, index) => (
-          <li key={index} className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl font-semibold text-gray-800">{exercise.name}</h2>
-            <p className="text-lg text-gray-600">Day: {exercise.dayOfWeek}</p>
+          <li
+            key={index}
+            className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          >
+            <h2 className="text-2xl font-semibold text-gray-800">
+              {exercise.name}
+            </h2>
             <p className="text-lg text-gray-600">Type: {exercise.type}</p>
             {exercise.type === 'Timed' && exercise.mins && (
-              <p className="text-lg text-gray-600">Duration: {exercise.mins} minutes</p>
+              <p className="text-lg text-gray-600">
+                Duration: {exercise.mins} minutes
+              </p>
             )}
             {exercise.type === 'Sets' && (
               <p className="text-lg text-gray-600">
@@ -66,12 +96,18 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
         ))}
       </ul>
 
-      <div className="mt-8 text-center">
+      <div className="mt-8 text-center flex flex-col items-center gap-2 w-fit self-center mx-auto">
         <button
-          onClick={startWorkout}
+          onClick={handleStartWorkout}
           className="bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
         >
           Start Workout
+        </button>
+        <button
+          onClick={() => setIsSchedulingModalOpen(true)}
+          className="w-fit bg-gray-400 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
+        >
+          Schedule Workout
         </button>
       </div>
 
@@ -79,11 +115,13 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
         <p className="text-lg text-gray-600">Share this workout:</p>
         <button
           onClick={copyToClipboard}
-          className="mt-3 bg-green-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-200"
+          className="flex-initial w-fit mt-3 bg-green-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-200"
         >
           Copy Link
         </button>
       </div>
+      <CommentSection workoutId={workoutId} />
     </div>
   );
 }
+

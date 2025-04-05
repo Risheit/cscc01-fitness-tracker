@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     full_name TEXT,
     weight_lbs INT,
     age INT,
-    gender VARCHAR(2) CHECK (gender IN ('M', 'F')),
+    gender VARCHAR(255) CHECK (gender IN ('Male', 'Female')),
     bio TEXT
 );
 
@@ -46,6 +46,23 @@ INSERT INTO exercises (name, description, video_id, image_path) VALUES
 ('Barbell Full Squat', null, 'i7J5h7BJ07g', '/weight.jpg'),
 ('Pullups', null, 'iWpoegdfgtc', '/weight.jpg');
 
+CREATE TABLE IF NOT EXISTS exercise_progress (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    exercise_name VARCHAR(255) NOT NULL REFERENCES exercises(name) ON DELETE CASCADE,
+    recorded_at TIMESTAMP DEFAULT NOW(),
+    weight_lbs DECIMAL(5,2) NOT NULL CHECK (weight_lbs >= 0), -- Weight lifted, can't be negative
+    sets INT CHECK (sets >= 1), -- Optional, must be at least 1
+    reps INT CHECK (reps >= 1)  -- Optional, must be at least 1
+);
+
+-- Sample weight tracking data (user 1 logs weight for Bench Press)
+INSERT INTO exercise_progress (user_id, exercise_name, weight_lbs, sets, reps)
+VALUES 
+(1, 'Bench Press', 135.00, 3, 10),
+(1, 'Bench Press', 145.00, 3, 8),
+(1, 'Squats', 185.00, 4, 10);
+
 -- Workouts Table (User-created & Pre-Built)
 CREATE TABLE IF NOT EXISTS workouts (
     id SERIAL PRIMARY KEY,
@@ -64,17 +81,26 @@ CREATE TABLE IF NOT EXISTS workout_days (
     id SERIAL PRIMARY KEY,
     workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
     day_of_week VARCHAR(10) NOT NULL CHECK (day_of_week IN 
-        ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+        ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')),
+    time INT NOT NULL CHECK (time >= 0 AND time < 24)
 );
 
-INSERT INTO workout_days (workout_id, day_of_week) VALUES
-(1, 'Monday');
+INSERT INTO workout_days (workout_id, day_of_week, time) VALUES
+(1, 'Monday', 0);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id SERIAL PRIMARY KEY,
+    workout_id INT NOT NULL REFERENCES workouts(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
 
 -- Workout-Exercises Table (Links workouts to exercises & specific days)
 CREATE TABLE IF NOT EXISTS workout_exercises (
     workout_id INT REFERENCES workouts(id) ON DELETE CASCADE,
     workout_day_id INT REFERENCES workout_days(id) ON DELETE CASCADE, -- Now exercises are assigned to days!
-    name VARCHAR(255) NOT NULL, -- Example: "Squat", "Bench Press", etc.
+    name VARCHAR(255) NOT NULL REFERENCES exercises(name) ON DELETE CASCADE, 
     exercise_type VARCHAR(50) NOT NULL,
     sets INT DEFAULT NULL,
     reps INT DEFAULT NULL,
@@ -95,3 +121,30 @@ INSERT INTO workout_exercises(workout_id, workout_day_id, name, exercise_type, s
 (1, 1, 'Pull Up', 'Sets', 2, 5, NULL, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 3),
 (1, 1, 'Squats', 'Timed', NULL, NULL, 3, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 2),
 (1, 1, 'Squats', 'Timed', NULL, NULL, 2, 'Always warm up before starting and maintain proper form by keeping your posture upright and landing softly on your feet to reduce impact. Stay aware of your surroundings by running in well-lit areas, wearing reflective gear if it''s dark, and listening at a volume that allows you to hear traffic and other hazards.', 4);
+
+CREATE TABLE IF NOT EXISTS comment_likes (
+    id SERIAL PRIMARY KEY,
+    comment_id INT NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE(comment_id, user_id) -- Ensure a user can like a comment only once
+);
+
+CREATE TABLE IF NOT EXISTS finished_exercises (
+    id SERIAL PRIMARY KEY,  -- Auto-incrementing ID for each record
+    user_id INT NOT NULL,   -- Reference to the user who completed the exercise
+    exercise_name VARCHAR(255) NOT NULL,  -- Name of the exercise
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (exercise_name) REFERENCES exercises(name)  
+);
+
+
+CREATE TABLE IF NOT EXISTS workout_times (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    workout_id INT REFERENCES workouts(id),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    duration INTERVAL GENERATED ALWAYS AS (end_time - start_time) STORED
+);
+
+

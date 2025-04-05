@@ -6,16 +6,31 @@ import {
   fetchNinjaExercises,
   addExerciseToWorkout,
   createWorkout,
+  SelectedExercise,
 } from '@/app/models/Ninja';
+import { DayOfWeek } from "@/app/models/Workout";
 import { useState, useEffect } from 'react';
 import StepperMenu from './StepperMenu';
+import { DropdownMenu } from './DropdownMenu';
 
 export default function WorkoutBuilder() {
+  const daysOfWeek: DayOfWeek[] = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+
   const [exercises, setExercises] = useState<NinjaApiExercise[]>([]);
-  const [selectedExercises, setSelectedExercises] = useState<Day[]>([]);
+  const [selectedExercises, setSelectedExercises] = useState<
+    SelectedExercise[]
+  >([]);
+  const [selectedDays, setSelectedDays] = useState<Day[]>([]);
   const [workoutName, setWorkoutName] = useState('');
   const [search, setSearch] = useState('');
-  const [selectedDays, setSelectedDays] = useState<string[]>([]); // Track selected days
   const [exerciseType, setExerciseType] = useState<string>('');
   const [muscleGroup, setMuscleGroup] = useState<string>('');
   const [difficulty, setDifficulty] = useState<string>('');
@@ -34,95 +49,67 @@ export default function WorkoutBuilder() {
     fetchExercises();
   }, [exerciseType, muscleGroup, difficulty, search]);
 
-  function addExerciseToDay(exercise: NinjaApiExercise, day: string) {
+  function addSelectedExercise(exercise: NinjaApiExercise) {
     const exerciseToAdd =
       exercise.type !== 'cardio'
         ? { ...exercise, sets: 3, reps: 10 }
         : { ...exercise, mins: 10 };
 
-    setSelectedExercises((prev) =>
-      prev
-        .map((item) => {
-          // If item not in today, do nothing
-          if (item.day !== day) {
-            return item;
-          }
-
-          // If exercise is already in the day's list, do nothing
-          if (item.exercises.some((e) => e.name === exercise.name)) {
-            return item;
-          }
-
-          // Return a new object to ensure state updates properly
-          return {
-            ...item,
-            exercises: [...item.exercises, exerciseToAdd],
-          };
-        })
-        .concat(
-          prev.some((item) => item.day === day)
-            ? []
-            : [{ day, exercises: [exerciseToAdd] }]
-        )
-    );
+    setSelectedExercises((prev) => prev.concat(exerciseToAdd));
   }
 
   function updateExerciseDetails(
-    day: string,
     exerciseName: string,
     field: 'sets' | 'reps' | 'mins',
     value: number
   ) {
     setSelectedExercises((prev) =>
-      prev.map((item) => {
-        if (item.day !== day) {
-          return item;
-        }
-
-        return {
-          ...item,
-          exercises: item.exercises.map((exercise) =>
-            exercise.name === exerciseName
-              ? {
-                  ...exercise,
-                  [field]: Math.max(1, value),
-                }
-              : exercise
-          ),
-        };
+      prev.map((exercise) => {
+        return exerciseName === exercise.name
+          ? { ...exercise, [field]: Math.max(1, value) }
+          : exercise;
       })
     );
   }
 
-  function removeExerciseFromDay(exercise: NinjaApiExercise, day: string) {
-    setSelectedExercises((prev) => {
-      const dayExercises = prev.find((item) => item.day === day);
-      if (dayExercises) {
-        dayExercises.exercises = dayExercises.exercises.filter(
-          (e) => e.name !== exercise.name
-        );
-      }
-      return [...prev];
-    });
+  function removeSelectedExercise(exercise: NinjaApiExercise) {
+    setSelectedExercises((prev) =>
+      prev.filter((e) => e.name !== exercise.name)
+    );
   }
 
-  function toggleDaySelection(day: string) {
-    setSelectedDays((prev) => {
-      if (prev.includes(day)) {
-        return prev.filter((d) => d !== day);
+  function removeSelectedDay(day: Day) {
+    setSelectedDays((prev) =>
+      prev.filter((d) => !(d.day === day.day && d.time === day.time))
+    );
+  }
+
+  function addNewDay(newDay: DayOfWeek) {
+    // Find some time period without conflicts
+    let time = 0;
+    while (selectedDays.some((d) => d.day === newDay && d.time === time)) {
+      time += 1;
+      if (time > 23) {
+        // No time periods available
+        return;
       }
-      return [...prev, day];
-    });
+    }
+
+    setSelectedDays((prev) =>
+      prev.some((d) => d.day === newDay && d.time === time) // Check if the day already exists
+        ? prev
+        : prev.concat({ day: newDay, time })
+    );
   }
 
   async function addWorkout() {
     const workoutId = await createWorkout(workoutName, selectedDays);
 
-    for (const day of selectedExercises) {
+    for (const day of selectedDays) {
       let position = 1;
-      for (const exercise of day.exercises) {
+      for (const exercise of selectedExercises) {
         addExerciseToWorkout(workoutId, day, exercise, position);
-        position += 1;
+        position++;
       }
     }
 
@@ -147,21 +134,11 @@ export default function WorkoutBuilder() {
         <div className="mb-4">
           <h3 className="text-lg font-semibold">Select Days of the Week</h3>
           <div className="flex flex-wrap">
-            {[
-              'Monday',
-              'Tuesday',
-              'Wednesday',
-              'Thursday',
-              'Friday',
-              'Saturday',
-              'Sunday',
-            ].map((day) => (
+            {daysOfWeek.map((day) => (
               <button
                 key={day}
-                onClick={() => toggleDaySelection(day)}
-                className={`p-2 mr-2 mb-2 rounded-md ${
-                  selectedDays.includes(day) ? 'bg-blue-500' : 'bg-gray-700'
-                }`}
+                onClick={() => addNewDay(day)}
+                className={`p-2 mr-2 mb-2 rounded-md bg-blue-500`}
               >
                 {day}
               </button>
@@ -169,60 +146,114 @@ export default function WorkoutBuilder() {
           </div>
         </div>
 
-        {/* Filter Dropdowns for Exercise */}
-        <div className="flex space-x-4 mb-4">
-          {/* Exercise Type */}
-          <select
-            value={exerciseType}
-            onChange={(e) => setExerciseType(e.target.value)}
-            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
-          >
-            <option value="">Select Type</option>
-            <option value="cardio">Cardio</option>
-            <option value="strength">Strength</option>
-            <option value="olympic_weightlifting">Olympic Weightlifting</option>
-            <option value="plyometrics">Plyometrics</option>
-            <option value="powerlifting">Powerlifting</option>
-            <option value="stretching">Stretching</option>
-            <option value="strongman">Strongman</option>
-          </select>
+        {/* Time selection */}
+        <div className="mb-4">
+          {selectedDays.length > 0 &&
+            selectedDays.map((day, index) => (
+              <li
+                key={`${index}`}
+                className="bg-gray-700 p-2 my-1 rounded-md flex items-center justify-between"
+              >
+                <span className="text-sm">{day.day} at</span>
+                <div className="flex items-center space-x-2">
+                  <StepperMenu
+                    name="sets"
+                    value={day.time}
+                    displayed={`:00`}
+                    min={0}
+                    max={23}
+                    onValueUpdate={(time, changeType) => {
+                      let newTime = time;
+                      const timeExists = (d: Day) =>
+                        d.day === day.day && d.time === newTime;
+                      while (selectedDays.some(timeExists)) {
+                        newTime += changeType === 'decrease' ? -1 : 1;
+                        if (newTime > 23) {
+                          newTime = 0;
+                        } else if (newTime < 0) {
+                          newTime = 23;
+                        }
 
-          {/* Muscle Group */}
-          <select
+                        if (newTime === time) {
+                          return; // No time periods available
+                        }
+                      }
+
+                      setSelectedDays((prev) =>
+                        prev.map((d) =>
+                          d.day === day.day && d.time === day.time
+                            ? { ...d, time: newTime }
+                            : d
+                        )
+                      );
+                    }}
+                  />
+
+                  {/* Remove Button */}
+                  <button
+                    onClick={() => removeSelectedDay(day)}
+                    className="text-red-500 text-sm px-2 py-1 rounded-md bg-gray-800 hover:bg-gray-700"
+                  >
+                    ✖
+                  </button>
+                </div>
+              </li>
+            ))}
+        </div>
+
+        <div className="flex space-x-4 mb-4">
+          {/* Filter Dropdowns for Exercise */}
+          <DropdownMenu
+            options={[
+              { value: '', name: 'Select Type' },
+              { value: 'cardio', name: 'Cardio' },
+              { value: 'strength', name: 'Strength' },
+              { value: 'olympic_weightlifting', name: 'Olympic Weightlifting' },
+              { value: 'plyometrics', name: 'Plyometrics' },
+              { value: 'powerlifting', name: 'Powerlifting' },
+              { value: 'stretching', name: 'Stretching' },
+              { value: 'strongman', name: 'Strongman' },
+            ]}
+            value={exerciseType}
+            onChange={setExerciseType}
+          />
+
+          {/* Muscle Group Dropdown */}
+          <DropdownMenu
+            options={[
+              { value: '', name: 'Select Muscle' },
+              { value: 'abdominals', name: 'Abdominals' },
+              { value: 'abductors', name: 'Abductors' },
+              { value: 'adductors', name: 'Adductors' },
+              { value: 'biceps', name: 'Biceps' },
+              { value: 'calves', name: 'Calves' },
+              { value: 'chest', name: 'Chest' },
+              { value: 'forearms', name: 'Forearms' },
+              { value: 'glutes', name: 'Glutes' },
+              { value: 'hamstrings', name: 'Hamstrings' },
+              { value: 'lats', name: 'Lats' },
+              { value: 'lower_back', name: 'Lower Back' },
+              { value: 'middle_back', name: 'Middle Back' },
+              { value: 'neck', name: 'Neck' },
+              { value: 'quadriceps', name: 'Quadriceps' },
+              { value: 'traps', name: 'Traps' },
+              { value: 'triceps', name: 'Triceps' },
+            ]}
             value={muscleGroup}
-            onChange={(e) => setMuscleGroup(e.target.value)}
-            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
-          >
-            <option value="">Select Muscle</option>
-            <option value="abdominals">Abdominals</option>
-            <option value="abductors">Abductors</option>
-            <option value="adductors">Adductors</option>
-            <option value="biceps">Biceps</option>
-            <option value="calves">Calves</option>
-            <option value="chest">Chest</option>
-            <option value="forearms">Forearms</option>
-            <option value="glutes">Glutes</option>
-            <option value="hamstrings">Hamstrings</option>
-            <option value="lats">Lats</option>
-            <option value="lower_back">Lower Back</option>
-            <option value="middle_back">Middle Back</option>
-            <option value="neck">Neck</option>
-            <option value="quadriceps">Quadriceps</option>
-            <option value="traps">Traps</option>
-            <option value="triceps">Triceps</option>
-          </select>
+            onChange={setMuscleGroup}
+          />
 
           {/* Difficulty Level */}
-          <select
+          <DropdownMenu
+            options={[
+              { value: '', name: 'Select Difficulty' },
+              { value: 'beginner', name: 'Beginner' },
+              { value: 'intermediate', name: 'Intermediate' },
+              { value: 'expert', name: 'Expert' },
+            ]}
             value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-            className="w-full p-3 rounded-md bg-gray-700 text-white focus:ring focus:ring-blue-500"
-          >
-            <option value="">Select Difficulty</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="expert">Expert</option>
-          </select>
+            onChange={setDifficulty}
+          />
         </div>
 
         {/* Search Bar */}
@@ -251,15 +282,12 @@ export default function WorkoutBuilder() {
                   {exercise.muscle} | {exercise.equipment}
                 </p>
                 <div className="mt-2">
-                  {selectedDays.map((day) => (
-                    <button
-                      key={day}
-                      onClick={() => addExerciseToDay(exercise, day)}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md mb-2"
-                    >
-                      Add to {day}
-                    </button>
-                  ))}
+                  <button
+                    onClick={() => addSelectedExercise(exercise)}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md mb-2"
+                  >
+                    Add to Workout
+                  </button>
                 </div>
               </div>
             ))}
@@ -270,79 +298,57 @@ export default function WorkoutBuilder() {
           <>
             <h2 className="text-xl font-semibold mt-6">Selected Exercises</h2>
             <ul className="mt-2 space-y-2">
-              {selectedExercises.map((day) => (
-                <div key={day.day} className="mb-2">
-                  <h3 className="font-semibold text-lg mb-1">{day.day}</h3>
-                  {day.exercises.map((exercise) => (
-                    <li
-                      key={`${exercise.name}-${day.day}`}
-                      className="bg-gray-700 p-2 my-1 rounded-md flex items-center justify-between"
+              {selectedExercises.map((exercise, index) => (
+                <li
+                  key={`${index}`}
+                  className="bg-gray-700 p-2 my-1 rounded-md flex items-center justify-between"
+                >
+                  <span className="text-sm">{exercise.name}</span>
+
+                  <div className="flex items-center space-x-2">
+                    {/* Set/Rep Stepper */}
+                    {exercise.type !== 'cardio' && (
+                      <StepperMenu
+                        name="sets"
+                        value={exercise.sets ?? 3}
+                        min={1}
+                        onValueUpdate={(updated) =>
+                          updateExerciseDetails(exercise.name, 'sets', updated)
+                        }
+                      />
+                    )}
+                    {exercise.type !== 'cardio' && (
+                      <StepperMenu
+                        name="reps"
+                        value={exercise.reps ?? 3}
+                        min={1}
+                        onValueUpdate={(updated) =>
+                          updateExerciseDetails(exercise.name, 'reps', updated)
+                        }
+                      />
+                    )}
+
+                    {/* Minutes Stepper */}
+                    {exercise.type === 'cardio' && (
+                      <StepperMenu
+                        name="minutes"
+                        value={exercise.mins ?? 3}
+                        min={1}
+                        onValueUpdate={(updated) =>
+                          updateExerciseDetails(exercise.name, 'mins', updated)
+                        }
+                      />
+                    )}
+
+                    {/* Remove Button */}
+                    <button
+                      onClick={() => removeSelectedExercise(exercise)}
+                      className="text-red-500 text-sm px-2 py-1 rounded-md bg-gray-800 hover:bg-gray-700"
                     >
-                      {/* Exercise Name */}
-                      <span className="text-sm">{exercise.name}</span>
-
-                      {/* Sets & Reps Controls (Inline) */}
-                      <div className="flex items-center space-x-2">
-                        {exercise.type !== 'cardio' && (
-                          <StepperMenu
-                            name='sets'
-                            value={exercise.sets ?? 3}
-                            min={1}
-                            onValueUpdate={(updated) =>
-                              updateExerciseDetails(
-                                day.day,
-                                exercise.name,
-                                'sets',
-                                updated
-                              )
-                            }
-                          />
-                        )}
-                        {exercise.type !== 'cardio' && (
-                          <StepperMenu
-                            name='reps'
-                            value={exercise.reps ?? 3}
-                            min={1}
-                            onValueUpdate={(updated) =>
-                              updateExerciseDetails(
-                                day.day,
-                                exercise.name,
-                                'reps',
-                                updated
-                              )
-                            }
-                          />
-                        )}
-
-                        {exercise.type === 'cardio' && (
-                          <StepperMenu
-                            name='minutes'
-                            value={exercise.mins ?? 3}
-                            min={1}
-                            onValueUpdate={(updated) =>
-                              updateExerciseDetails(
-                                day.day,
-                                exercise.name,
-                                'mins',
-                                updated
-                              )
-                            }
-                          />
-                        )}
-
-                        {/* Remove Button */}
-                        <button
-                          onClick={() =>
-                            removeExerciseFromDay(exercise, day.day)
-                          }
-                          className="text-red-500 text-sm px-2 py-1 rounded-md bg-gray-800 hover:bg-gray-700"
-                        >
-                          ✖
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </div>
+                      ✖
+                    </button>
+                  </div>
+                </li>
               ))}
             </ul>
           </>

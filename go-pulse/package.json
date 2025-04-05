@@ -1,6 +1,6 @@
 {
   "name": "go-pulse",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -26,6 +26,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-linkify": "^1.0.0-alpha",
+    "recharts": "^2.15.1",
     "web-push": "^3.6.7"
   },
   "devDependencies": {

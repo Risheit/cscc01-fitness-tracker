@@ -1,13 +1,15 @@
 'use client';
 
 import YouTubePlayer from '@/app/components/YouTubePlayer';
-import { ExerciseData, WorkoutState } from '@/app/models/Workout';
+import { ExerciseData, WorkoutState, WorkoutPlan } from '@/app/models/Workout';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   className?: string;
   data?: ExerciseData;
   state: WorkoutState;
   onCompletion: () => void;
+  workoutPlan: WorkoutPlan;
 }
 
 function getHeadingText(state: WorkoutState) {
@@ -28,7 +30,37 @@ export default function IntermediateBottomSheet({
   data,
   state,
   onCompletion,
+  workoutPlan,
 }: Props) {
+  const router = useRouter();
+
+  const handleFinish = async () => {
+    if (state === 'end') {
+      const startTime = localStorage.getItem("workoutStartTime");
+      const endTime = new Date().toISOString();
+
+      if (startTime && workoutPlan?.id) {
+        try {
+          await fetch('/api/workout-times', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              workoutId: workoutPlan.id,
+              startTime,
+              endTime
+            })
+          });
+          localStorage.removeItem("workoutStartTime");
+        } catch (err) {
+          console.error("Failed to log workout:", err);
+        }
+      }
+
+      router.push("/home?tab=workouts");
+    } else {
+      onCompletion();
+    }
+  };
   return (
     <div
       className={`${
@@ -54,7 +86,7 @@ export default function IntermediateBottomSheet({
       <div className="flex justify-center w-full mt-4">
         <button
           className="bg-blue-600 rounded-md h-16 w-48 border border-r-2 border-blue-800 text-white hover:bg-blue-700 transition-colors"
-          onClick={onCompletion}
+          onClick={handleFinish}
         >
           {state != 'end' ? 'Continue' : 'Finish'}
         </button>
@@ -62,3 +94,5 @@ export default function IntermediateBottomSheet({
     </div>
   );
 }
+
+

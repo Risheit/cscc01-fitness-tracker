@@ -1,3 +1,5 @@
+import { DayOfWeek } from "./Workout";
+
 export interface NinjaApiExercise {
   name: string;
   muscle: string;
@@ -21,8 +23,8 @@ export interface SelectedExercise extends NinjaApiExercise {
 }
 
 export interface Day {
-  day: string;
-  exercises: SelectedExercise[];
+  day: DayOfWeek;
+  time: number;
 }
 
 export async function fetchNinjaExercises(
@@ -55,7 +57,7 @@ export async function fetchNinjaExercises(
 
 export async function createWorkout(
   name: string,
-  days: string[]
+  days: Day[]
 ): Promise<number> {
   const res = await fetch('/api/workouts', {
     method: 'POST',
@@ -67,25 +69,25 @@ export async function createWorkout(
   return workout.workoutId;
 }
 
-export async function addExerciseToWorkout(
+export function addExerciseToWorkout(
   workoutId: number,
   day: Day,
   exercise: SelectedExercise,
   position: number
 ) {
-  await fetch(`/api/workout-exercises`, {
+  return fetch(`/api/workout-exercises`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       workout_id: workoutId,
       day_of_week: day.day,
+      time: day.time,
       name: exercise.name,
       exercise_type: exercise.type,
       sets: exercise.sets,
       reps: exercise.reps,
       mins: exercise.mins,
-      weight: null,
-      rest_time: 60,
+      weight: undefined,
       position: position,
       description: exercise.instructions || '',
     }),
