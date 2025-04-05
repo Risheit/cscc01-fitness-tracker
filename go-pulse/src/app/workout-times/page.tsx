@@ -44,11 +44,11 @@ export default function WorkoutTimesPage() {
     ? Math.floor(totalDuration / workoutTimes.length)
     : 0; 
    
-  let filteredWorkoutTimes = workoutTimes.filter(w =>
+  const filteredWorkoutTimes = workoutTimes.filter(w =>
     w.workout_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  let sortedWorkoutTimes = [...filteredWorkoutTimes];
+  const sortedWorkoutTimes = [...filteredWorkoutTimes];
   switch (sortOption) {
     case 'shortest':
       sortedWorkoutTimes.sort((a, b) => a.duration - b.duration);

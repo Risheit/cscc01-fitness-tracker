@@ -31,7 +31,7 @@ export default function OverviewPage({ exercises, workoutId, workoutPlan }: Prop
     if (workoutStarted) {
       router.push(`/workout?view=exercise&id=${workoutId}`);
     }
-  }, [workoutStarted, router]);
+  }, [workoutStarted, router, workoutId]);
 
   const shareableLink = `${window.location.origin}/workout?id=${workoutId}`;
 
