@@ -1,4 +1,4 @@
-import { getWorkoutPlan } from '@/app/models/Workout';
+import { getWorkoutPlan, getAllWorkoutPlans } from '@/app/models/Workout';
 import OverviewPage from './components/OverviewPage';
 import ExerciseScreen from './components/ExerciseScreen';
 import SummaryPage from './components/SummaryPage';
@@ -14,6 +14,7 @@ export default async function WorkoutPage({ searchParams }: PageProps) {
   const cleanId = Number.isNaN(paramsId) ? -1 : paramsId;
   const view = params?.view ?? 'overview';
   const data = await getWorkoutPlan(cleanId);
+<<<<<<< HEAD
   if (!data || data.length === 0) {
     return <p>There was an issue fetching exercises.</p>
   }
@@ -27,4 +28,14 @@ export default async function WorkoutPage({ searchParams }: PageProps) {
     default:
       notFound();
   }
+=======
+  const allPlans = await getAllWorkoutPlans();
+  const workoutPlan = allPlans.find(plan => plan.id === cleanId);
+
+  if (!data || data.length === 0 || !workoutPlan) {
+    notFound();
+  }
+
+  return <OverviewPage exercises={data} workoutId={cleanId} workoutPlan={workoutPlan}/>;
+>>>>>>> 717e779 (Workout History and Times Page)
 }

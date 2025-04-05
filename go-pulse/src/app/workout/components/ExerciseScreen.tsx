@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import TimedBottomSheet from './TimedBottomSheet';
-import { ExerciseData, WorkoutState } from '@/app/models/Workout';
+import { ExerciseData, WorkoutState, WorkoutPlan } from '@/app/models/Workout';
 import RepBottomSheet from './RepBottomSheet';
 import { useState } from 'react';
 import IntermediateBottomSheet from './IntermediateBottomSheet';
@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 interface Props {
   exercises: ExerciseData[];
-  workoutId: number;
+  workoutPlan: WorkoutPlan;
 }
 
 function renderBottomSheet(exercise: ExerciseData, onCompletion: () => void) {
@@ -35,7 +35,7 @@ function renderBottomSheet(exercise: ExerciseData, onCompletion: () => void) {
   }
 }
 
-export default function ExerciseScreen({ exercises, workoutId }: Props) {
+export default function ExerciseScreen({ exercises, workoutPlan }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [workoutState, setWorkoutState] = useState<WorkoutState>('start');
   const router = useRouter();
@@ -94,7 +94,7 @@ export default function ExerciseScreen({ exercises, workoutId }: Props) {
   const nextExercise = () => {
     if (workoutState === 'end') {
       logCompletedExercises().then(() => {
-        router.push(`/workout?view=summary&id=${workoutId}`);
+        router.push('/');
       });
     } else {
       setWorkoutState('running');
@@ -123,8 +123,11 @@ export default function ExerciseScreen({ exercises, workoutId }: Props) {
           data={exercises[currentIndex]}
           state={workoutState}
           onCompletion={nextExercise}
+          workoutPlan={workoutPlan}
         />
       )}
     </main>
   );
 }
+
+

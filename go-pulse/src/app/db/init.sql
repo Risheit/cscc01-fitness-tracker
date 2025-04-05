@@ -136,3 +136,15 @@ CREATE TABLE IF NOT EXISTS finished_exercises (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (exercise_name) REFERENCES exercises(name)  
 );
+
+
+CREATE TABLE IF NOT EXISTS workout_times (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    workout_id INT REFERENCES workouts(id),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    duration INTERVAL GENERATED ALWAYS AS (end_time - start_time) STORED
+);
+
+

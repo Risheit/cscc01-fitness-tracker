@@ -1,23 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ExerciseData } from '@/app/models/Workout';
-import { useRouter } from 'next/navigation';
+import { ExerciseData, WorkoutPlan } from '@/app/models/Workout';
+import ExerciseScreen from './ExerciseScreen';
 import { redirect, RedirectType } from 'next/navigation';
 import { SchedulingModal } from './SchedulingModal';
 import CommentSection from './CommentSection';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   exercises: ExerciseData[];
   workoutId: number;
+  workoutPlan: WorkoutPlan;
 }
 
-export default function OverviewPage({ exercises, workoutId }: Props) {
+export default function OverviewPage({ exercises, workoutId, workoutPlan }: Props) {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(true);
   const router = useRouter();
 
-  const startWorkout = () => {
+  const handleStartWorkout = async () => {
+    const now = new Date().toISOString();
+    localStorage.setItem("workoutStartTime", now); 
+  
     setWorkoutStarted(true);
   };
 
@@ -38,6 +43,10 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
   const goBack = () => {
     redirect('/home?tab=workouts', RedirectType.replace);
   };
+
+  if (workoutStarted) {
+    return <ExerciseScreen exercises={exercises} workoutPlan={workoutPlan}/>;
+  }
 
   return (
     <div className="relative max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-xl">
@@ -88,8 +97,8 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
 
       <div className="mt-8 text-center flex flex-col items-center gap-2 w-fit self-center mx-auto">
         <button
-          onClick={startWorkout}
-          className="w-fit bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
+          onClick={handleStartWorkout}
+          className="bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
         >
           Start Workout
         </button>
@@ -114,3 +123,4 @@ export default function OverviewPage({ exercises, workoutId }: Props) {
     </div>
   );
 }
+
