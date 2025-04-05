@@ -39,14 +39,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    /*const result = await pool.query(
-      `SELECT workout_name, EXTRACT(EPOCH FROM duration)::int AS duration
-       FROM workout_times
-       WHERE user_id = $1
-       ORDER BY end_time DESC`,
-      [session.userId]
-    );*/
-    
     const result = await pool.query(
         `SELECT w.name AS workout_name, EXTRACT(EPOCH FROM wt.duration)::int AS duration
          FROM workout_times wt
