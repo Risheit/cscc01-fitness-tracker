@@ -55,7 +55,7 @@ export default function CommentSection({ workoutId }: { workoutId: number }) {
                     ...prevComments,
                     {
                         ...newCommentData,
-                        user_id: userId, // Add the logged-in user's ID to the new comment
+                        user_id: userId,
                     },
                 ]);
                 setNewComment('');

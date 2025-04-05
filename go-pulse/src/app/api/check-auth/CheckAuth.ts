@@ -1,7 +1,7 @@
 export interface AuthResponse {
   authenticated: boolean;
   userId?: number;
-  username?: string; // Add `username` to the interface
+  username?: string;
 }
 
 // Function to check authentication status and get userId and username by calling check-auth route

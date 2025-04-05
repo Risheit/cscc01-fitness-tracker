@@ -11,7 +11,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    // Decode the token to extract `userId` and `username`
     const decoded = jwt.verify(token, SECRET) as { userId: number; username: string };
     return NextResponse.json(
       { authenticated: true, userId: decoded.userId, username: decoded.username },

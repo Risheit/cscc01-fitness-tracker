@@ -17,7 +17,6 @@ export async function POST(req: Request) {
     }
 
     try {
-        // Insert the comment and return the generated ID and created_at
         const result = await pool.query(
             'INSERT INTO comments (content, user_id, workout_id) VALUES ($1, $2, $3) RETURNING id, created_at',
             [content, userId, workoutId]
@@ -51,7 +50,6 @@ export async function DELETE(req: Request) {
         return NextResponse.json({ error: "Missing comment ID" }, { status: 400 });
     }
 
-    // Ensure the user owns the comment before deleting
     const result = await pool.query(
         'DELETE FROM comments WHERE id = $1 AND user_id = $2 RETURNING id',
         [commentId, userId]

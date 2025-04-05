@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import pool from "@/app/db/database";
 import checkAuth from "@/app/api/check-auth/CheckAuth";
+import type { NextRequest } from 'next/server';
 
-export async function GET(req: Request, context: { params: { workoutId: string } }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ workoutId: string }> }) {
+    const { workoutId } = await context.params;
     const authData = await checkAuth(req);
     const userId = authData.userId;
 
-    const params = await context.params;
-    const workoutId = params.workoutId;
     const parsedWorkoutId = parseInt(workoutId, 10);
 
     if (isNaN(parsedWorkoutId)) {
@@ -15,9 +15,6 @@ export async function GET(req: Request, context: { params: { workoutId: string }
     }
 
     try {
-        // Query to fetch comments with likes and likedByUser
-
-        console.log("User ID:", userId);
         const { rows } = await pool.query(
             `
             SELECT 
@@ -41,8 +38,6 @@ export async function GET(req: Request, context: { params: { workoutId: string }
             `,
             [parsedWorkoutId, userId]
         );
-
-        console.log("Fetched comments:", rows);
 
         return NextResponse.json(rows);
     } catch (error) {
